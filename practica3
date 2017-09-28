@@ -253,3 +253,52 @@ Observe qué sucede al ejecutar el programa y hacer click con el mouse en difere
           [to-draw ImprimirTexto]
           [on-key Agregarcaracter]
           )
+;======================================================================================================== ejercicio 7
+(define CAR .)
+
+
+(define LARGOFONDO 500)
+(define ALTOFONDO 150)
+;(define CAR (rectangle 70 35 "solid" "blue"))
+(define INICIAL 0)
+(define LIMITE (- LARGOFONDO (+ 10 (image-width CAR)))) ;limite hasta el cual el auto avanza
+(define LIENZO (empty-scene LARGOFONDO ALTOFONDO))
+
+(define (Dibujo d) (place-image/align CAR d (/ ALTOFONDO 2) "left" "middle" LIENZO));funcion que imprime la imagen
+
+(define distancia 3)
+
+(define (AutoAvanza d) (cond
+                           [(< d LIMITE) (+ d distancia)]
+                           [(>= d LIMITE) LIMITE]
+                           ))
+
+(define DELTA 20)
+
+(define (Teclado d k)
+  (if (and (<= 2 d) (<= d LIMITE ))
+   (cond
+    [(key=? k "left") (- d DELTA)]
+    [(key=? k "right") (+ d DELTA)]
+    [(key=? k " ") INICIAL]
+    ) d
+   )
+  )
+
+(define (mouse-handler d x y event)
+  (if (<= y LIMITE)
+      (cond
+        [(string=? event "button-down") x]
+        [else d]
+        )
+      LIMITE))
+        
+        
+        
+        (big-bang INICIAL
+                  [to-draw Dibujo]
+                  [on-tick AutoAvanza]
+                  [on-key Teclado]
+                  [on-mouse mouse-handler]
+                  )
+ 

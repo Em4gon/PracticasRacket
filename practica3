@@ -230,8 +230,12 @@ Observe qué sucede al ejecutar el programa y hacer click con el mouse en difere
         [(key=? k "p") inicial]
         [else c]) c))))
       
+      
+(define (mouse-handler c x y event) (cond [(string=? event "button-down") y]
+                                          [else c]))
 
 (big-bang inicial
           [to-draw Circulo]
           [on-key Teclado]
+          [on-mouse mouse-handler]
           )

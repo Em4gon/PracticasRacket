@@ -145,4 +145,57 @@ Semaforo
  [to-draw Semaforo]
  [on-tick ColorChange 0.5]
  )
- 
+
+;=================================================================================================================
+#|EJERCICIO 4
+
+Si no lo tuvo en cuenta en el item anterior, puede suceder que el objeto desaparezca de la escena. Modifique sus funciones para que esto no ocurra. Es decir, que el objeto se mueva sólo si no va a desaparecer de los bordes de la escena. Caso contrario, el estado no debe modificarse.
+
+Si se presiona la barra espaciadora, el sistema debe volver al estado inicial.
+
+Agregue la siguiente pareja a su expresión big bang:
+[on-mouse mouse-handler]
+
+Donde la función mouse-handler se define como sigue:
+(define (mouse-handler n x y event) (cond [(string=? event "button-down") y]
+                                          [else n]))
+Recuerde que, para manejar eventos del teclado, la función asociada recibía el estado actual y la tecla presionada, y devolvía el nuevo estado.
+Para el caso del mouse, también devolvemos el nuevo estado, pero recuerde que el manejador recibe los siguientes argumentos:
+El estado actual n
+
+La coordenada x donde se produjo el evento
+
+La coordenada y donde se produjo el evento
+
+Qué clase de evento se produjo. En nuestro caso respondemos al mouse cuando se aprieta un botón. Hay otros eventos que iremos aprendiendo en nuevos ejercicios.
+
+Observe qué sucede al ejecutar el programa y hacer click con el mouse en diferentes puntos de la escena.
+|#
+
+(define alto 600)
+(define ancho 300)
+(define radio 100)
+(define delta 25)
+(define inicial (/ alto 2))
+
+(define (Circulo c) (place-image (circle radio "solid" "cyan") (/ ancho 2) c (empty-scene ancho alto)))
+  
+  (define (Teclado c k)
+    (if
+      (and (< c (- alto radio)) (> c (+ radio 0)))
+       (cond
+         [(key=? k "w") (- c delta)]
+         [(key=? k "s") (+ c delta)]
+         [(key=? k "p") inicial]
+         [else c])
+       (cond
+      [(key=? k "p") inicial]
+      [else c]
+      )
+      ))
+  
+(big-bang inicial
+          [to-draw Circulo]
+          [on-key Teclado]
+          )
+

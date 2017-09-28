@@ -219,3 +219,37 @@ Observe qué sucede al ejecutar el programa y hacer click con el mouse en difere
           [to-draw Circulo]
           [on-key Teclado]
           [on-mouse mouse-handler])
+          
+  #|
+  ==========================================================================================================================
+  Ejercicio 6 - mini editor de texto
+  
+  |#
+
+
+(define ANCHO 800)
+(define ALTO 60)
+(define LIENZO (empty-scene ANCHO ALTO)) ;fondo vacio
+(define INICIAL "") ;estado inicial
+(define FONTSIZE 20) ;tamaño de la fuente
+(define COLOR "indigo") ;color del texto
+
+(define (ImprimirTexto t) (place-image/align (text t FONTSIZE COLOR)
+                   0 0 "left" "top" LIENZO)) ;funcion que dibuja la imagen con el texto
+
+
+(define (Agregarcaracter c k) 
+  (cond
+    [(string=? k "\b") (substring c 0 (- (string-length c) 1))]
+    [(string=? k "rshift") c] ;evita que se imprima rshift o shift al apretarlos
+    [(string=? k "shift") c]
+    [(string=? k "control") c]
+    [(string? k) (string-append c k)]
+    
+    )
+  )
+
+(big-bang INICIAL
+          [to-draw ImprimirTexto]
+          [on-key Agregarcaracter]
+          )

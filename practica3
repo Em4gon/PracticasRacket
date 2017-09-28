@@ -149,10 +149,7 @@ Semaforo
 ;=================================================================================================================
 #|EJERCICIO 4
 
-Si no lo tuvo en cuenta en el item anterior, puede suceder que el objeto desaparezca de la escena. Modifique sus funciones para que esto no ocurra. Es decir, que el objeto se mueva sólo si no va a desaparecer de los bordes de la escena. Caso contrario, el estado no debe modificarse.
-
-Si se presiona la barra espaciadora, el sistema debe volver al estado inicial.
-
+#|
 Agregue la siguiente pareja a su expresión big bang:
 [on-mouse mouse-handler]
 
@@ -180,7 +177,7 @@ Observe qué sucede al ejecutar el programa y hacer click con el mouse en difere
 
 (define (Circulo c) (place-image (circle radio "solid" "cyan") (/ ancho 2) c (empty-scene ancho alto)))
   
-  (define (Teclado c k)
+#|  (define (Teclado c k)
     (if
       (and (< c (- alto radio)) (> c (+ radio 0)))
        (cond
@@ -193,9 +190,48 @@ Observe qué sucede al ejecutar el programa y hacer click con el mouse en difere
       [else c]
       )
       ))
-  
+|#
+
+#| (define (Teclado c k)
+    (if
+      (< c (- alto radio)) 
+       (cond
+         [(key=? k "w") (- c delta)]
+         [(key=? k "p") inicial]
+         [else c]) 
+       (if
+        (> c (+ radio 0))
+       (cond
+         [(key=? k "s") (+ c delta)]
+         [(key=? k "p") inicial]
+         [else c]
+         ) c)
+       ))
+|#
+
+ (define (Teclado c k)
+   (if
+    (and (< c (- alto radio)) (> c (+ radio 0)))
+    (cond
+      [(key=? k "w") (- c delta)]
+      [(key=? k "s") (+ c delta)]
+      [(key=? k "p") inicial]
+      [else c])
+    (if
+     (>= c (- alto radio))
+     (cond
+       [(key=? k "w") (- c delta)]
+       [(key=? k "p") inicial]
+       [else c])
+     (if
+      (<= c (+ radio 0))
+      (cond
+        [(key=? k "s") (+ c delta)]
+        [(key=? k "p") inicial]
+        [else c]) c))))
+      
+
 (big-bang inicial
           [to-draw Circulo]
           [on-key Teclado]
           )
-

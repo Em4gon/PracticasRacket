@@ -1,0 +1,148 @@
+#|
+tarea: implementar un semaforo como los de la calle con variacion en el tiempo
+hacer ejercicio 3, item 3 (Agregue un manejador de eventos para controlar el teclado, de acuerdo a las siguientes reglas:
+
+    Si la tecla presionada es un dígito d, entonces el nuevo estado debe ser 10*d,
+
+    Para cualquier otra tecla, deja el estado sin cambiar.)))))))
+
+;estado inicial
+(define inicial 200)
+
+;define escenario 300x300
+(define escenario (empty-scene 300 300))
+
+;Circulo: number -> image
+(define (Circulo radio) (cond
+                          [(< 100 radio) (circle radio "solid" "green")]
+                          [(<= 51 radio ) (circle radio "solid" "red")]
+                          [(<= radio 50) (circle radio "solid" "yellow")]
+                          [else "blue"]))
+
+;pantalla; estado> image
+(define (pantalla r) (place-image (Circulo r) 150 150
+                                  escenario))
+
+;incrementar: number > number
+;suma uno a su argumento
+(define (incrementar n) (+ n 1))
+
+;decrementar number > number
+;resta uno al argumento siempre que sea mayor a cero
+(define (decrementar n)(if (= n 0) 100 (- n 1)))
+
+(big-bang inicial
+          [to-draw pantalla]
+          [on-tick decrementar]
+          )
+========================================================================================================
+|#
+
+#|===========================================================================Ejercicio5
+;estado inicial
+(define inicial "blue")
+
+;define escenario 300x300
+(define escenario (empty-scene 300 300))
+
+
+#|;Circulo: number -> image
+(define (Circulo radio c) (cond
+                          [(<= 150 radio) (circle radio "solid" c)]
+                          [(< 100 radio) (triangle radio "solid" c)]
+                          [(<= 51 radio ) (square radio "solid" c)]
+                          [(<= radio 50) (star radio "solid" c)]))
+  |#                   
+
+(define (Circulo c) (circle 100 "solid" c))
+                      
+;pantalla; estado> image
+(define (pantalla r) (place-image (Circulo r) 150 150
+                                  escenario))
+
+;incrementar: number > number
+;suma uno a su argumento
+(define (incrementar n) (+ n 1))
+
+;decrementar number > number
+;resta uno al argumento siempre que sea mayor a cero
+(define (decrementar n)(if (= n 0) 100 (- n 1)))
+
+;eventosTeclado estado String > estado
+(define (eventosTeclado c k) (cond
+                         [(key=? k "a") "yellow"]
+                         [(key=? k "r") "red"]
+                         [(key=? k "b") "blue"]
+                         [(key=? k "g") "green"]
+                         ))
+
+;CambioColor: string > string
+(define (CambioColor c) (cond 
+                          [(string=? c "blue") "red"]
+                          [(string=? c "red") "black"]
+                          [(string=? c "black") "yellow"]
+                          [(string=? c "yellow") "brown"]
+                          [(string=? c "brown") "green"]
+                          [(string=? c "green") "blue"]
+                          ))
+
+
+(big-bang inicial 
+          [to-draw pantalla]
+          [on-tick CambioColor 4] ;cambia el color a otro cada tick
+          [on-key eventosTeclado] ;cambia el color segun el teclado
+           )
+
+|#
+#|
+=====================================================================================================
+
+
+Semaforo
+
+
+=====================================================================================================
+|#
+
+
+;constantes del fondo del semaforo
+(define ancho 150)
+(define alto 500)
+(define lienzo (empty-scene ancho alto))
+(define inicial 0)
+
+(define (CircleRed c) (circle (/ ancho 2) "solid" (cond
+                                                 [(= c 1) "red"]
+                                                 [else "black"])))
+
+(define (CircleYel c) (circle (/ ancho 2) "solid" (cond
+                                                 [(= c 2) "yellow"]
+                                                 [else "black"])))
+
+(define (CircleGre c) (circle (/ ancho 2) "solid" (cond
+                                                 [(= c 3) "green"]
+                                                 [(= c 4) "green"]
+                                                 [else "black"])))
+
+(define (Semaforo c)
+  ;  (overlay/offset
+  ;   (overlay/offset
+  ;   (overlay/offset
+  ;    (CircleRed c) 0 -300 (CircleYel c))
+  ;  0 -300 (CircleGre c))
+  ;  0 000 lienzo))
+  (place-image (CircleGre c) 75 400
+   (place-image (CircleYel c) 75 250 (place-image  (CircleRed c) (/ ancho 2) 100 lienzo))))
+                
+
+(define (ColorChange c)
+  (cond
+    [(< c 4) (add1 c)]
+    [(= 4 c) (- c 3)]
+    ))
+
+(big-bang inicial
+ [to-draw Semaforo]
+ [on-tick ColorChange 0.5]
+ )
+ 

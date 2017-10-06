@@ -1,333 +1,167 @@
-(require picturing-programs)
-
-#|
-(rotate-cw img) → image?
-  img : image?
-Rotates an image 90 degrees clockwise.
-procedure
-(rotate-ccw img) → image?
-  img : image?
-Rotates an image 90 degrees counterclockwise.
-procedure
-(rotate-180 img) → image?
-  img : image?
-Rotates an image 180 degrees around its center.
-procedure
-(crop-top img pixels) → image?
-  img : image?
-  pixels : natural-number/c
-Chops off the specified number of pixels from the top of the image.
-procedure
-(crop-bottom img pixels) → image?
-  img : image?
-  pixels : natural-number/c
-Chops off the specified number of pixels from the bottom of the image.
-procedure
-(crop-left img pixels) → image?
-  img : image?
-  pixels : natural-number/c
-Chops off the specified number of pixels from the left side of the image.
-procedure
-(crop-right img pixels) → image?
-  img : image?
-  pixels : natural-number/c
-Chops off the specified number of pixels from the right side of the image.
-procedure
-(flip-main img) → image?
-  img : image?
-Reflects an image across the line x=y, moving the pixel at coordinates (x,y) to (y,x). The top-right corner becomes the bottom-left corner, and vice versa. Width and height are swapped.
-procedure
-(flip-other img) → image?
-  img : image?
-Reflects an image by moving the pixel at coordinates (x,y) to (h-y, w-x). The top-left corner becomes the bottom-right corner, and vice versa. Width and height are swapped.
-procedure
-(reflect-vert img) → image?
-  img : image?
-The same as flip-vertical; retained for compatibility.
-procedure
-(reflect-horiz img) → image?
-  img : image?
-The same as flip-horizontal; retained for compatibility.
-procedure
-(reflect-main-diag img) → image?
-  img : image?
-The same as flip-main; retained for compatibility.
-procedure
-(reflect-other-diag img) → image?
-  img : image?
-The same as flip-other; retained for compatibility.
-|#
-#|
-CircleRan: recibe un numero que determina el tamaño del circulo
-number -> circle
-----------------------------------------------
-(circle radius mode color) → image?
-  radius : (and/c real? (not/c negative?))
-  mode : mode?
-  color : image-color?
-|#
+(require picturing-programs) ;paquete del cual se usaran un par de funciones
 
 
-(define (Circulo r) (circle (* 25 r) "solid"
-                              (make-color (random 255) (random 255) (random 255))))
+;GROSORDECIRCULOS constante que afecta al tamaño de los circulos, las estrellas y los triangulos
+(define GROSORDECIRCULOS 25)
 
-#|
-(underlay/align x-place y-place i1 i2 is ...) → image?
-  x-place : x-place?
-  y-place : y-place?
-  i1 : image?
-  i2 : image?
-  is : image?
------------------------------------ejemplo
-(underlay/align "right" "top"
-                  (rectangle 50 50 "solid" "seagreen")
-                  (rectangle 40 40 "solid" "silver")
-                  (rectangle 30 30 "solid" "seagreen")
-                  (rectangle 20 20 "solid" "silver"))
------------------------------------------
-|#
 
-(define CombinacionDeCirculos(underlay/align "middle" "middle"
-                (Circulo 30)
-                (Circulo 29)
-                (Circulo 28)
-                (Circulo 27)
-                (Circulo 26)
-                (Circulo 25)
-                (Circulo 24)
-                (Circulo 23)
-                (Circulo 22)
-                (Circulo 21)
-                (Circulo 20)
-                (Circulo 19)
-                (Circulo 18)
-                (Circulo 17)
-                (Circulo 16)
-                (Circulo 15)
-                (Circulo 14)
-                (Circulo 13)
-                (Circulo 12)
-                (Circulo 11)
-                (Circulo 10)
-                (Circulo 9)
-                (Circulo 8)
-                (Circulo 7)
-                (Circulo 6)
-                (Circulo 5)
-                ))
+;ColorAzar: la funcion no recibe ningun dato y genera un color aleatorio de tono verde-azul, no esta definida como constante para asi poder generar colores distintos cuando se la llame
+(define (ColorAzar a)  (make-color (random 55) (random 255) (random 255)))
 
-(define altura 1000)
-(define ancho 1000)
+;Circulo: funcion, recibe un numero que se multiplicara por la constante GROSORDECIRCULOS y usa la funcion ColorAzar
+(define (Circulo r) (circle (* GROSORDECIRCULOS r) "solid"
+                            (ColorAzar 0)))
 
-;FondoCirculos constante que encuadra la imagen CombinacionDeCirculos
-#|
-    (place-image image x y scene) → image?
+;COMBINACIONDECIRCULOS: constante, ubica 25 circulos uno abajo del otro
+(define FONDOCIRCULOS
+  (underlay/align
+   "middle"
+   "middle"
+   (Circulo 30)
+   (Circulo 29)
+   (Circulo 28)
+   (Circulo 27)
+   (Circulo 26)
+   (Circulo 25)
+   (Circulo 24)
+   (Circulo 23)
+   (Circulo 22)
+   (Circulo 21)
+   (Circulo 20)
+   (Circulo 19)
+   (Circulo 18)
+   (Circulo 17)
+   (Circulo 16)
+   (Circulo 15)
+   (Circulo 14)
+   (Circulo 13)
+   (Circulo 12)
+   (Circulo 11)
+   (Circulo 10)
+   (Circulo 9)
+   (Circulo 8)
+   (Circulo 7)
+   (Circulo 6)
+   ))
 
-  image : image?
-  x : real?
-  y : real?
-  scene : image?
-|#
-(define FondoVacio (empty-scene ancho altura))
+;ALTURA, ANCHO: constantes de la que depende las dimenciones de la constante FONDOVACIO (e imagen final)
+(define ALTURA 1000)
+(define ANCHO 1000)
 
-(define FondoCirculos (place-image CombinacionDeCirculos
-             (/ ancho 2)
-             (/ altura 2)
-             FondoVacio))
+;FONDOVACIO, constante que encuadrara a la imagen 
 
-(check-expect (+ (image-width FondoCirculos) (image-height FondoCirculos)) 2000)
+(define FONDOVACIO
+  (empty-scene ANCHO ALTURA))
 
-;======================================================================================
-#|
-(underlay/offset i1 x y i2) → image?
-  i1 : image?
-  x : real?
-  y : real?
-  i2 : image?
-(overlay/offset (overlay/offset (rectangle 60 20 "solid" "black")
-                                  -50 0
-                                  (circle 20 "solid" "darkorange"))
-                  70 0
-                  (circle 20 "solid" "darkorange"))
-(rotate angle image) → image?
-|#
 
-(define (Estrella t) (rotate (random 359)(star 50 "solid" "white")))
-(define HS (image-height (Estrella 1)))
-(define WS (image-width (Estrella 1)))
 
-(define (medidax x) (+ (* 100 x) WS))
-(define (mediday y) (+ (* 100 y) HS))
+;AZARESTRELLA, constante que complementa a la constante COLORAZARESTRELLAS
+(define AZARESTRELLA (random 255))
 
-;forma una imagen rectangular de estrellas consecutivas
+;COLORAZARESTRELLAS, constante, genera el color de las estrellas, en todo de grises 
+(define COLORAZARESTRELLAS
+  (make-color AZARESTRELLA AZARESTRELLA AZARESTRELLA))
+
+;Estrella, funcion, no recibe datos, usa las constantes GROSORDECIRCULOS para determinar el tamaño y COLORAZARESTERLLAS para el color, cada vez que se la llama genera la imagen de una estrella con una rotacion diferente
+
+(define (Estrella t)
+  (rotate
+   (random 359)
+   (star (* GROSORDECIRCULOS 2) "solid" COLORAZARESTRELLAS)))
+
+;ALTOESTRELLA y ANCHOESTRELLA, constantes que calculan el alto y ancho de la imagen 
+(define ALTOESTRELLA (image-height (Estrella 1)))
+(define ANCHOESTRELLA (image-width (Estrella 1)))
+
+;MedidaX y MedidaY funciones que calculan en donde se posicionara la estrella, en el eje x y en el eje y. Se usan en las constantes LINEAESTRELLA y FONDOESTRELLADO
+(define (MedidaX x) (+ (* (* GROSORDECIRCULOS 4) x) ANCHOESTRELLA))
+(define (MedidaY y) (+ (* (* GROSORDECIRCULOS 4) y) ALTOESTRELLA))
+
+;LINEAESTRELLA, funcion que forma una imagen rectangular de estrellas alineadas y colocadas en el eje x segun la funcion MedidaX. No es una constante para luego llamarla repetidas veces y las estrellas de cada hilera no tengan la misma rotacion
 (define (LineaEstrella l)
- (overlay/offset
   (overlay/offset
    (overlay/offset
     (overlay/offset
+     (overlay/offset
       (Estrella 1)
-    (medidax 1) 0 (Estrella 1))
-   (medidax 2) 0 (Estrella 1))
-  (medidax 3) 0 (Estrella 1))
- (medidax 4) 0 (Estrella 1))
-   )
+      (MedidaX 1) 0 (Estrella 2))
+     (MedidaX 2) 0 (Estrella 3))
+    (MedidaX 3) 0 (Estrella 4))
+   (MedidaX 4) 0 (Estrella 5))
+  )
 
-;coloca 5 lineas de estrellas una debajo de la otra
-(define FondoEstrellado
- (overlay/offset
+;FONDOESTRELLADO, constante que coloca 5 lineas de estrellas una debajo de la otra, colocadas en el eje y segun la funcion MedidaY y genera una imagen
+(define FONDOESTRELLADO
   (overlay/offset
    (overlay/offset
     (overlay/offset
-     (LineaEstrella 1)
-     0  (mediday 1) (LineaEstrella 1))
-    0 (mediday 2) (LineaEstrella 2))
-   0 (mediday 3) (LineaEstrella 3))
-  0 (mediday 4) (LineaEstrella 4)))
-
-;define circulo central, lo defino como una constante porque luego lo voy a usar
-;para posicionar los triangulos en la imagen
-
-(define CirculoCentral (circle (* 25 5) "solid" "yellow"))
+     (overlay/offset
+      (LineaEstrella 1)
+      0  (MedidaY 1) (LineaEstrella 2))
+     0 (MedidaY 2) (LineaEstrella 3))
+    0 (MedidaY 3) (LineaEstrella 4))
+   0 (MedidaY 4) (LineaEstrella 5)))
 
 
-(define CirculoEstrella (overlay/align "middle" "middle" ;abajo va la mas grande
-                                       CirculoCentral
-                                       FondoEstrellado
-                                       FondoCirculos
+;CIRCULOCENTRAL, constante que genera una imagen con los 5 circulos del centro de la imagen
+(define CIRCULOCENTRAL
+  (underlay/align "middle" "middle"
+                  (Circulo 5)
+                  (Circulo 4)
+                  (Circulo 3)
+                  (Circulo 2)
+                  (circle GROSORDECIRCULOS "solid" "black")))
+
+
+
+;Triangulo, funcion que no recibe ningun dato, genera un triangulo con un color al azar y tamaño dependiente de la constante GROSORDECIRCULOS
+(define (Triangulo t) (triangle (* GROSORDECIRCULOS 4) "solid" (ColorAzar 1)))
+
+;Triangulo1 genera una imagen del triangulo definido y lo rota 90 grados
+(define (Triangulo1 t) (rotate 90 (Triangulo 0)))
+
+;Triangulo2 refleja el triangulo rotado
+(define (Triangulo2 t) (reflect-horiz (Triangulo1 0)))
+
+;TriangulosSuperiores genera la imagen de los triangulos de arriba, situados uno al lado del otro
+(define (TriangulosSuperiores t) (underlay/offset (Triangulo1 1) (* GROSORDECIRCULOS 8) 0 (Triangulo2 2)))
+
+;TriangulosInferiores refleja verticalmente la imagen anterior
+(define (TriangulosInferiores t) (reflect-vert (TriangulosSuperiores 0)))
+
+;4TRIANGULOS combina las dos imagenes anteriores, situando una debajo de la otra
+(define 4TRIANGULOS (underlay/offset
+                     (TriangulosSuperiores 0)
+                     0 (* GROSORDECIRCULOS 8)
+                     (TriangulosInferiores 0)
+                     ))
+                      
+
+;CIRCULOCONTRIANGULOS genera la imagen del circulo en el centro de la imagen usando la constante CIRCULOCENTRAL y colocando la imagen de 4TRIANGULOS arriba
+(define CIRCULOCONTRIANGULOS (underlay/align/offset
+                              "middle" "middle"
+                              CIRCULOCENTRAL
+                              0
+                              0
+                              4TRIANGULOS
+                              ))
+
+;CIRCULOESTRELLA alinea las imagenes de CIRCULOCONTRIANGULOS, FONDOESTRELLADO y FONDOCIRCULOS, una por encima de la otra
+(define CirculoEstrella (overlay/align "middle" "middle"
+                                       CIRCULOCONTRIANGULOS
+                                       FONDOESTRELLADO
+                                       FONDOCIRCULOS
                                        ))
 
-CirculoEstrella 
-#|
-(triangle side-length mode color) → image?
-  side-length : (and/c real? (not/c negative?))
-  mode : mode?
-  color : image-color?
-|#
-;(rotate 95 (triangle 50 "solid" "white"))
-
-;(rotate (-(/ (- 360 45) 2)) (triangle 50 "solid" "white"))
-
-#|
-procedure
-(triangle/aas	 	angle-a	 	 	 	 
- 	 	angle-b	 	 	 	 
- 	 	side-length-c	 	 	 	 
- 	 	mode	 	 	 	 
- 	 	color)	 	→	 	image?
-  angle-a : angle?
-  angle-b : angle?
-  side-length-c : (and/c real? (not/c negative?))
-  mode : mode?
-  color : image-color?
-|#
-
-#|
-funciones de prueba de triangulos
-(triangle/ass 90 40 200 "solid" "white")
-
-(triangle/aas 90 40 200 "solid" "white")
-
-es mas facil
-(triangle side-length mode color) → image?
-|#
-
-(define Triangulo (triangle 100 "solid" "blue"))
+;EJECUTAR encuadra la imagen final en el FONDOVACIO, para que las dimensiones de la imagen final sean las deseadas, segun las constantes ANCHO y ALTURA
+(define EJECUTAR
+  (place-image CirculoEstrella
+               (/ ANCHO 2)
+               (/ ALTURA 2)
+               FONDOVACIO))
 
 
-(define (RotTri x) (rotate x Triangulo))
+EJECUTAR
 
-
-
-(define Triangulo1 (RotTri 215))
-
-
-;(overlay/offset null
-;               (- (/ ancho 2) (/ 2 (image-width (Circulo 5)))) ;posicion x
-;              (- (/ altura 2) (/ 2 (image-height (Circulo 5)))) Triangulo1)
-
-#|
-        (overlay/align/offset	 	x-place	 	 	 	 
-         	 	y-place	 	 	 	 
-         	 	i1	 	 	 	 
-         	 	x	 	 	 	 
-         	 	y	 	 	 	 
-         	 	i2)	 	→	 	image?
-
-      x-place : x-place?
-      y-place : y-place?
-      i1 : image?
-      x : real?
-      y : real?
-      i2 : image?
-
-Overlays image i1 on top of i2, using x-place and y-place as the starting points for 
-the overlaying, and then adjusts i2 by x to the right and y pixels down.
-
-This function combines the capabilities of overlay/align and overlay/offset.
-
-===============================================================================================
-        (underlay/align/offset	 	x-place	 	 	 	 
-         	 	y-place	 	 	 	 
-         	 	i1	 	 	 	 
-         	 	x	 	 	 	 
-         	 	y	 	 	 	 
-         	 	i2)	 	→	 	image?
-
-      x-place : x-place?
-      y-place : y-place?
-      i1 : image?
-      x : real?
-      y : real?
-      i2 : image?
-
-Underlays image i1 underneath i2, using x-place and y-place as the starting points for the combination, and then adjusts i2 by x to the right and y pixels down.
-
-This function combines the capabilities of underlay/align and underlay/offset.
-
-Examples:
-
-    > (underlay/align/offset
-       "right" "bottom"
-       (star-polygon 20 20 3 "solid" "navy")
-       10 10
-       (circle 30 "solid" "cornflowerblue"))
-
-
-
-
-(underlay/align/offset
-   "right" "bottom"
-   (underlay/align/offset
-    "left" "bottom"
-    (underlay/align/offset
-     "right" "top"
-     (underlay/align/offset
-      "left" "top"
-      (rhombus 120 90 "solid" "navy")
-      16 16
-      (star-polygon 20 11 3 "solid" "cornflowerblue"))
-     -16 16
-     (star-polygon 20 11 3 "solid" "cornflowerblue"))
-    16 -16
-    (star-polygon 20 11 3 "solid" "cornflowerblue"))
-   -16 -16
-   (star-polygon 20 11 3 "solid" "cornflowerblue"))
-
-image
-|#
-
-;(flip-main img) → image?
-
-(define Triangulo2 (reflect-horiz Triangulo1))
-
-(define Triangulo1y2 (underlay/align/offset "middle" "middle" Triangulo1 200 0 Triangulo2))
-
-(underlay/align/offset
- "middle" "middle"
- CirculoCentral
- -0
- -100
- Triangulo1y2
- )
- 
- 
+;Emanuel Gonzalez
+;Proyecto 1

@@ -27,7 +27,7 @@ rendimiento: number
 (define punto (make-posn 3.14 2.98))
 ;Ejemplo1
 (define Fangio1 (make-auto "Forol" 1943 "FX3-14" "Diesel" 0))
-(define Fangio2 (make-auto "Forol" 1943 "FX3-14" "Diesel" 0))
+(define Fangio2 (make-auto "Foro2" 1944 "FX3-14" "Diesel" 0))
 ;(auto-año Fangio)
 
 ;Ejemplo2
@@ -60,5 +60,12 @@ Aventura: ranger, jeep, f-100, amarok
 
 Carrera: ford-f1, ferrari, lamborghini
 
-
 |#
+(define (auto-mas-viejo auto1 auto2)
+  (cond
+    [(< (auto-año auto2) (auto-año auto1)) auto1]
+    [(< (auto-año auto1) (auto-año auto2)) 
+     (auto-modelo auto2)]
+    [(= (auto-año auto1) (auto-año auto2)) "Iguales"]))
+
+(auto-mas-viejo Fangio1 Fangio2)

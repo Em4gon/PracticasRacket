@@ -1,3 +1,4 @@
+(require htdp/image)
 ;ejercicio minions
 (define ANCHO 900)
 (define ALTO 300)
@@ -48,7 +49,11 @@
   (cond
     [(key=? k " ") INIT]))
 
+;(define (FIN INIT) (image-inside? INIT MINIONM))
+
 (big-bang INIT 
           [to-draw pantalla]
           [on-mouse mouse]
-          [on-key Teclado])
+          [on-key Teclado]
+         ; [stop-when FIN]
+          )

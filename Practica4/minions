@@ -1,0 +1,54 @@
+;ejercicio minions
+(define ANCHO 900)
+(define ALTO 300)
+(define MINIONH (circle 25 "solid" "red"))
+(define MINIONM (circle 25 "solid" "blue"))
+(define INIT (empty-scene ANCHO ALTO))
+;imaginando una cuadricula con los primeros 3 cuadrados colcados uno al lado del otro y los otros 3 debajo
+
+(define (CUADRI_1 x y) (and (<= 0 x) (< x (/ ANCHO 3))
+                            (>= y 0) (<= y (/ ALTO 2))))
+
+(define (CUADRI_2 x y) (and (<= (/ ANCHO 3) x) (< x (* 2 (/ ANCHO 3)))
+                            (>= y 0) (<= y (/ ALTO 2))))
+
+(define (CUADRI_3 x y) (and (<= (* 2 (/ ANCHO 3)) x) (< x ANCHO)
+                            (>= y 0) (<= y (/ ALTO 2))))
+
+(define (CUADRI_4 x y) (and (<= 0 x) (< x (/ ANCHO 3))
+                            (>= y (/ ALTO 2)) (<= y ALTO)))
+
+(define (CUADRI_5 x y) (and (<= (/ ANCHO 3) x) (< x (* 2 (/ ANCHO 3)))
+                            (>= y (/ ALTO 2)) (<= y ALTO)))
+
+(define (CUADRI_6 x y) (and (<= (* 2 (/ ANCHO 3)) x) (< x ANCHO)
+                            (>= y (/ ALTO 2)) (<= y ALTO)))
+
+(define (pantalla e) e)
+
+(define (mouse e x y ev)
+  (if (string=? ev "button-down")
+      (cond
+        [(CUADRI_1 x y) 
+         (place-image MINIONH (/ ANCHO 6) (/ ALTO 4) e)]
+        [(CUADRI_2 x y)
+         (place-image MINIONH (* 3 (/ ANCHO 6)) (/ ALTO 4) e)]
+        [(CUADRI_3 x y)
+         (place-image MINIONH (* 5 (/ ANCHO 6)) (/ ALTO 4) e)]
+        [(CUADRI_4 x y) 
+         (place-image MINIONH (/ ANCHO 6) (* 3 (/ ALTO 4)) e)]
+        [(CUADRI_5 x y)
+         (place-image MINIONH (* 3 (/ ANCHO 6)) (* 3 (/ ALTO 4)) e)]
+        [(CUADRI_6 x y)
+         (place-image MINIONM (* 5 (/ ANCHO 6)) (* 3 (/ ALTO 4)) e)]
+        [else "error"]
+        ) e))
+
+(define (Teclado c k)
+  (cond
+    [(key=? k " ") INIT]))
+
+(big-bang INIT 
+          [to-draw pantalla]
+          [on-mouse mouse]
+          [on-key Teclado])

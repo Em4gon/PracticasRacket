@@ -1,0 +1,79 @@
+
+;-----------------------------------------------
+;CONSTANTES
+;-----------------------------------------------
+
+; alto de la escena
+(define ALTO 700)
+
+; ancho de la escena
+(define ANCHO 450)
+
+; objeto a dibujar en la escena
+
+
+(define OBJETO (circle 20 "solid" "red"))
+
+
+; cantidad de píxeles que se moverá el objeto
+(define DELTA 5)
+
+; escena sobre la que se dibujará el objeto:
+(define ESCENA (empty-scene ANCHO ALTO))
+
+
+;-----------------------------------------------
+;ESTADO
+;-----------------------------------------------
+
+
+; El estado del sistema se representa mediante una estructura posn,
+; que indica la posición del centro del objeto en la escena
+
+; estado inicial del sistema
+(define INICIAL (make-posn 150 200))
+
+
+;-----------------------------------------------
+;PANTALLA
+;-----------------------------------------------
+
+; manejadorPantalla : Estado -> Image
+; Genera una imagen con el OBJETO en la posición determinada por el estado
+(define (manejadorPantalla p)
+  (place-image OBJETO (posn-x p) (posn-y p) ESCENA))
+
+
+;-----------------------------------------------
+;TECLADO
+;-----------------------------------------------
+
+;eventosTeclado : Estado String -> Estado
+; maneja el teclado:
+; tecla "up": DELTA unidades arriba
+; tecla "down": DELTA unidades abajo
+; tecla "right": DELTA unidades derecha
+; tecla "left": DELTA unidades izquierda
+(define (eventosTeclado p s)
+  (cond [(string=? s "up") (make-posn (posn-x p) (- (posn-y p) DELTA))]
+        [(string=? s "down")(make-posn (posn-x p) (+ (posn-y p) DELTA))]
+        [(string=? s "right")(make-posn (+ (posn-x p) DELTA) (posn-y p))]
+        [(string=? s "left")(make-posn (- (posn-x p) DELTA) (posn-y p))]
+        [else p]
+        ))
+
+
+;-----------------------------------------------
+;BIG BANG: Run program Run!
+;-----------------------------------------------
+(big-bang INICIAL
+                   [to-draw manejadorPantalla]
+                   [on-key eventosTeclado]
+                   
+                   )
+
+
+
+
+
+

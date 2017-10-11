@@ -1,0 +1,217 @@
+#| 18/8/2017
+
+CHECKEAR https://docs.racket-lang.org/htdp-langs/beginner.html paquete de principiante
+
+
+No olvidar hacer la tabla de operaciones aritmeticas
+
+TABLA OPERACIONES ARITMETICAS
+
+Nombre operador |||||  Tipo/Asignatura ||||| Descripcion ||||| Ejemplo
+
+Sin (seno)      |||||  Number -> Number |||   Calcula el seno de un numero |||| (sin pi) (sin 0.5)
+
+sqr (al cuadrado) ||  Number -> Number || Calcula el cuadrado de un num ||| (sqr 8)
+
+
+TABLA STRINGSSSS
+
+Nombre operador    |||||    Tipo/Asignatura   |||||   Descripcion  ||||| Ejemplo
+
+string-append      |||| String string... -> string  | Concatena las cadenas de caracteres dados como argumento en el orden indicado || (string-append "casa" " linda"
+
+string-length || string > number || calcula la longitud de UNA SOLA cadena de caracteres ||| String-length "casa"
+
+number->string || number > string || cambia el tipo de un numero a un string ||
+
+string->number || string > number || si es posible cambia un string a un numero ||
+
+string-ith  || string number -> string || Devuelve el caracter del que ocupa la posicion especificada || (string-ith "casa" 0)
+ ===================================================================
+
+TABLA BOOLEANOS
+
+Nombre/Operador       |||||| Tipo/Signatura       ||||    Descripcion                                           |||| ejemplo
+
+not (negacion)                Boolean -> boolean       negacion logica de un valor de verdad.          || not #t)
+                                                       P| (nop P)
+                                                      #t| (#f)
+                                                      #f| (#t)
+
+and (conjuncion, y) ||| boolean boolean ... -> boolean  || conjuncion logica de ALMENOS dos o mas valores de verdad || (and #t #t)
+                                                            P   Q| (and P Q)
+                                                          #t   #t| (#t)
+                                                          #f   #t| (#f)
+                                                          #t   #t| (#t)
+                                                          #f   #t| (#f)
+or (disjuncion, o) ||  boolean boolean ... -> boolean  || disjujncion logica de ALMENOS dos o mas valores de verdad || (or #t #t)
+
+==================================================
+
+TABLA DE RELACIONES BOOLEANAS
+
+Nombre/Operador       |||||| Tipo/Signatura       ||||    Descripcion                                           |||| ejemplo
+                                                                                                                                                     
+    <                         numero  numero           relacion aritmetica orden del menor                           (< 3 (+ 2 2))                                                                                 
+    menor                       -> booleano                                                                                                                          
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+    string=?         ||  string string -> boolean  || compara si dos o mas strings son iguales caracter por caracter                                                                                                                                      
+                                                                                                                                                    
+   string>=?             string string.. -> boolean  || compara si dos palabras estan en orden alfabetico                                                                                                                                          
+                                                                                                                                                    
+  string?               x -> boolean                   determina si una variable es un string o no
+                                                                                                                                                  
+                                                                                                                                                    
+ BUSCAR MAS FUNCIONES con "string=?"                                                                                                                                                   
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+2    Expresiones aritméticas.
+1.  Considere las siguientes expresiones aritméticas:
+(- (*12 5) (* 7 6))
+
+(+ (- (* 3 5) (/ (* 7 4) 14)) (/ 3 1)) 
+
+
+(+ (cos 0.8) (/ 1 5) (* (sin 0.5) 3.5))
+
+Usando Dr Racket evalue las siguentes expresiones
+
+a) (/ 1 (sin (sqrt 3)))
+
+b) (* (sqrt 2) (sin pi))
+
+c) (+ 3 (sqrt (- 4)))
+
+d) (* (sqrt 5) (sqrt (/ 3 (cos pi))))
+
+e) (/ (sqrt 5) (sin (* 3 0))) ;error/ division por cero antes de ejecutar la funcion
+
+f) (/ (+ 3) (* 2 4))
+
+g) (* 1 2 3 4 5 6 7 8) ;un solo paso
+
+h) (/ 120 2 3 2 2 5) ; un solo paso
+
+  En los ejercicios anteriores aparecen algunas funciones como cos,sin,sqrt.
+Si la mayoría de estos nombres no le dicen nada, no se preocupe, no es necesario
+conocerlas por ahora.
+Muchas funciones que quizás le resulten conocidas ya se encuentran predefinidas en
+DrRacket,  tales como log, tan, expt, random, max, min, floor, ceiling, abs.
+Escriba expresiones que combinen algunas de estas funciones.  Si no conoce su com-
+portamiento, consulte la documentación o a los docentes
+
+
+=======================================
+
+Evalúe en DrRacket las siguientes expresiones.
+(a) (string-append "Hola" "mundo")
+
+(b) (string-append "Pro" "gra" "ma.")
+
+(c) (number->string 1357) ;Dado un numero infinito o largo mayor a 15 caracteres decimales lo corta
+
+(d) (string-append "La respuesta es " (+ 21 21)) 
+
+-espera un string-
+
+FIXED. (string-append "La respuesta es " (number->string (+ 21 21)))
+
+(e) (string-append "La respuesta es " (number->string (+ 21
+21)))
+(f)(* (string-length "Hola") (string-length "Chau"))
+
+Recuerde que en Ciencias de la Computación contamos desde 0.
+Explore la función string-ith, que, dados un string s y un número natural n
+, devuelve el caracter que ocupa la n-ésima posición en s
+
+Más interesante es la función substring
+. Aquí un ejemplo de cómo funciona:
+(substring "Programar" 2 5)
+==
+"ogr"
+Escriba expresiones que utilicen esta función ¿Qué sucede si el último argumento es
+menor que el penúltimo? ¿Y si son iguales?
+
+(substring "la concha de tu hermana allboys" 0 (- (string-length "la concha de tu hermana allboys") 1))
+(substring "programar" 3 2)
+=====================================================================================
+(define (fahrenheit->celsius f)
+  (* 5/9 (- f 32)))
+(check-expect (fahrenheit->celsius 212) 100)
+
+========================================================================
+Evalúe en
+DrRacket
+las siguientes expresiones:
+(a)
+(not #t)
+(b)
+(or #t #f)
+(c)
+(and #t #f)
+(d)
+(and #t (or #f (not #f)) (not #t))
+(e)
+(not (= 2 (* 1 3)))
+(f)
+(or (= 2 (* 1 3)) (< 4 (+ 3 2)))
+
+g) (string>? "árbol" "burra")
+h) (string<? "algo" "básico")
+i) (string=? "algo" "Algo")
+j) (string=? "1536" "mil quinientos treinta y seis")
+j.1) (string=? "1" "one") ;claro, number->string no traduce, solo cambia el estado de number -> string 
+k) (string<=? "algo" "básico" "bambú" "bicho")
+
+;(string<=? "algo" "básico" "bambú" "bicho")
+
+
+
+
+
+Resuelva los siguientes ejercicios
+
+
+1. Defina una función que recibe dos números x e y, devolviendo la distancia al origen
+del punto (x,y)
+
+(define (DistOrg x y) (integer-sqrt (+ (sqr x) (sqr y))))
+(define (DistOrg x y) (sqrt (+ (sqr x) (sqr y))))
+(DistOrg 55 646)
+
+2. Defina una función que recibe cuatro números x1, y1, x2 e y2; devolviendo la distan-
+cia entre los puntos (x1, y1) y (x2, y2)
+3. Defina la función vol-cubo que recibe la longitud de la arista de un cubo y calcula
+su volumen.
+4. Defina la función area-cubo que recibe la longitud de la arista de un cubo y calcula
+su área.
+5. Defina la función area-imagen que recibe una imagen y calcula su área. Intente
+aplicar esta función a valores que no son imágenes
+
+(define (AreaImg x) (* (image-width x) (image-height x)))
+
+(AreaImg .) ;area de una img de 100x250
+
+
+6. Defina la función string-insert, que consume un string y un número i e inserta
+"-" en la posición i-ésima del string.
+|#
+
+
+
+
+
+
+
+
+
+

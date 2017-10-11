@@ -24,7 +24,6 @@ rendimiento: number
 ; Any: cualquier tipo de objeto
 |#
 
-(define punto (make-posn 3.14 2.98))
 ;Ejemplo1
 (define Fangio1 (make-auto "Forol" 1943 "FX3-14" "Diesel" 0))
 (define Fangio2 (make-auto "Foro2" 1944 "FX3-14" "Diesel" 0))
@@ -68,4 +67,34 @@ Carrera: ford-f1, ferrari, lamborghini
      (auto-modelo auto2)]
     [(= (auto-año auto1) (auto-año auto2)) "Iguales"]))
 
-(auto-mas-viejo Fangio1 Fangio2)
+;(auto-mas-viejo Fangio1 Fangio2)
+
+
+#|make-posn, llamado constructor. Es el que nos permite crear objetos de la clase posn.
+
+posn-x y posn-y, llamados selectores. Nos permiten acceder a cada uno de los campos de la estructura.
+
+posn?, llamado el predicado de la estructura. Dado un objeto cualquiera, devuelve #true si su argumento es un objeto de tipo posn.|#
+(define p (make-posn 3 4))
+(define q (make-posn -2 0.5))
+(define pta (make-posn 10 20))
+(define ptb (make-posn 9 25))
+
+;(posn-x p)
+;(- (posn-y p) (posn-y q))
+;(posn-y (make-posn (posn-x p) (posn-x q)))
+
+;ejercicio 3
+(define (dist-origen punto) (sqrt (floor [abs (+ (sqr (posn-x punto)) (sqr (posn-y punto)) )]) ))
+
+;(dist-origen p)
+
+;Diseñe una función distancia, que dado dos puntos en el plano calcule la distancia entre ellos. Extienda la definción para que, en caso que alguno de los argumentos no sea de tipo posn, muestre el mensaje "Tipos incorrectos para la función."
+
+(define (distancia pt1 pt2)
+  (if [and (posn? pt1) (posn? pt2)]
+      {abs [- (dist-origen pt1) (dist-origen pt2)]}
+            "Tipos incorrectos para la funcion"))
+
+(distancia pta ptb)
+      

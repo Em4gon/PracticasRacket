@@ -1,0 +1,229 @@
+#|
+http://www.fceia.unr.edu.ar/~iilcc/material/apunte.html
+https://dcc.fceia.unr.edu.ar/homepage/
+
+
+
+
+buscar (string-alphabetic? s) → boolean?
+
+
+
+
+
+
+cuenta--------
+<evaluacion suma resta >
+----------cuenta
+<evaluacion .......>
+
+
+La librería El lápiz curioso tiene una promoción para la venta de cuadernos. El precio de
+cada cuaderno es $18, pero comprando 4 o más realiza un 10% de descuento.
+Estamos interesados en definir una función que, dado un número que representa la cantidad
+de cuadernos a comprar, nos calcule el importe a pagar.
+Dado que la promoción de la librería establece una condición en los precios, nuestro programa
+tendrá que evaluar lo siguiente
+|#
+
+;(define (Saldo l) (if (< l 4) (* l 18) (* 0.90 (* l 18))))
+
+;(Saldo 10)
+
+#|
+Una forma alternativa de definir este tipo de funciones la provee la expresión
+cond
+.  Las
+expresiones de esta clase tienen la siguiente forma:
+(cond 
+       [Condición-1  Resultado-1]
+       [Condición-2  Resultado-2]
+       ....
+       [Condición-n  Resultado-n])
+
+
+
+Ejercicio
+4
+. Hemos decidido hilar más fino en la clasificación de imágenes. Ahora diremos
+que una imagen es
+"Muy gorda"
+si su ancho es más que el doble que su alto.  Del mismo
+modo, diremos que
+"Muy flaca"
+si su alto es más que el doble que su ancho.  Defina una
+función, utilizando una expresión
+cond
+, que clasifique imágenes en alguna de las categorías
+"Muy Gorda", "Gorda", "Cuadrada","Flaca","Muy flaca".
+|#
+
+(define (Img i) (cond 
+                  ((>= (image-width i) (* 2 (image-height i))) "Imagen muy gorda")
+                  ((> (image-width i) (image-height i)) "Imagen gorda")
+                  ((= (image-width i) (image-height i)) "Imagen cuadrada")
+                 ((<= (* 2(image-width i)) (image-height i)) "Imagen muy Flaca")
+                  ((<= (image-width i) (image-height i)) "Imagen Flaca")
+                  
+                  
+                   ))
+;(rectangle width height mode color) → image?
+;(Img (rectangle 10 5 "solid" "black"))
+
+#|=========================================================================Piense en hacer el ejercicio con la expresion "if"
+
+        (if test-expression then-expression else-expression)
+
+When the value of the test-expression is true, if evaluates the then-expression. When the test is false, if evaluates the else-expression.
+
+If the test-expression is neither true nor false, if reports an error.
+|#
+
+(define (Imgif o) (if (>= (image-width o) (* 2 (image-height o))) "Imagen muy gorda"
+                      (if (> (image-width o) (image-height o)) "Imagen gorda"
+                          (if (= (image-width o) (image-height o)) "Imagen cuadrada"
+                              (if (<= (* 2(image-width o)) (image-height o)) "Imagen muy Flaca" "Imagen Flaca"
+                                  )))))
+
+;(Imgif (rectangle 5 8 "solid" "black"))
+
+#|
+Ejercicio
+5
+.  Como parte de una aplicación para observar el clima,  se pide clasificar una
+temperatura de la siguiente forma:
+•
+"Helado"
+(menos de 0 grados);
+•
+"Frío"
+(entre 0 y 15 grados);
+•
+"Agradable"
+(entre 15 y 25 grados);
+•
+"Caluroso"
+(más de 25 grados);
+Considere la siguiente función:
+
+(define (clasificar t) (cond [(< t 0) "Helado"]
+[(and (> t 0) (< t 15)) "Frío"]
+[(and (> t 15) (< t 25)) "Templado"]
+[(> t 25) "Caluroso"]))
+
+Evalúe cada expresión de la forma indicada:
+•
+(clasificar -3)
+, en el área de interacción
+•
+(clasificar 12)
+, con lápiz y papel
+•
+(clasificar 28)
+, con el evaluador paso a paso de
+DrRacket
+.
+¿Qué sucede con la expresión
+(clasificar 15)
+? Tómese un minuto para entender cuál es
+el problema ¿Para qué valores sucede lo mismo? Redefina la función para todas las temperat-
+uras queden clasificadas (decida usted en qué categoría quedan los valores no contemplados
+previamente).
+|#
+
+(define (clasificar t) (cond [(<= t 0) "Helado"]
+[(and (> t 0) (< t 15)) "Frío"]
+[(and (>= t 15) (< t 25)) "Templado"]
+[(>= t 25) "Caluroso"]))
+
+;(clasificar 25)
+
+#|
+Verificadores de clase 
+boolean?
+number?
+string?
+
+
+
+
+Ejemplo 1
+.  Decidimos extender la función signo para que pueda recibir como argumento strings.
+
+
+(define (sgn2 x) (cond [(< x 0) -1]
+                       [(= x 0) 0]
+                       [(> x 0) 1])) 
+
+
+
+(define (sgn3 x) (cond [(number? x) (sgn2 x)]
+                       [(string? x) (sgn2 (string->number x))]))
+
+Si el argumento de la función es un número,  entonces utiliza la función
+sgn2,  que tenía justamente este propósito. Si el argumento es un string, entonces lo convertimos a número
+y luego aplicamos la función sgn2.
+|#
+
+#|Ejercicio 6
+ Muchas veces se identifica a los valores booleanos con los números 0 (para #false) y
+1 (para #true ).  Con esta identificación en mente, extienda la función signo para que pueda procesar booleanos.
+
+
+|#
+
+(define (SigNum s) (cond ((< s 0) -1)
+                        ((= s 0) 0)
+                        ((> s 0) 1)))
+
+(define (SigBool s) (cond ((false? s) "Boooleano 0")
+                         (else "Booleano 1")))
+
+(define (sgn99 s) (if (number? s) (SigNum s) (if (boolean? s) (SigBool s) "Introduzca un booleano o un numero u imagen")))
+
+;(sgn99 -1)
+
+#|
+Ejercicio 7
+.  Las imágenes "Flacas" son negativas, mientras que las "Gordas" son positivas.  Obviamente, las
+"Cuadradas" equivalen al 0 de los números.  Extienda la función signo para soportar imágenes.
+|#
+
+(define (SigImg s) (cond ((> (image-width s) (image-height s)) 1) ;gorda
+                         ((= (image-width s) (image-height s)) 0) ;cuadrada
+                         ((< (image-width s) (image-height s)) -1) ;flaca
+                         ))
+
+(define (SgnNumBoolyImg s) (if (image? s) (SigImg s) (sgn99 s)))
+
+;(SgnNumBoolyImg (rectangle 10 5 "solid" "black"))
+ ;(SgnNumBoolyImg "hola")
+ 
+ #|
+
+(define (sgn3 x) (cond [(number? x) (sgn2 x)]
+[(string? x) (sgn2 (string->number x))]))
+
+
+
+Ejercicio
+9
+.  Como última extensión, modifique la función para que imprima "La cadena no se puede convertir a un número" , en caso que se procese un
+string para el que la función number->string no devuelva un número.
+
+Ejercicio
+10
+. Defina una función f que pueda ser aplicada a cualquier elemento de cualquier clase.
+|#
+
+(define (SignoTodo s) (cond
+                        [(image? s) (SigImg s)]
+                        [(number? s) (SigNum s)]
+                        [(boolean? s) (SigBool s)]
+                        [(string? s) (if 
+                                      (number? (string->number s)) (SigNum (string->number s)) "La cadena no se puede convertir a un número") ])
+  )
+
+(SignoTodo "asdsa3")
+
+codigo impresion de la imagen, un relato de como funciona y como lo coinstrui, como hice la composicion

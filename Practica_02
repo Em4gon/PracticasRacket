@@ -1,0 +1,160 @@
+;check-within: marca un rango de error
+#|
+Ejercicio 1
+.  Diseñe una función distancia-origen , que recibe dos números x e y, devolviendo como resultado la distancia al origen del punto (x,y).
+
+Ejercicio 2
+. Diseñe una función distancia-puntos, que recibe cuatro números x1, y1: indentation suggests a missing `)' before line 72, x2 e y2 y devuelve la distancia entre los puntos (x1, y1) y (x2, y2).
+
+Ejercicio 3
+.  Diseñe la función vol-cubo que recibe la longitud de la arista de un cubo y calcula su volumen.
+
+Ejercicio 4
+.  Diseñe la función area-cubo que recibe la longitud de la arista de un cubo y calcula su área
+|#
+
+#| ----------Ejercicio 1----------
+1) Diseño de datos 
+Coordenada x: number
+Coordenada y: number
+Distancia: number
+
+
+2)signatura
+
+DistanciaOrigen: Number Number -> Number
+
+3) Declaracion de proposito:
+
+Calcula la distancia al origen de un punto dado.
+
+
+3) Ejemplos
+
+entrada 25 25 salida 35
+entrada 2 2 salida 4
+entrada 10 10 salida 14
+
+4) Definicion de la funcion
+|#
+(define (DistanciaOrigen x y) (integer-sqrt (+ (sqr x) (sqr y))))
+
+;5.  Evaluar el código en los ejemplos
+
+(check-expect (DistanciaOrigen 10 10) 14)
+(check-expect (DistanciaOrigen 2 2) 2)
+(check-expect (DistanciaOrigen 25 25) 35)
+
+
+#|
+Ejercicio 2
+. Diseñe una función distancia-puntos, que recibe cuatro números x1, y1, x2 e y2 y devuelve la distancia entre los puntos (x1, y1) y (x2, y2).
+
+i) diseño de datos
+
+Coordenada x: number
+Coordenada y: number
+Distancia: number
+
+
+ii)Signatura
+
+DistanciaOrigen2: number number number number -> number 
+
+iii) Declaracion de proposito
+
+Calcula la distancia entre dos puntos dados y lo aproxima a un numero entero.
+
+iii) Ejemplos 
+entrada 0 0 0 0 salida 0 
+entrada 10 10 10 10 salida 0
+entrada 50 50 10 10 salida 56
+entrada 14 33 75 89 salida 81
+
+|#
+
+;iv) definicion de la funcion
+
+(define (DistanciaOrigen2 x1 y1 x2 y2) (abs (- (integer-sqrt (+ (sqr x1) (sqr y1))) (integer-sqrt (+ (sqr x2) (sqr y2))))))
+
+;v) Evaluacion
+(check-expect (DistanciaOrigen2 0 0 0 0) 0)
+(check-expect (DistanciaOrigen2 50 50 10 10) 56)
+(check-expect (DistanciaOrigen2 14 33 75 89) 81)
+
+
+
+
+
+#|=======================================================================================
+Ejercicios: diseñe las siguientes funciones
+
+1) interes: supongo que el banco pago 4% para depositos menores a 50k inclusive, 4.5% para
+depositos menores a 250k (inclusive) y 5% paradepositos mayores a 250k
+
+Lafuncion interes debera recibir un deposito y calcular el porcentaje asignado
+|#
+
+;i) Diseño de datos: 
+;Deposito: number
+;interes: number
+
+
+
+;ii) signatura 
+;number -> number/string
+
+; Declaracion de proposito
+;Dado un deposito devuelve un porcentaje de interes recibido o un mensaje de error
+
+;iii) ejemplos
+;entrada 50000 salida 4
+;entrada 50001 salida 4.5
+;entrada -1000 salida error
+;entrada string salida error
+;entrada 250000 salida 4.5
+;entrada 250001 salida 5
+
+;iv Definicion de la funcion
+
+(define (Interes i) (if (number? i)
+                        (cond
+                          [(negative? i) "Ingrese un valor mayor a cero"]
+                          [(<= i 50000) 4]
+                          [(and (< 50000 i) (<= i 250000)) 4.5]
+                          [(< 250000 i) 5]
+                          )
+                        "Ingrese un numero valido"
+                        )
+  )
+
+
+;v) Evaluacion
+
+(check-expect (Interes -100) "Ingrese un valor mayor a cero")
+(check-expect (Interes 250000) 4.5)
+(check-expect (Interes 250001) 5)
+(check-expect (Interes 50000) 4)
+(check-expect (Interes 50001) 4.5)
+
+#|
+2) harina-yapa
+Un almacen de venta de harina opera bajo el siguiente esquema de venta
+si la compra es de 10 jg de harina vende la cantidad exacta que le solicitan, si le compran hasta 100kg de harina agrega 3kg mas de yapa,
+si le compran hasta 500kg (no incluye) agrega 10kg mas, y si le compran 500 o mas de 500kg  agrega el 10% mas de yapa a la cantidad solicitada
+
+La solucion debera devolver la cantidad en kg de harina a vender
+
+
+3)Precio-harina
+Sobre el problema anterior, dada la cantidad de harina a comprar calcular el monto a pagar segun el siguiente computo
+
+0<= cantidfad de harina a vender < 30kg                   no hay descuento
+30<= cantidad de harina a vender < 100kg                  10% de descuento
+100<= cantidad de harina a vender < 500kg                  15% de descuento
+500<= cantidad de harina a vender                          20% de descuento
+
+
+Al precio final se le debe agragar el 21% del iva, 
+Y el precio de harina x kg es de 25$
+|#

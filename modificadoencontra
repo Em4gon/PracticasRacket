@@ -1,0 +1,72 @@
+ (require picturing-programs)
+;Proyecto N° 1
+;Alumnos: Becerra Pedro
+; Bergottini Francisco
+ 
+;Utilizamos funciones para
+;dibujar un diseño predeterminado
+;llamando diferentes figuras geometricas
+;para lograr esta composición
+ 
+;Definimos constantes para utilizar en la creación de la escena
+(define ALTO 250) ;Alto de la escena
+(define ANCHO 250) ;Ancho de la escena
+(define FONDO "darkred") ;Color de fondo de la escena
+ 
+(define DIBUJO ;Llamamos DIBUJO a la funcion que nos permitirá crear la imagen
+;Utilizamos la funcion place-image para ordenar y superponer cada imagen a la anterior
+(place-image  (overlay
+           (ellipse 1.5 1.5 "outline" "black")
+           (ellipse 1.5 1.5 "solid" "dodgerblue")
+           (ellipse 5 5 "outline" "black")
+           (ellipse 5 5 "solid" "forestgreen")
+           (ellipse 10 10 "outline" "black")
+           (ellipse 10 10 "solid" "gold")
+           (ellipse 20 20 "outline" "black")
+           (ellipse 20 20 "solid" "darkred")
+           (ellipse 30 30 "outline" "black")
+           (ellipse 30 30 "solid" "dodgerblue")
+           (ellipse 40 40 "outline" "black")
+           (ellipse 40 40 "solid" "forestgreen")
+           (ellipse 50 50 "outline" "black")
+           (ellipse 50 50 "solid" "gold")
+           (ellipse 60 60 "outline" "black")
+           (ellipse 60 60 "solid" "darkred")
+           (square 63 "outline" "black")
+           (square 63 "solid" "ForestGreen")
+           (rhombus 90 90 "outline" "black")
+           (rhombus 90 90 "solid" "DodgerBlue")
+           (square 125 "outline" "black")
+           (square 125 "solid" "gold")
+           (circle 100 "outline" "black")
+           (circle 100 "solid" "Firebrick")
+           (circle 115 "outline" "black")
+           (circle 115 "solid" "gold")
+           (circle 150 "outline" "black") 
+           (circle 150 "solid" "DodgerBlue") 
+           (circle 200 "outline" "black")
+           (circle 200 "solid" "ForestGreen") 
+           (circle 250 "outline" "black")
+           (circle 250 "solid" "gold")) 250 250
+                                        (empty-scene ALTO ANCHO FONDO))) ;Definimos la escena
+ 
+ 
+;Definimos una funcion que dibuja un poligono den el medio de la imagen
+;oscurenciendo la opacidad en negro.
+
+
+(define DIB1 (place-image (overlay (regular-polygon 30 5 75 "black")
+           (regular-polygon 45 5 75 "black")
+           (regular-polygon 60 5 75 "black")
+           (regular-polygon 78 5 100 "blue")
+           (regular-polygon  96 5 125 "red")
+           (regular-polygon 106 5 150 "green")
+           (regular-polygon 122 5 200 "gold")) 250 230
+ 
+ ;Compone la imagen con partes de la funcion DIBUJO.
+       
+ (above (beside (rotate-180 DIBUJO) (rotate-ccw DIBUJO))
+       (beside (rotate-cw DIBUJO)  DIBUJO))))
+;
+(above (beside DIB1 DIB1 DIB1) (beside DIB1 DIB1 DIB1))
+

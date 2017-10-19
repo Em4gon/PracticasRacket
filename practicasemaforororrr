@@ -1,0 +1,154 @@
+(require 2htdp/universe)
+(require 2htdp/image)
+
+
+
+;----------------------------------------------------------
+; CONSTANTES
+;----------------------------------------------------------
+ (define ALTO 150)
+ (define ANCHO 300)
+ (define ESCENARIO  (empty-scene ANCHO ALTO "gray"))
+ (define MARCO    (rectangle (- ANCHO 10) (- ALTO 10) "outline" "black" ))
+ 
+;----------------------------------------------------------
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+; SEMAFORO - FUNCIONES AUXILIARES
+;----------------------------------------------------------
+
+ (define (luzSemaforo color) (circle 50 "solid" color))
+
+ (define (primeraLuz luz escenario)
+                 (place-image luz
+                              75 (/ ALTO 2)
+                              escenario)
+  )
+
+ (define (segundaLuz luz escenario)
+                  (place-image luz
+                              225 (/ ALTO 2)
+                              escenario)
+  )
+
+
+; Definición de Semáforo APAGADO
+(define SEMAFORO-OFF (segundaLuz
+                             (luzSemaforo "black")
+                             (primeraLuz (luzSemaforo "black")
+                                   (overlay  MARCO  ESCENARIO)))
+ )
+
+; Definición de Semáforo en ROJO 
+(define SEMAFORO-RED
+           (primeraLuz (luzSemaforo "red") SEMAFORO-OFF)
+)
+ 
+
+;Definición de Semáforo en VERDE
+(define SEMAFORO-GREEN
+           (segundaLuz (luzSemaforo "green") SEMAFORO-OFF)
+ )
+
+;----------------------------------------------------------
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+; ESTADO
+;----------------------------------------------------------
+;  El estado del sistema será un color,
+;  representado por una string.
+;
+;  En la medida que pase el tiempo se alternará entre dos
+;  colores: rojo y verde, en concordancia con la barreras.
+;
+;----------------------------------------------------------
+; Inicialmente el semaforo esta apagado
+;
+(define INICIAL "black") 
+;----------------------------------------------------------
+
+
+
+;----------------------------------------------------------
+; PANTALLA
+;----------------------------------------------------------
+; recibe :
+;    el estado (es decir, un color/string) y
+; produce:
+;     prende una luz en el semaforo 
+;----------------------------------------------------------
+
+; manejadorPantalla: Estado -> Image
+
+(define (manejadorPantalla color)
+             (cond [ (string=? color "red")   (primeraLuz (luzSemaforo color) SEMAFORO-OFF )]
+                   [ (string=? color "green")  (segundaLuz (luzSemaforo color) SEMAFORO-OFF)]
+                   [ else SEMAFORO-OFF ])
+  
+);fin define
+;----------------------------------------------------------
+(check-expect (manejadorPantalla "red" ) SEMAFORO-RED)
+(check-expect (manejadorPantalla "green" ) SEMAFORO-GREEN)
+(check-expect (manejadorPantalla "black" ) SEMAFORO-OFF)
+(check-expect (manejadorPantalla "orange" ) SEMAFORO-OFF)
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+; TECLADO
+;----------------------------------------------------------
+; eventosTeclado
+; recibe:
+;   el estado (es decir, un color/string) y
+;   la tecla presionada, y
+; devuelve:
+;   un estado (es decir, un color/string)
+;----------------------------------------------------------
+
+; eventosTeclado: Estado String -> Estado
+
+(define (eventosTeclado color tecla)
+           ( cond [ (key=? tecla " ") "black" ]
+                  [  else color ])
+ )
+;----------------------------------------------------------
+(check-expect (eventosTeclado "red" " ") "black" )
+(check-expect (eventosTeclado "green" "escape" ) "green")
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+; RELOJ
+;----------------------------------------------------------
+; recibe:
+;   el estado (es decir, un color/string) y
+; devuelve:
+;   un estado (es decir, color/string)
+;----------------------------------------------------------
+; 
+(define  (eventosReloj color)
+           (cond [(string=? color "red")  "green"]
+                 [(string=? color "green") "red"]
+                 [(string=? color "black") "red"]
+                 [else "black"])
+)
+;----------------------------------------------------------
+(check-expect (eventosReloj "red" ) "green" )
+(check-expect (eventosReloj "green" ) "red" )
+(check-expect (eventosReloj "black" ) "red" )
+(check-expect (eventosReloj "orange" ) "black" )
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+; Big-Bang: Run program run!
+;----------------------------------------------------------
+
+(big-bang INICIAL
+        [to-draw manejadorPantalla] 
+        [on-tick eventosReloj 5 25]
+        [on-key  eventosTeclado]
+)

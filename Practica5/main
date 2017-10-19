@@ -67,6 +67,15 @@ cons?         Predicado          Reconoce listas no vacías
 (define ListaAm4 (list amigo0 amigo1 amigo3))
 (equal? ListaAm3 ListaAm4)
 
+;contiene-amigo recibe una lista de estructuras y verifica que se encuentre el nombre
+(define (contiene-amigo? l) (cond [(empty? l) #false]
+                                   [(cons? l) (if (string=? (amigo-nombre (first l)) "Jose de San Martin")
+                                                  #true
+                                                  (contiene-amigo? (rest l)))]))
+(first ListaAm3)
+
+(contiene-amigo? ListaAm4)
+
 #|
 Tarea
 Ejercicio1a: consideramos un color como una string crear diseñar una lista de colores y generen tres ejemplos
@@ -77,14 +86,15 @@ Ejercicio 2a consideramos planeta como una string crear diseñar uina lista de p
 Ejercicio 2b redefinir a una planeta considerandolo como una estructura con dos campos, el primero correspondera al nombre y el segundo correspodera a la distancia al sol
 
 
-Ejercicio 3a considereamos un producto de lsupermercado como una string. crear o diseñar una lista de preocudtos del supermercado. generar 3 ejemplos
+Ejercicio 3a considereamos un producto de supermercado como una string. crear o diseñar una lista de preocudtos del supermercado. generar 3 ejemplos
 
 Ejercicio 3b redefinir a un producto considerandolo como una estructura con cuatro campos donde
 1er campo nombre
 2do codigo de barra
 3er precio
-4 fecha de venciumiento
-La fecha de venciomiento tambien debe ser una estructura (una estructura dentro de la estructura producto)
+4 fecha de vencimiento
+La fecha de vencimiento tambien debe ser una estructura (una estructura dentro de la estructura producto)
+5. imagen del producto
 
 
 ;Ejercicio 1a--------------------------------------------------------
@@ -121,4 +131,9 @@ Por ej:
 
 (define verde (make-color 15 11 12))
 (define rojo (make-color 25 12 5))
+|#
+;Ejercicio 3 
+#|
+Diseño de datos
+un producto es: estructure
 |#

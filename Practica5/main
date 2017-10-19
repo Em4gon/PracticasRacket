@@ -1,0 +1,29 @@
+#|
+Para crear una lista vacia usamos
+'()
+
+Para agregar elementos a una lista usamos el constructor
+(cons ANY LIST)
+
+cons?
+(cons? x) → boolean?
+ x : any/c
+Determines whether some value is a constructed list. 
+|#
+
+; Invitados es:
+; - '()
+; - (cons String Invitados)
+; interpretación: Invitados representa una lista de nombres de de personas invitadas a la fiesta.
+(define Lista1 (cons "Pedro"
+      (cons "Maria" 
+            '())))
+
+
+
+(define Lista2 (list "Maria" "Pedro" empty))
+Lista2
+;no es un constructor, es nu operador, para simplificar la notacion. Agrega un cons a cada elemento y al final una lista vacia
+
+(define ListaDigitos (list 0 1 2 3 4 5 6 7 8 9))
+(define Lista-1 (cons -1 ListaDigitos))

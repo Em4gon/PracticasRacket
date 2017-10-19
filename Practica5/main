@@ -59,10 +59,66 @@ cons?         Predicado          Reconoce listas no vacías
 (define amigo3 (make-amigo "Jose de San Martin" "0332-9112157"))
 ;(amigo-nombre amigo1)
 
-;(define ListaAm1 (list amigo0))
+;La misma lista por medio de (cons..) y por medio de (list...)
 (define ListaAm0 (cons amigo3 empty))
 (define ListaAm1 (cons amigo1 ListaAm0))
 (define ListaAm3 (cons amigo0 ListaAm1))
 
 (define ListaAm4 (list amigo0 amigo1 amigo3))
 (equal? ListaAm3 ListaAm4)
+
+#|
+Tarea
+Ejercicio1a: consideramos un color como una string crear diseñar una lista de colores y generen tres ejemplos
+
+Ejercicio1b: redefinir a un color considerendolo ahora como una estructura con tres valores numericos correspondientes a la saturacion Rojo-Verde-Azul de cada color. Vuelva a definir una lista de colores
+
+Ejercicio 2a consideramos planeta como una string crear diseñar uina lista de planetas. Generen tres ejemplos
+Ejercicio 2b redefinir a una planeta considerandolo como una estructura con dos campos, el primero correspondera al nombre y el segundo correspodera a la distancia al sol
+
+
+Ejercicio 3a considereamos un producto de lsupermercado como una string. crear o diseñar una lista de preocudtos del supermercado. generar 3 ejemplos
+
+Ejercicio 3b redefinir a un producto considerandolo como una estructura con cuatro campos donde
+1er campo nombre
+2do codigo de barra
+3er precio
+4 fecha de venciumiento
+La fecha de venciomiento tambien debe ser una estructura (una estructura dentro de la estructura producto)
+
+
+;Ejercicio 1a--------------------------------------------------------
+;diseño de datos
+color: string
+
+;ListadeColores es:
+;'()
+;-(cons string ListaDeColores
+
+;Intepretacion: lista de colores representa a una lista de colores enunciados por su nombre
+Por ej:
+(cons "verde" (cons "rojo '()))
+indica la lista con dos colores verde y rojo
+
+Ejercicio 1b----------------------------------------------------------
+;Diseño de datos
+;un color es
+;-rojo: number
+;-verde:number
+;azul: number
+
+;Interpretacion
+(define-struct color [rojo verde azul])
+
+;ListadeColores es:
+;'()
+;-(cons string ListaDeColores
+
+;Intepretacion: lista de colores representa a una lista de colores enunciados por su nombre
+Por ej:
+(cons verde (cons rojo '())
+;indicar la lista con dos colores verde y rojo respectivamente
+
+(define verde (make-color 15 11 12))
+(define rojo (make-color 25 12 5))
+|#

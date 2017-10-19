@@ -9,21 +9,52 @@ cons?
 (cons? x) → boolean?
  x : any/c
 Determines whether some value is a constructed list. 
+
+-------------------------------------------------------------
+'()           Constructor                Constante usada para representar una lista vacía
+empty?         Predicado                Reconoce únicamente la lista vacía
+cons           Constructor             Agrega un elemento a una lista
+first          Selector               Devuelve el primer elemento de la lista
+rest           Selector           Devuelve la lista sin su primer elemento
+cons?         Predicado          Reconoce listas no vacías
+
+
+(list...) no es un constructor, es un operador, para simplificar la notacion. Agrega un cons a cada elemento y al final una lista vacia
 |#
+
 
 ; Invitados es:
 ; - '()
 ; - (cons String Invitados)
 ; interpretación: Invitados representa una lista de nombres de de personas invitadas a la fiesta.
+
+
 (define Lista1 (cons "Pedro"
       (cons "Maria" 
             '())))
 
-
-
 (define Lista2 (list "Maria" "Pedro" empty))
-Lista2
-;no es un constructor, es nu operador, para simplificar la notacion. Agrega un cons a cada elemento y al final una lista vacia
+(define Lista3 (cons "Juan" Lista2))
+
+;
 
 (define ListaDigitos (list 0 1 2 3 4 5 6 7 8 9))
 (define Lista-1 (cons -1 ListaDigitos))
+
+;Un amigo
+; -nombre
+; -celular
+; Interpretacion
+;un amigo es una estructura con un nombre (apodo) para identificarlo y yun num de celular que representamos utilizando un string
+
+(define-struct amigo [nombre celular])
+
+;Lista de Amigos es:
+;-'()
+;-(cons amigo ListaDeAmigos)
+
+
+(define amigo0 (make-amigo "Juan Manuel de Rosas" "011-3142987"))
+(define amigo1 (make-amigo "Juan Domingo Peron" "011-2153981"))
+(define amigo3 (make-amigo "Jose de San Martin" "0332-9112157"))
+(amigo-nombre amigo1)

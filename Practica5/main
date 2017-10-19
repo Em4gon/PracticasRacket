@@ -57,4 +57,12 @@ cons?         Predicado          Reconoce listas no vacías
 (define amigo0 (make-amigo "Juan Manuel de Rosas" "011-3142987"))
 (define amigo1 (make-amigo "Juan Domingo Peron" "011-2153981"))
 (define amigo3 (make-amigo "Jose de San Martin" "0332-9112157"))
-(amigo-nombre amigo1)
+;(amigo-nombre amigo1)
+
+;(define ListaAm1 (list amigo0))
+(define ListaAm0 (cons amigo3 empty))
+(define ListaAm1 (cons amigo1 ListaAm0))
+(define ListaAm3 (cons amigo0 ListaAm1))
+
+(define ListaAm4 (list amigo0 amigo1 amigo3))
+(equal? ListaAm3 ListaAm4)

@@ -65,17 +65,19 @@ cons?         Predicado          Reconoce listas no vacías
 (define ListaAm3 (cons amigo0 ListaAm1))
 
 (define ListaAm4 (list amigo0 amigo1 amigo3))
-(equal? ListaAm3 ListaAm4)
+;(equal? ListaAm3 ListaAm4)
 
-;contiene-amigo recibe una lista de estructuras y verifica que se encuentre el nombre
-(define (contiene-amigo? l) (cond [(empty? l) #false]
-                                   [(cons? l) (if (string=? (amigo-nombre (first l)) "Jose de San Martin")
-                                                  #true
-                                                  (contiene-amigo? (rest l)))]))
+;contiene-amigo recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
+(define (contiene-amigo? NOMBRE-AMIGO LISTA) (cond [(empty? LISTA) "No hay contactos en la lista"]
+                                   [(cons? LISTA) (if (string=? (amigo-nombre (first LISTA)) NOMBRE-AMIGO)
+                                                  
+                                                  "El amigo esta en la lista"
+                                                      (contiene-amigo? NOMBRE-AMIGO (rest LISTA)))]))
+
 (first ListaAm3)
 
-(contiene-amigo? ListaAm4)
-
+(contiene-amigo? "Jose de San Martin" ListaAm4)
+                 
 #|
 Tarea
 Ejercicio1a: consideramos un color como una string crear diseñar una lista de colores y generen tres ejemplos
@@ -136,4 +138,28 @@ Por ej:
 #|
 Diseño de datos
 un producto es: estructure
+|#
+
+;==========================================================================================================================
+#|
+
+contactos es
+'()
+- (cons string contactos)
+interpretacion: contactos representa una listade nombres de personas presentes en una agenda
+cons: A list(A) -> list(A)
+
+empty? cons? list(A) -> boolean
+
+(cons "A" (cons "Maria" (cons "C" '())))
+
+Amigo es:
+-nombre string
+-cel string
+
+constactos es
+-'()
+-(cons amigo contactos)
+buscarcontactos: string contactos -> boolean
+buscarcontactos: amigo contactos -> boolean
 |#

@@ -67,17 +67,40 @@ cons?         Predicado          Reconoce listas no vacías
 (define ListaAm4 (list amigo0 amigo1 amigo3))
 ;(equal? ListaAm3 ListaAm4)
 
-;contiene-amigo recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
-(define (contiene-amigo? NOMBRE-AMIGO LISTA) (cond [(empty? LISTA) "No hay contactos en la lista"]
-                                   [(cons? LISTA) (if (string=? (amigo-nombre (first LISTA)) NOMBRE-AMIGO)
-                                                  
-                                                  "El amigo esta en la lista"
-                                                      (contiene-amigo? NOMBRE-AMIGO (rest LISTA)))]))
+;contiene-amigo?: string list -> boolean
+;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
+(define (contiene-amigo? nombre-amigo lista) (cond [(empty? lista) #false]
+                                                   [(cons? lista) (if (string=? (amigo-nombre (first lista)) nombre-amigo)
+                                                                      #true
+                                                                      (contiene-amigo? nombre-amigo (rest lista)))]))
+
 
 (first ListaAm3)
 
-(contiene-amigo? "Jose de San Martin" ListaAm4)
-                 
+;(check-expect (contiene-amigo? "Jose de San Martin" ListaAm4) #true)
+;(check-expect (contiene-amigo? "Jose de San" ListaAm4) #false)
+
+;cont-amigo2?: struct list -> boolean
+;recibe una estructura y verifica que sus elementos se encuentren en la lista
+(define (contiene-amigo2? amigostruct lista) (cond [(empty? lista) #false]
+                                                   [(and (cons? lista) (amigo? amigostruct)) (if (equal? (amigo-nombre (first lista)) (amigo-nombre (amigostruct))
+                                                                      #true
+                                                                      
+                                                                      (contiene-amigo? nombre-amigo (rest lista)))]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #|
 Tarea
 Ejercicio1a: consideramos un color como una string crear diseñar una lista de colores y generen tres ejemplos

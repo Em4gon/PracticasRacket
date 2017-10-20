@@ -69,11 +69,11 @@ cons?         Predicado          Reconoce listas no vacías
 
 ;contiene-amigo?: string list -> boolean
 ;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
-(define (contiene-amigo? nombre-amigo lista) (cond [(empty? lista) #false]
+#|(define (contiene-amigo? nombre-amigo lista) (cond [(empty? lista) #false]
                                                    [(cons? lista) (if (string=? (amigo-nombre (first lista)) nombre-amigo)
                                                                       #true
                                                                       (contiene-amigo? nombre-amigo (rest lista)))]))
-
+|#
 
 (first ListaAm3)
 
@@ -82,11 +82,17 @@ cons?         Predicado          Reconoce listas no vacías
 
 ;cont-amigo2?: struct list -> boolean
 ;recibe una estructura y verifica que sus elementos se encuentren en la lista
-(define (contiene-amigo2? amigostruct lista) (cond [(empty? lista) #false]
-                                                   [(and (cons? lista) (amigo? amigostruct)) (if (equal? (amigo-nombre (first lista)) (amigo-nombre (amigostruct))
-                                                                      #true
+(define (contiene-amigo2? amigostruct lista) 
+  (cond [(empty? lista) #false]
+        [(and (cons? lista) (amigo? amigostruct)) 
+         (if (and
+              (equal? (amigo-nombre (first lista)) (amigo-nombre amigostruct))
+              (equal? (amigo-celular (first lista)) (amigo-celular amigostruct)))
+                                                              #true
                                                                       
-                                                                      (contiene-amigo? nombre-amigo (rest lista)))]))
+                                                                      (contiene-amigo2? amigostruct (rest lista)))]))
+
+(contiene-amigo2? amigo1 ListaAm4)
 
 
 

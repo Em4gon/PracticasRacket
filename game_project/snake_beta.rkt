@@ -9,16 +9,17 @@
 (define FONDO (empty-scene ANCHO ALTO "black")) 
 
 (define POSBOT1 (make-posn (/ ANCHO 2) (/ ALTO 3) ))
+(define POSBOT2 (make-posn (/ ANCHO 2) (* 2 (/ ALTO 3) )))
 
-(define (BOTON2 varbot2) (place-image/align (rectangle 100 100 "solid" "blue") 200 200 "middle" "middle" FONDO))
 
 
 ;boton2 options
 ;boton1 play
-(define (BOTON1 varbot1) (place-image (rectangle 100 100 "solid" "red") (posn-x POSBOT1) (posn-y POSBOT1) FONDO))
+(define (BOTON1 varbot1) (place-image (rectangle 100 100 "solid" "red") (posn-x POSBOT1) (posn-y POSBOT1) (empty-scene ANCHO ALTO)))
 
+(define (BOTON2 varbot2) (place-image (rectangle 100 100 "solid" "blue") (posn-x POSBOT2) (posn-y POSBOT2) FONDO))
 
-
+(define (menu menuitem) (place-image/align (BOTON1 1)  0 0 "middle" "middle" (BOTON2 1)))
 #|
 (define (mouse-handler c x y event) 
     (cond [(string=? event "button-down") 
@@ -36,7 +37,7 @@
 ;(define (RESULTADOBOTON1 x y)
 
 (big-bang INICIAL
- [to-draw BOTON1]
+ [to-draw menu]
  ;[on-tick ColorChange 0.5]
  ;[on-key ]
  ;[on-mouse]

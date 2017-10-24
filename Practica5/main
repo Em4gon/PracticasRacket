@@ -69,13 +69,19 @@ cons?         Predicado          Reconoce listas no vacías
 
 ;contiene-amigo?: string list -> boolean
 ;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
-#|(define (contiene-amigo? nombre-amigo lista) (cond [(empty? lista) #false]
+#|(define (contiene-amigo1? nombre-amigo lista) (cond [(empty? lista) #false]
                                                    [(cons? lista) (if (string=? (amigo-nombre (first lista)) nombre-amigo)
                                                                       #true
-                                                                      (contiene-amigo? nombre-amigo (rest lista)))]))
+(contiene-amigo1? nombre-amigo (rest lista)))]))
 |#
 
-(first ListaAm3)
+(define (contiene-amigo-lista? nombre-amigo lista) (cond 
+                                                     [(empty? lista) #false]
+                                                     [(cons? lista) (if (equal? (first lista) nombre-amigo)
+                                                                        #true
+                                                                        (contiene-amigo-lista? nombre-amigo (rest lista)))]))
+
+;(first ListaAm3)
 
 ;(check-expect (contiene-amigo? "Jose de San Martin" ListaAm4) #true)
 ;(check-expect (contiene-amigo? "Jose de San" ListaAm4) #false)
@@ -92,10 +98,10 @@ cons?         Predicado          Reconoce listas no vacías
                                                                       
                                                                       (contiene-amigo2? amigostruct (rest lista)))]))
 
-(contiene-amigo2? amigo1 ListaAm4)
+;(contiene-amigo2? amigo1 ListaAm4)
 
-
-
+;(contiene-amigo-lista? amigo1 (cons "C" '()))
+;(contiene-amigo-lista? "Marcos" (cons "A" (cons "Marcos" (cons "C" '()))))
 
 
 
@@ -192,3 +198,37 @@ constactos es
 buscarcontactos: string contactos -> boolean
 buscarcontactos: amigo contactos -> boolean
 |#
+
+    
+   #|Una Lista-de-montos es: 
+; – '()
+; – (cons NumeroPositivo Lista-de-montos)
+; Lista-de-montos representa una lista con montos de dinero|#
+
+;suma: lista -> number
+;(define (suma l) ())
+;define verificador lista positivo
+;(define (lista-posit lista) (if (positive? (first lista)) (lista-posit (rest lista)) #false))
+
+(define LISTAPRUEBA1 empty)
+(define LISTAPRUEBA2 (list 20 15 3 4))
+(define LISTAPRUEBA3 (list 1 1 1 1))
+(define LISTAPRUEBA4 (list 1 2 3 4))
+
+(define (suma l)
+  (cond
+    [(empty? l) 0]
+    [(cons? l) (+ (first l) (suma (rest l)))]))
+
+(check-expect (suma LISTAPRUEBA1) 0)
+(check-expect (suma LISTAPRUEBA4) 10)
+(check-expect (suma LISTAPRUEBA2) 42)
+(check-expect (suma LISTAPRUEBA3) 4)
+
+;empty 1, cuando valla a multiplicar el ultimo elemento, lista vacia, este debe ser uno. De otra forma el producto siempre seria cero.
+(define (producto l)
+  (cond
+    [(empty? l) 1]
+    [(cons? l) (* (first l) (producto (rest l)))]))
+
+(producto LISTAPRUEBA3)

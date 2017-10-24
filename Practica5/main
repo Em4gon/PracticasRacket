@@ -208,12 +208,41 @@ buscarcontactos: amigo contactos -> boolean
 ;suma: lista -> number
 ;(define (suma l) ())
 ;define verificador lista positivo
-;(define (lista-posit lista) (if (positive? (first lista)) (lista-posit (rest lista)) #false))
+(define (lista-posit lista) 
+  (cond
+    [(empty? lista) #false]
+    [(cons? lista)
+     (if (and (negative? (first lista)) (lista-posit (rest lista))) #false "ES POSITIVO")]))
+
+(define (lista-posit2 lista) 
+  (cond
+    [(empty? lista) 0]
+    [(cons? lista)
+     (if (and (> 0 (first lista)) (lista-posit2 (rest lista))) "ES POSITIVO" "TIENE UN NEGATIVO" )]))
+
+(define (lista-posit3 lista) 
+  (cond
+    [(empty? lista) #true]
+    [(cons? lista)
+     (if 
+      (> (first lista) 0) 
+      (lista-posit3 (rest lista))
+      #false 
+      )
+     ]
+    )
+  )
+
+
 
 (define LISTAPRUEBA1 empty)
 (define LISTAPRUEBA2 (list 20 15 3 4))
 (define LISTAPRUEBA3 (list 1 1 1 1))
 (define LISTAPRUEBA4 (list 1 2 3 4))
+(define LISTAPRUEBA5 (list 1 2 3 -4))
+
+
+(lista-posit3 LISTAPRUEBA5)
 
 (define (suma l)
   (cond

@@ -2,23 +2,10 @@
 (require 2htdp/universe)
 ;(display-mode normal)
 ;Worlds and the Universe: "universe.rkt"
-;(require htdp/gui)
-(require 2htdp/universe)
-;(display-mode normal)
-;Worlds and the Universe: "universe.rkt"
-;(require htdp/gui)
-(require 2htdp/universe)
-;(display-mode normal)
-;Worlds and the Universe: "universe.rkt"
 (define ALTO 500)
 (define ANCHO 500)
-
 (define INICIAL (make-posn (/ ANCHO 2) (/ ALTO 2)))
-
-(define FONDO (empty-scene ANCHO ALTO "black")) 
-
-(define POSBOT1 (make-posn (/ ANCHO 2) (/ ALTO 3) ))
-(define POSBOT2 (make-posn (/ ANCHO 2) (* 2 (/ ALTO 3) )))
+(define FONDO (empty-scene ANCHO ALTO "black"))
 
 
 
@@ -37,15 +24,15 @@
 
 (define pre-menu2 (underlay/offset (BOTON3 3) 0 -300 pre-menu1))
 
-(define (menu varmenu)
+(define (menu INICIAL)
   (place-images
    (list (BOTON1 1)
          (BOTON2 2)
          (BOTON3 3)
          )
-   (list (make-posn (/ ANCHO 2) 50)
-         (make-posn (/ ANCHO 2) 250)
-         (make-posn (/ ANCHO 2) 450)
+   (list (make-posn (posn-x INICIAL) 50)
+         (make-posn (posn-x INICIAL) 250)
+         (make-posn (posn-x INICIAL) 450)
          )
    FONDO
    )
@@ -59,16 +46,18 @@
    (cond
        [(and
          (< y 500)
-         (< 400 y)) #true]
-       (else estado)
+         (< 400 y)) (posn? estado)]
+       (else #false)
        
-       ) estado
+       ) #false
      ))
 
-(define (gamequit true?) (equal? gamequit2 #true))
-(big-bang INICIAL
+(define (end val_end) (and (not (false? gamequit2)) (posn? val_end)))
+
+(big-bang 0
           [to-draw menu]
-          [stop-when gamequit]
+          [on-mouse gamequit2]
+          [stop-when end]
           )
 
 #|
@@ -292,18 +281,9 @@
   (if (or (hits-wall? (game-worm g))
       (hits-itself? (game-worm g) (worm-cola (game-worm g)))) true false))
 
-;(big-bang game2 
- ;         [to-draw render-game]
-  ;        [on-tick tick-game 0.05]
-   ;       [on-key key-game]
-    ;      (stop-when stop-expr last-scene-expr)
-     ;     )
-
-;(big-bang INICIAL
-; [to-draw menu]
- ;[on-tick ColorChange 0.5]
- ;[on-key ]
- ;[on-mouse]
- ;[on-pad]
-;)
+(big-bang game2 
+          [to-draw render-game]
+          [on-tick tick-game 0.05]
+          [on-key key-game]
+          )
 |#

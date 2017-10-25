@@ -6,6 +6,10 @@
 (require 2htdp/universe)
 ;(display-mode normal)
 ;Worlds and the Universe: "universe.rkt"
+;(require htdp/gui)
+(require 2htdp/universe)
+;(display-mode normal)
+;Worlds and the Universe: "universe.rkt"
 (define ALTO 500)
 (define ANCHO 500)
 
@@ -33,32 +37,40 @@
 
 (define pre-menu2 (underlay/offset (BOTON3 3) 0 -300 pre-menu1))
 
-(define (Menu varmenu)
+(define (menu varmenu)
   (place-images
    (list (BOTON1 1)
          (BOTON2 2)
          (BOTON3 3)
          )
-   (list (make-posn 50 50)
-         (make-posn 50 250)
-         (make-posn 50 450)
+   (list (make-posn (/ ANCHO 2) 50)
+         (make-posn (/ ANCHO 2) 250)
+         (make-posn (/ ANCHO 2) 450)
          )
    FONDO
    )
   )
                     
 
-(define (gamequit estado x y evento)
-  (cond
-    [(string=? evento "button-down")
-     (and
-      (< x 400)
-      (> 600 x)
-      (< y 700)
-      (< 600))
-     ]))
-                        
-                      
+
+(define (gamequit2 estado x y evento)
+  (if
+   (string=? evento "button-down")
+   (cond
+       [(and
+         (< y 500)
+         (< 400 y)) #true]
+       (else estado)
+       
+       ) estado
+     ))
+
+(define (gamequit true?) (equal? gamequit2 #true))
+(big-bang INICIAL
+          [to-draw menu]
+          [stop-when gamequit]
+          )
+
 #|
 (define (mouse-handler c x y event) 
     (cond [(string=? event "button-down") 

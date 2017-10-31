@@ -242,7 +242,7 @@ buscarcontactos: amigo contactos -> boolean
 (define LISTAPRUEBA5 (list 1 2 3 -4))
 
 
-(lista-posit3 LISTAPRUEBA5)
+;(lista-posit3 LISTAPRUEBA5)
 
 (define (suma l)
   (cond
@@ -260,4 +260,74 @@ buscarcontactos: amigo contactos -> boolean
     [(empty? l) 1]
     [(cons? l) (* (first l) (producto (rest l)))]))
 
-(producto LISTAPRUEBA3)
+;(producto LISTAPRUEBA3)
+
+;---------------------------------------------------------------------------------------- ejercicio 9a
+;todos-verdaderos : lista -> boolean
+
+(define (todos-verdaderos l)
+  (cond
+    [(empty? l) #true]
+    [
+     (cons? l) (and (if (not (false? (first l))) #true #false) ;false si algun elemento es falso
+                   (if (todos-verdaderos (rest l)) #true #false ))
+     ]
+    ))
+
+(define listadetrue (list #t #t #t #t))
+
+;(todos-verdaderos listadetrue)
+;----------------------------------------------------------------------------------------ejercicio 9b
+
+(define (algun-verdadero l)
+  (cond
+    [(empty? l) #false]
+    [
+     (cons? l) (or (if (not (false? (first l))) #true #false) ;false si algun elemento es falso
+                   (if (algun-verdadero (rest l)) #true #false ))
+     ]
+    ))
+
+
+#|
+(define (algun-verdadero l)
+  (cond
+    [(empty? l) 0]
+    [
+     (cons? l) (if (=
+                    (+
+                    (+ (if (false? (first l)) 1 0) 0)
+                    (+ (if (false? (rest l)) 1 0) 0)) 0) #true #false
+     )]
+))
+|#
+
+(define listaconuntrue (list #false #false #false #true))
+(define listatodofalse (list #false #false #false))
+;(algun-verdadero listatodofalse)
+
+;------------------------------- ejercicio 10
+(define (cat l)
+  (cond
+    [(empty? l) ""]
+    [
+     (cons? l) (string-append (first l) (cat (rest l)))
+     ]))
+
+(define listapalabras (list "a " "b " "c "))
+;(cat listapalabras)
+
+;-------------------------------- ejercicio 11
+;cant-elementos list -> number
+
+(define (cant-elementos l)
+  (cond
+    [(empty? l) 0 ]
+    [(cons? l)
+     (+
+      
+      1 (cant-elementos (rest l))
+        
+      )]))
+(cant-elementos listaconuntrue)
+  

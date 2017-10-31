@@ -1,0 +1,409 @@
+;----------------------------------------------------------------------------------Constantes
+(define ALTO 400)
+(define ANCHO 400)
+(define COLORBOTONPLAY1 "red")
+(define COLORBOTONPLAY2 "pink")
+
+(define DELTA 10)
+(define segmento (square 10 "solid" "green"))
+(define escena (square 400 "solid" "black"))
+
+
+(define BOTONPLAY (rectangle 200 100 "solid" "green"))
+(define BOTONOPCIONES (rectangle 200 100 "solid" "yellow"))
+(define BOTONSALIR (rectangle 200 100 "solid" "red"))
+
+(define vacio (empty-scene 400 400 "transparent"))
+
+(define COMIDA (square 10 "solid" "yellow"))
+
+
+ ;-------------------------------------------------------------------------------Estructura
+(define-struct game (worm comida))
+(define-struct ejecutar [estado game cabeza-x cabeza-y cola-x cola-y dir comida score snakecolor])
+
+#;( 
+
+(make-ejecutar (ejecutar-estado e)
+               (ejecutar-game) ;
+               (ejecutar-cabeza-x e)
+               (ejecutar-cabeza-y e)
+               (ejecutar-cola-x e)
+               (ejecutar-cola-y e)
+               (ejecutar-cola e) ;lista
+               
+               (ejecutar-dir e)
+               (ejecutar-comida e)
+               (ejecutar-score e)
+               (ejecutar-snakecolor e))
+
+
+;menu: estado del menu
+;cabeza-x posicion de la cabeza eje x
+;cabeza-y posicion de la cabeza eje y
+;cola cantidad de cuadrados dentro de la cola (lenght lista?)
+;direccion: up down left right
+;comida-x
+;comida-y
+;score: puntaje
+
+)
+;--------------------------------------------------------------------------------INICIAL
+
+
+(define (bloc e) (square DELTA "solid" (ejecutar-snakecolor e)))
+                               
+#|(define (menu c)
+  (place-images
+   (list
+    (rectangle 200 100 "solid" COLORBOTONPLAY1)
+    
+    )
+   (list (make-posn 200 50)
+         )
+         vacio
+         ))
+
+(define CAMBIO (
+|#
+
+;======================================================================================== menu
+(define (menu e)
+  (place-images
+   (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
+   (list (make-posn 200 50)
+         (make-posn 200 200)
+         (make-posn 200 350)
+         )
+   vacio
+   ))
+
+;======================================================================================== game
+#;(
+(define (game e)
+  (place-images
+   (cons (bloc e) (ejecutar-cola e))
+   
+
+
+
+ 
+    (define (todospixeles listaimg listapos)
+  (place-images
+   (make-list (length listapos) listaimg)
+   listapos
+   vacio
+   )))
+))
+(define-struct worm (cabeza cola dir))
+
+; game : struct 
+(define-struct game (worm comida))
+ ; comida:
+; (make-posn Number Number)
+(define comida1 (make-posn 40 40))
+
+(define comida (square 10 "solid" "red"))
+
+
+; to-draw 
+; render-game: Game -> Img
+; crea el juego en la escena
+(define (render-game g)
+  (render-comida g (render-worm (game-worm g))))
+
+; render-food: comida del juego, Image-> Image
+; crea la comida en la escena
+(define (render-comida g image)
+  (place-image comida (posn-x (game-comida g)) (posn-y (game-comida g))
+               image))
+
+
+
+; crea la cola (o cuerpo) del gusano
+
+(define (render-cola cola escena)
+  (cond [(empty? cola) escena]
+        [else (place-image segmento (posn-x (first cola)) (posn-y (first cola))
+               (render-cola (rest cola) escena))]))
+
+; crea la cabeza del gusano
+
+(define (render-cabeza cabeza image)
+  (place-image segmento (posn-x cabeza) (posn-y cabeza) image))
+
+
+; despliega los avisos
+
+(define (render-worm w)
+  (cond [(hits-wall? w) (place-image (text "Has chocado la pared" 20 "white")
+                                  100 300 escena)]
+        [(hits-itself? w (worm-cola w)) (place-image (text "Te has chocado solo :p" 20 "white")
+                                  100 300 escena)] 
+        [(cons? (worm-cola w)) (render-cabeza (worm-cabeza w) (render-cola (worm-cola w) escena))]))
+
+; on-tick
+; tick-game: Game -> Game
+; cambia el juego hacia uno nuevo
+(define (tick-game g)
+  (cond [(get-food? g (worm-cabeza (game-worm g))) (largo g)]
+        [else (tick-another-worm g)]))
+
+(define (tick-worm w)
+  (make-worm (tick-cabeza (worm-cabeza w) (worm-dir w))
+             (tick-cola (worm-cola w) (worm-cabeza w))
+             (worm-dir w)))
+
+; mueve la cola (o cuerpo del gusano)
+
+(define (tick-cola cola cabeza)
+  (cond [(empty? cola) (cons cabeza empty)]   
+        [else (cons cabeza (reverse (rest (reverse cola))))]))  
+
+(check-expect (tick-cola empty (make-posn 40 40)) (cons (make-posn 40 40) empty))
+(check-expect (tick-cola (list (make-posn 100 90) (make-posn 100 100)) (make-posn 100 80))
+              (list (make-posn 100 80) (make-posn 100 90)))
+
+
+; mueve su cabeza
+
+(define (tick-cabeza cabeza dir)
+  (cond [(string=? dir "up") (make-posn (posn-x cabeza) (- (posn-y cabeza) ANCHO))] 
+                                        
+        [(string=? dir "down") (make-posn (posn-x cabeza) (+ (posn-y cabeza) ANCHO))]  
+                                         
+        [(string=? dir "left") (make-posn (- (posn-x cabeza) ANCHO) (posn-y cabeza))] 
+                                         
+        [(string=? dir "right") (make-posn (+ (posn-x cabeza) ANCHO) (posn-y cabeza))]))
+
+
+; get-food? : game cabeza -> bolean
+; determina si el gusano come o no la comida
+(define (get-food? g cabeza)
+  (cond 
+        [(and (= (posn-x cabeza) (posn-x (game-comida g)))
+              (= (posn-y cabeza) (posn-y (game-comida g))))
+         true]
+        [else false]))
+
+(check-expect (get-food? game1 (make-posn 30 30)) false)
+(check-expect (get-food? game2 (make-posn 300 300)) true)
+
+; largo: Game -> game
+; cambia el juego hacia uno nuevo
+(define (largo g) 
+  (make-game (make-worm (make-new-head (game-worm g))
+                        (add-to-cola (worm-cola (game-worm g)) (worm-cabeza (game-worm g)))
+                        (worm-dir (game-worm g)))
+             (make-posn (* 10 (random 40)) (* 10 (random 40)))))
+
+; make-new-head: worm -> cabeza
+; crea una nueva cabeza
+(define (make-new-head w)
+  (cond [(string=? (worm-dir w) "up") (make-posn (posn-x (worm-cabeza w)) 
+                                                 (- (posn-y (worm-cabeza w)) ANCHO))]
+        [(string=? (worm-dir w) "down") (make-posn (posn-x (worm-cabeza w))
+                                                 (+ (posn-y (worm-cabeza w)) ANCHO))]
+        [(string=? (worm-dir w) "left") (make-posn (- (posn-x (worm-cabeza w)) ANCHO)
+                                                  (posn-y (worm-cabeza w)))]
+        [(string=? (worm-dir w) "right") (make-posn (+ (posn-x (worm-cabeza w)) ANCHO)
+                                                   (posn-y (worm-cabeza w)))])) 
+  
+
+; add-to-tail: 
+; añade otro posn a la cola del gusano
+(define (add-to-cola cola cabeza)
+  (cons cabeza cola))
+
+; tick-another-worm Game -> game
+; cambia el juego hacia uno nuevo
+(define (tick-another-worm g)
+  (make-game (tick-worm (game-worm g))
+             (game-comida g)))
+
+; on-key
+; key-game : Game, keyEvent -> Ggme
+; cambia el juego basado en la teclas
+(define (key-game g ke)
+  (make-game (key-worm (game-worm g) ke)
+             (game-comida g)))
+
+
+; movimientos del gusano
+(define (key-worm w ke)
+  (cond [(and (string=? (worm-dir w) "left") (key=? ke "right")) w]
+        [(and (string=? (worm-dir w) "right") (key=? ke "left")) w]
+        [(and (string=? (worm-dir w) "up") (key=? ke "down")) w]
+        [(and (string=? (worm-dir w) "down") (key=? ke "up")) w]
+        [(key=? ke "up") (make-worm (worm-cabeza w)
+                                    (worm-cola w)
+                                    "up")]
+        [(key=? ke "down") (make-worm (worm-cabeza w)
+                                      (worm-cola w)
+                                      "down")]
+        [(key=? ke "left") (make-worm (worm-cabeza w)
+                                      (worm-cola w)
+                                      "left")]
+        [(key=? ke "right") (make-worm (worm-cabeza w)
+                                       (worm-cola w)
+                                       "right")]))
+
+
+; analiza si se ha chocado el mismo
+(define (hits-itself? w cola)
+  (cond [(empty? cola) false]
+        [(and (= (posn-x (worm-cabeza w)) (posn-x (first cola)))
+              (= (posn-y (worm-cabeza w)) (posn-y (first cola))))
+         true]
+        [else (hits-itself? w (rest cola))]))
+
+; analiza si se ha chocado la pared o no
+(define (hits-wall? w)
+  (if (or (< (posn-x (worm-cabeza w)) 0) 
+          (< (posn-y (worm-cabeza w)) 0) 
+          (> (posn-x (worm-cabeza w)) 390) 
+          (> (posn-y (worm-cabeza w)) 390))
+         true false))
+
+
+
+
+; muerte del gusano
+(define (worm-died w)
+  (if (or (hits-wall? w) (hits-itself? w))
+      true false)) 
+
+
+
+; determina si el juego ha terminado
+(define (game-ends g)
+  (if (or (hits-wall? (game-worm g))
+      (hits-itself? (game-worm g) (worm-cola (game-worm g)))) true false))
+
+;========================================================================================= to-draw
+#;(
+   manejador-pantalla
+                     0 -> menu principal
+                     1 -> snake 
+                     2 -> opciones
+                     3 -> quitar
+   )
+
+(define (manejador-pantalla e) (cond
+                                 [
+                                  (= 0 (ejecutar-estado e)) (menu e)
+                                  ]
+                                 [
+                                  (= 1 (ejecutar-estado e)) (render-game e)
+                                  ]
+                                 [
+                                  (= 2 (ejecutar-estado e)) (opciones e)
+                                  ]
+                                 [
+                                  (= 3 (ejecutar-estado e)) (creditos e)
+                                  ]
+                                 ))
+
+;========================================================================================= on-tick
+
+
+
+
+;========================================================================================= on-key
+
+;========================================================================================= on-mouse
+;define LIMITE BOTON 1
+(define (LIMITEBOTON1 e y)
+  (and
+   (= 0 (ejecutar-estado e))
+   (and
+    (<= 0 y) (<= y 100)
+    )
+   )
+  )
+
+;
+(define (LIMITEBOTON2 e y)
+  (and
+   (= 0 (ejecutar-estado e))
+   (and
+    (<= 150) (<= y 250)
+    )
+   )
+  )
+
+(define (LIMITEBOTON3 e y)
+  (and
+   (= 0 (ejecutar-estado e))
+   (and
+    (<= 300) (<= y ALTO)
+    )
+   )
+  )
+
+(define (mouse-handler e x y event) 
+  (if (string=? event "button-down") 
+         (cond
+           [
+            (LIMITEBOTON1 e y)
+            (make-ejecutar (ejecutar-estado 1)
+                           (ejecutar-cabeza-x e)
+                           (ejecutar-cabeza-y e)
+                           (ejecutar-cola-x e)
+                           (ejecutar-cola-y e)
+                           (ejecutar-dir e)
+                           (ejecutar-comida e)
+                           (ejecutar-score e)
+                           (ejecutar-snakecolor e)
+                           )
+            ]
+           [
+            (LIMITEBOTON2 e y)
+            (make-ejecutar (ejecutar-estado 2)
+                           (ejecutar-cabeza-x e)
+                           (ejecutar-cabeza-y e)
+                           (ejecutar-cola-x e)
+                           (ejecutar-cola-y e)
+                           (ejecutar-dir e)
+                           (ejecutar-comida e)
+                           (ejecutar-score e)
+                           (ejecutar-snakecolor e))
+            ]
+           [
+            (LIMITEBOTON3 e y)
+            (make-ejecutar (ejecutar-estado 3)
+                           (ejecutar-cabeza-x e)
+                           (ejecutar-cabeza-y e)
+                           (ejecutar-cola-x e)
+                           (ejecutar-cola-y e)
+                           (ejecutar-dir e)
+                           (ejecutar-comida e)
+                           (ejecutar-score e)
+                           (ejecutar-snakecolor e))
+            ]
+[else e]
+        ) e
+        ))
+;========================================================================================= bang
+(define INICIAL (make-ejecutar 0
+                               (make-game (make-worm (make-posn 40 40)
+                                                     (list (make-posn 50 40) (make-posn 60 40) (make-posn 70 40)) "right")
+                                          (make-posn 100 100))
+                               (/ ANCHO 2)
+                               (/ ALTO 2)
+                               (ejecutar-cabeza-x INCIAL)
+                               (- (ejecutar-cabeza-y INICIAL) 10)
+                               (list empty)
+                               "down"
+                               0 ;estado de comida
+                               0 ;score inicial
+                               "green" 
+                               ))
+
+(big-bang INICIAL 
+          [to-draw manejador-pantalla]
+          [on-tick tick-game 0.05]
+          [on-key key-game]
+          [on-mouse mouse-handler]
+          )
+

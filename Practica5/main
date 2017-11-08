@@ -329,5 +329,180 @@ buscarcontactos: amigo contactos -> boolean
       1 (cant-elementos (rest l))
         
       )]))
-(cant-elementos listaconuntrue)
-  
+;(cant-elementos listaconuntrue)
+
+;------------------------------------ ejercicio 17
+(define (positivos l)
+  (cond [(empty? l) empty]
+        [(cons? l)
+         (if (positive? (first l)) (cons (first l) (positivos (rest l)))
+                                        (positivos(rest l))) ]))
+
+;----------------------------------------ejercicio 15
+#;(
+sig:
+mayores: lista number number  -> lista number
+prop: toma una lista de nunmeros L y un numero N y construye otra lista formado por los numeros mayores que n en la lista L
+mayores o iguales
+)
+
+(define (mayores l n)
+  (cond [(empty? l) empty]
+        [(cons? l)
+         (if (> (first l) n) (cons (first l) (mayores (rest l) n))
+                                       (mayores (rest l) n)) ]))
+
+;ejemplos
+;(check-expect (mayores (list empty) -1) empty)
+(define listamayores1 (list 3 5 1 0 -1))
+(check-expect (mayores listamayores1 2) (list 3 5))
+(check-expect (mayores listamayores1 3) (list 5))
+(check-expect (mayores listamayores1 0) (list 3 5 1))
+(check-expect (mayores listamayores1 7) empty) 
+
+;-----------------------------------------------------ejercicio 14
+#;(Ejercicio 14. Diseñe una función cortas que tome una lista de strings y devuelva una lista con aquellas palabras de longitud menor a 5.
+
+             )
+
+(define (cortas l)
+  (cond [(empty? l) empty]
+        [(cons? l)
+         (if (< (string-length (first l)) 5) (cons (first l) (cortas (rest l)))
+                                       (cortas (rest l))) ]))
+
+(define listacorta1 (list "Lista" "de" "palabras" "sin" "sentido"))
+
+(cortas listacorta1)
+
+;------------------------------------------------- ejercicio 18
+#;( Diseñe una función eliminar que tome una lista de números y un número y devuelva la lista luego de eliminar el número que indica el 2do argumento)
+
+(define (eliminar l n)
+  (cond [(empty? l) empty]
+        [(cons? l)
+         (if (equal? (first l) n) (eliminar (rest l) n)
+             (cons (first l) (eliminar (rest l) n))
+                                       ) ]))
+(check-expect (eliminar listamayores1 1) (list 3 5 0 -1))
+(check-expect (eliminar listamayores1 3) (list 5 1 0 -1))
+
+;________________________________-
+#;(Diseñe la función raices, que dada una lista de números, devuelve una lista con las raíces cuadradas de sus elementos.
+)
+
+
+(define (raices2 l)
+  (cond
+    [(empty? l) empty]
+    [(cons? l) (if (< (first l) 0)
+                   (raices2 (rest l))
+                           (cons (sqrt (first l)) (raices2 (rest l))))]))
+
+(define raices1 (list 9 16 4))
+(define (raices l)
+  (cond
+    [(empty? l) empty]
+    [(cons? l)
+     (cons (sqrt (first l)) (raices (rest l)))]))
+
+(check-expect (raices raices1) (list 3 4 2))
+(check-expect (raices (list 25 81 1)) (list 5 9 1))
+
+;------------------------
+#;(Diseñe una función anchos que tome una lista de imágenes y devuelva una lista con el ancho de cada una
+   )
+
+(define (cir c)(circle c "solid" "red"))
+(define lista-imagenes (list
+                        (cir 10)
+                        (cir 15)
+                        (cir 20)))
+
+(define (anchos l)
+  (cond [(empty? l) empty]
+        [(cons? l)
+         (cons (image-width (first l)) (anchos (rest l)))]))
+
+(anchos lista-imagenes)
+
+;--------------------------------------
+
+;Ejercicio 28. Diseñe una función max que devuelve en máximo de una lista de naturales. Para la lista vacía, devuelve 0. 
+(define (max2 l)
+  (cond
+    [(empty? l) 0]
+    [(cons? l)
+     (if 
+      (> (first l) (max2 (rest l)))
+      (first l)
+      (max2 (rest l))
+      )
+     ]))
+
+(max2 (list 23 543 325 0 75))
+
+#;(Diseñe una función sumcuad que dada una lista de números devuelve la suma de sus cuadrados. Para la lista vacía, devuelve 0. )
+
+(define (sumcad l)
+  (cond
+    [(empty? l) 0]
+    [(cons? l)
+     (+ (sqr (first l)) (sumcad (rest l)))
+     ]))
+
+(sumcad (list 1 2 3))
+
+;Ejercicio 26. Diseñe una función prod que multiplica los elementos de una lista de números. Para la lista vacía, devuelve 1. 
+
+(define (prod l)
+  (cond
+    [(empty? l) 1]
+    [(cons? l)
+     (* (first l) (prod (rest l)))
+     
+     ]))
+
+(prod (list 1 2 3 4 5))
+
+;Ejercicio 29. Diseñe una función sumdist que tome una lista de puntos del plano y devuelva la suma de sus distancias al origen.
+
+(define (sumdist l)
+  (cond
+    [(empty? l) 0]
+    [(cons? l)
+     (+ (sqrt (+ (sqr (posn-x (first l)))  (sqr (posn-y (first l))))) (sumdist (rest l))
+     )]))
+
+;(sumdist (list (make-posn 3 4) (make-posn 0 4) (make-posn 12 5)))
+
+;Ejercicio 27. Diseñe una función pegar que dada una lista de strings, devuelve el string que se obtiene de concatenar todos los elementos de la lista. 
+
+(define (pegar l)
+  (cond
+    [(empty? l) ""]
+    [(cons? l)
+     (string-append (first l) (pegar (rest l)))]))
+
+(pegar (list "Las " "lis" "tas " "son " "complicadas" "."))
+
+;Ejercicio 24. Diseñe una función longitudes que tome una lista de cadenas y devuelva una lista de números que corresponda con la longitud de cada cadena de la lista original.
+
+(define (longitudes l)
+  (cond
+    [(empty? l) empty]
+    [(cons? l)
+     (cons (string-length (first l)) (longitudes (rest l)))
+     ]))
+
+(longitudes(list "hola" "cómo" "estás?"))
+
+;Ejercicio 23. Diseñe una función cuadrados que tome una lista de números y devuelva otra lista donde los elementos que aparezcan sean el cuadrado de los elementos de la lista original.
+
+(define (cuadrados l)
+  (cond
+    [(empty? l) empty]
+    [(cons? l)
+     (cons (sqr (first l)) (cuadrados (rest l)))
+     ]))
+    (cuadrados (list 1 2 3))  

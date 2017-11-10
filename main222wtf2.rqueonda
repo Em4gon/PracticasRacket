@@ -88,3 +88,6 @@ g) (map random (list 3 10 2 100 14 50))
 
 (check-expect (lista-number-string (list 1 5 0 -1 3.14 2398 9.81))
               (map number->string (list 1 5 0 -1 3.14 2398 9.81)))
+
+;=====================================================================
+(list (make-posn 3 4) (make-posn 0 4) (make-posn 12 5))

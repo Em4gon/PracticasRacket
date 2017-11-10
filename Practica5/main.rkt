@@ -1,4 +1,4 @@
-#|
+#|--
 Para crear una lista vacia usamos
 '()
 

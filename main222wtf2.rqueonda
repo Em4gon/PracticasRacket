@@ -3,3 +3,18 @@ https://dcc.fceia.unr.edu.ar/homepage/
 
 
 |#
+
+;ejemplo con sqr, funcionamiento de map
+(define lista1 (list 2 4 5 10))
+
+(define (cuadrados l)
+ 	(cond
+	[(empty? l) empty]
+ 	[(cons? l)
+	(cons (sqr (first l)) (cuadrados (rest l)))]))
+
+
+(define cuadradosmap (map sqr lista1))
+
+(cuadrados lista1)
+cuadradosmap

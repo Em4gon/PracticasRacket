@@ -1,0 +1,94 @@
+--------------------------------------------------------------------
+
+;ejemplo con sqr, funcionamiento de map
+
+(define lista1 (list 2 4 5 10))
+
+(define (cuadrados l)
+ 	(cond
+	[(empty? l) empty]
+ 	[(cons? l)
+	(cons (sqr (first l)) (cuadrados (rest l)))]))
+
+
+(define cuadradosmap (map sqr lista1))
+
+(check-expect (equal? (cuadrados lista1) cuadradosmap) #t)
+
+;Ejercicio 20. Diseñe una función distancias que tome una lista de puntos del plano y devuelva una lista con la distancia al origen de cada uno.
+
+(define (distanciab x)
+  (sqrt (+ (sqr (posn-x x)) (sqr (posn-y x)))))
+
+(check-expect (map distanciab (list (make-posn 3 4) (make-posn 0 4) (make-posn 12 5))) (list 5 4 13))
+
+;Ejercicio 21. Diseñe una función anchos que tome una lista de imágenes y devuelva una lista con el ancho de cada una.
+
+(check-expect (map image-width  
+    (list (circle 30 "solid" "red") (rectangle 10 30 "outline" "blue")))
+     (list 60 10))
+
+#|
+Uso de map: probar en la linea de comando interacciones que sucede con la aplicacion de las siguientes expreciones.
+Diseñe luego funciones para cadauna de ellas.
+
+a) (map empty? (list '() 5 2 '() '()))
+b) (map sin (list 0 pi 1 (* 2 pi)))
+c) (map round (list 12.5 1.1 3.14 2.98 3.21 0.0 14.01 88.99 99.88 0.001 0.5555556 ))
+d) (map zero? (list 1 2 0 1 0 0 5 -1))
+e) (map number->string (list 1 5 0 -1 3.14 2398 9.81))
+f) (map dibuja-circulos (list 10 50 12 11 100 1))
+g) (map random (list 3 10 2 100 14 50))
+|#
+
+(check-expect 
+     (map empty? (list '() 5 2 '() '())) 
+     (list true false false true true))
+
+(check-expect
+        (map round (list 12.5 1.1 3.14 2.98 3.21 0.0 14.01 88.99 99.88 0.001 0.5555555555555555555 0.00000004 ))
+        (list 12 1 3 3 3 0 14 89 100 0 1 0))
+
+(check-expect (map zero? (list 1 2 0 1 0 0 5 -1)) 
+              (list false false true false true true false false))
+;====================================================================================
+(define (esempty? l)
+  (cond
+    [(empty? l) empty]
+    [else
+      (cons (empty? (first l)) (esempty? (rest l)))]))
+
+(check-expect
+ (esempty? (list '() 5 2 '() '()))
+ (map empty? (list '() 5 2 '() '())))
+ (check-expect 
+ (esempty? '())
+(map empty? '()))
+;==================================================================================
+(define (eszero? l)
+  (cond
+    [(empty? l) empty]
+    [else
+     (cons (zero? (first l)) (eszero? (rest l)))]))
+  
+(check-expect 
+ (eszero?
+  (list 1 2 0 1 0 0 5 -1))
+(map zero? (list 1 2 0 1 0 0 5 -1)))
+  ;====================================================================================
+
+(define (lista-number-string l)
+  (cond
+    [(empty? l) empty]
+    [else
+     (cons (number->string (first l)) (lista-number-string (rest l)))]))
+
+(check-expect (lista-number-string (list 1 5 0 -1 3.14 2398 9.81))
+              (map number->string (list 1 5 0 -1 3.14 2398 9.81)))
+
+;=====================================================================
+(list (make-posn 3 4) (make-posn 0 4) (make-posn 12 5))
+
+;Filter P list) -> lista que cumpla con predicado p
+
+

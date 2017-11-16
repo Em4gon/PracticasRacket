@@ -1,17 +1,29 @@
-;----------------------------------------------------------------------------------Constantes
-(define ALTO 500)
-(define ANCHO 400)
+#;(
+para agregar
+     highscores
+     options
+     life-status
+     credits
+
+
+
+   
+   )
+
+;--------------------------------------------------------------------------Constantes
+(define ALTO 600)
+(define ANCHO 800)
 (define COLORBOTONPLAY1 "red")
 (define COLORBOTONPLAY2 "pink")
 
 (define DELTA 10)
 (define segmento (square 10 "solid" "green"))
-(define escena (rectangle 400 500 "solid" "black"))
+(define escena (rectangle ANCHO ALTO "solid" "black"))
 
 
-(define BOTONPLAY (rectangle 200 100 "solid" "green"))
-(define BOTONOPCIONES (rectangle 200 100 "solid" "yellow"))
-(define BOTONSALIR (rectangle 200 100 "solid" "red"))
+(define BOTONPLAY (rectangle (/ ANCHO 2) 100 "solid" "green"))
+(define BOTONOPCIONES (rectangle (/ ANCHO 2) 100 "solid" "yellow"))
+(define BOTONSALIR (rectangle (/ ANCHO 2) 100 "solid" "red"))
 
 (define vacio (empty-scene ANCHO ALTO "transparent"))
 
@@ -21,7 +33,7 @@
 (define MAXIMO-PARED (- ALTO 5))
 
 (define VALOR-DE-CERCANIA 5)
-;----------------------------------------------------------------------------Estructura
+;-----------------------------------------------------------------------Estructura
 (define-struct worm [cabeza cola direccion]) ;estructura auxiliar 
 ;cabeza: posn
 ;cola: lista de posn
@@ -39,7 +51,7 @@
 
 
 
-;--------------------------------------------------------------------------------INICIAL
+;---------------------------------------------------------------------------INICIAL
 
 (define INICIAL (make-ejecutar 0    ;instancia
                 (make-worm (make-posn 100 150) ;
@@ -84,9 +96,9 @@
               ) ;antes iba INICIAL en lugar de e, si falla cambiarlo
   (place-images
    (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
-   (list (make-posn 200 50)
-         (make-posn 200 200)
-         (make-posn 200 350)
+   (list (make-posn (/ ANCHO 2) 50)
+         (make-posn (/ ANCHO 2) (/ ALTO 2))
+         (make-posn (/ ANCHO 2) (- ALTO 50))
          )
    vacio
    ))
@@ -102,11 +114,11 @@
 
 ;coloca la barra sobre el juego
 (define (render-ingame e)
-  (place-image (barra-score e) 200 50 (render-comida e (render-worm (ejecutar-worm e)))))
+  (place-image (barra-score e) (/ ANCHO 2) 50 (render-comida e (render-worm (ejecutar-worm e)))))
 
 ;barra-score
 (define (barra-score e)
-  (place-image (text (number->string (ejecutar-score e)) 20 "red") 300 40 (rectangle 400 100 "solid" "blue")) )
+  (place-image (text (number->string (ejecutar-score e)) 20 "red") 700 40 (rectangle ANCHO 100 "solid" "blue")) )
 
 ; render-food: comida del juego, Image-> Image
 ; crea la comida en la escena
@@ -256,7 +268,7 @@ funcion definitiva
 (define (hits-wall? w)
   (if (or (< (posn-x (worm-cabeza w)) 0) 
           (< (posn-y (worm-cabeza w)) MINIMO-PARED) 
-          (> (posn-x (worm-cabeza w)) 390) 
+          (> (posn-x (worm-cabeza w)) (- ANCHO 10)) 
           (> (posn-y (worm-cabeza w)) MAXIMO-PARED))
          true false))
 
@@ -388,7 +400,7 @@ funcion definitiva
   (and
    (= 0 (ejecutar-instancia e))
    (and
-    (<= 150 y) (<= y 250)
+    (<= (- (/ ALTO 2) 50) y) (<= y (+ (/ ALTO 2) 50))
     )
    )
   )
@@ -397,7 +409,7 @@ funcion definitiva
   (and
    (= 0 (ejecutar-instancia e))
    (and
-    (<= 300 y) (<= y ALTO)
+    (<= (- ALTO 50) y) (<= y ALTO)
     )
    )
   )
@@ -445,7 +457,21 @@ funcion definitiva
     #true
     #false
    ))
-  
+
+
+;(define (close e)
+ ; 
+  ; (= (ejecutar-instancia e) 3)
+   ;    )
+
+(define (creditos e)
+  (place-images
+   (list (circle 50 "solid" "blue")
+         )
+   (list (make-posn (/ ANCHO 2) (/ ALTO 2))
+         )
+   escena))
+
 #|(define (close-check e x y )
   (if (and (string=? event "button-down")
            (LIMITEBOTON3 e y)) #true #false))
@@ -458,6 +484,7 @@ funcion definitiva
           [on-tick tick-game 0.05]
           [on-key key-game]
           [on-mouse mouse-handler]
-          [stop-when close]
+          [stop-when close creditos]
+          [name "Proyecto Snake"]
           )
 

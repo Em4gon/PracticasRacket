@@ -1,5 +1,5 @@
 ;----------------------------------------------------------------------------------Constantes
-(define ALTO 400)
+(define ALTO 500)
 (define ANCHO 400)
 (define COLORBOTONPLAY1 "red")
 (define COLORBOTONPLAY2 "pink")
@@ -13,12 +13,15 @@
 (define BOTONOPCIONES (rectangle 200 100 "solid" "yellow"))
 (define BOTONSALIR (rectangle 200 100 "solid" "red"))
 
-(define vacio (empty-scene 400 500 "transparent"))
+(define vacio (empty-scene ANCHO ALTO "transparent"))
 
-(define comida (square 12 "solid" "red"))
+(define comida (square 10 "solid" "red"))
 
 (define MINIMO-PARED 100)
-(define MAXIMO-PARED 495) ;----------------------------------------------------------------------------Estructura
+(define MAXIMO-PARED (- ALTO 5))
+
+(define VALOR-DE-CERCANIA 5)
+;----------------------------------------------------------------------------Estructura
 (define-struct worm [cabeza cola direccion]) ;estructura auxiliar 
 ;cabeza: posn
 ;cola: lista de posn
@@ -47,9 +50,34 @@
                                ))
                                
 
+;=================================================================== AUXILIAR
+; number number -> boolean
+;puntos cercanos toma dos numeros y dicta si estos estan cerca o no, sirve para determinar si el gusano come o no la fruta dependiendo su cercania
+(define (puntos-cercanos a b)
+  (and (<= (- a b) VALOR-DE-CERCANIA) (>= (- a b) (- VALOR-DE-CERCANIA))))
 
+;----------------------------------------------------------------------
 
+;round-to-multiplodiez
+;recibe un numero y lo redondea hacia abajo
+(define (round-to-mutiplodiez number)
+  (- number (modulo number 10)))
+;----------------------------------------------------------
 
+;random-acotado toma un valor al azar dentro de un intervalo inf-sup
+;number number -> number
+(define (random-acotado inf sup)
+         (let ( [rand (random sup)])
+              (if
+               (and (< rand sup) (> rand inf))
+               rand
+               (let ( [rand (random sup)])
+                  (cond
+                    [(and (< rand sup) (> rand inf)) rand]
+                    [else (random-acotado inf sup)]))
+                  ) 
+ ); let
+  );define
 
 ;======================================================================================== menu
 (define (menu INICIAL
@@ -78,7 +106,7 @@
 
 ;barra-score
 (define (barra-score e)
-  (place-image (text (number->string (ejecutar-score e)) 20 "red") 300 40 (rectangle 400 100 "solid" "grey")) )
+  (place-image (text (number->string (ejecutar-score e)) 20 "red") 300 40 (rectangle 400 100 "solid" "blue")) )
 
 ; render-food: comida del juego, Image-> Image
 ; crea la comida en la escena
@@ -109,47 +137,21 @@
                                   100 300 escena)] 
         [(cons? (worm-cola w)) (render-cabeza (worm-cabeza w) (render-cola (worm-cola w) escena))]))
 
-; on-tick
-; tick-game: Game -> Game
-; cambia el juego hacia uno nuevo
-(define (tick-game g)
-  (cond [(get-food? g (worm-cabeza (ejecutar-worm g))) (largo g)]
-        [else (tick-another-worm g)]))
-
-(define (tick-worm w)
-  (make-worm (tick-cabeza (worm-cabeza w) (worm-direccion w))
-             (tick-cola (worm-cola w) (worm-cabeza w))
-             (worm-direccion w)))
-
-; mueve la cola (o cuerpo del gusano)
-
-(define (tick-cola cola cabeza)
-  (cond [(empty? cola) (cons cabeza empty)]   
-        [else (cons cabeza (reverse (rest (reverse cola))))]))  
-
-(check-expect (tick-cola empty (make-posn 40 40)) (cons (make-posn 40 40) empty))
-;(check-expect (tick-cola (list (make-posn 100 90) (make-posn 100 100)) (make-posn 100 80))
- ;             (list (make-posn 100 80) (make-posn 100 90)))
-
-
-; mueve su cabeza
-
-(define (tick-cabeza cabeza direccion)
-  (cond [(string=? direccion "up") (make-posn (posn-x cabeza) (- (posn-y cabeza) DELTA))] 
-                                        
-        [(string=? direccion "down") (make-posn (posn-x cabeza) (+ (posn-y cabeza) DELTA))]  
-                                         
-        [(string=? direccion "left") (make-posn (- (posn-x cabeza) DELTA) (posn-y cabeza))] 
-                                         
-        [(string=? direccion "right") (make-posn (+ (posn-x cabeza) DELTA) (posn-y cabeza))]))
 
 
 ; get-food? : game cabeza -> bolean
 ; determina si el gusano come o no la comida
-(define (get-food? g cabeza)
+#;(define (get-food? g cabeza)
   (cond 
         [(and (= (posn-x cabeza) (posn-x (ejecutar-comida g)))
               (= (posn-y cabeza) (posn-y (ejecutar-comida g))))
+         true]
+        [else false]))
+
+(define (get-food? g cabeza)
+  (cond 
+        [(and (puntos-cercanos (posn-x cabeza) (posn-x (ejecutar-comida g)))
+              (puntos-cercanos (posn-y cabeza) (posn-y (ejecutar-comida g))))
          true]
         [else false]))
 
@@ -172,7 +174,7 @@ Usado en las frutas
 
 ^^beta
 
-
+------------------------------------
 funcion definitiva
 
 
@@ -201,15 +203,17 @@ funcion definitiva
 
 
 
-
-
 ; largo: Game -> game
-; cambia el juego hacia uno nuevo
+; cambia el juego hacia uno nuevo, coloca las frutas
 (define (largo g) ;CAMBIAR ACA PARA LAS POSICIONES DE LAS FRUTAS
   (make-ejecutar 1 (make-worm (make-new-head (ejecutar-worm g))
                         (add-to-cola (worm-cola (ejecutar-worm g)) (worm-cabeza (ejecutar-worm g)))
                         (worm-direccion (ejecutar-worm g)))
-             (make-posn (* 10 (random 40)) (* 10 (random 40))) (+ 10 (ejecutar-score g))))
+             (make-posn
+              ;(+ (* 10 (random (/ ANCHO 10))) 5)
+              (random-acotado 10 (- ANCHO 10))
+              (round-to-mutiplodiez (random-acotado 110 (- ALTO 10))) )
+             (+ 10 (ejecutar-score g))))
 
 ; make-new-head: worm -> cabeza
 ; crea una nueva cabeza
@@ -235,32 +239,7 @@ funcion definitiva
   (make-ejecutar (ejecutar-instancia e) (tick-worm (ejecutar-worm e))
              (ejecutar-comida e) (ejecutar-score e)))
 
-; on-key
-; key-game : Game, keyEvent -> Ggme
-; cambia el juego basado en la teclas
-(define (key-game g ke)
-  (make-ejecutar 1 (key-worm (ejecutar-worm g) ke)
-             (ejecutar-comida g) (ejecutar-score g)))
 
-
-; movimientos del gusano
-(define (key-worm w ke)
-  (cond [(and (string=? (worm-direccion w) "left") (key=? ke "right")) w]
-        [(and (string=? (worm-direccion w) "right") (key=? ke "left")) w]
-        [(and (string=? (worm-direccion w) "up") (key=? ke "down")) w]
-        [(and (string=? (worm-direccion w) "down") (key=? ke "up")) w]
-        [(key=? ke "up") (make-worm (worm-cabeza w)
-                                    (worm-cola w)
-                                    "up")]
-        [(key=? ke "down") (make-worm (worm-cabeza w)
-                                      (worm-cola w)
-                                      "down")]
-        [(key=? ke "left") (make-worm (worm-cabeza w)
-                                      (worm-cola w)
-                                      "left")]
-        [(key=? ke "right") (make-worm (worm-cabeza w)
-                                       (worm-cola w)
-                                       "right")]))
 
 
 ; analiza si se ha chocado el mismo
@@ -319,10 +298,78 @@ funcion definitiva
 
 ;========================================================================================= on-tick
 
+; on-tick
+; tick-game: Game -> Game
+; cambia el juego hacia uno nuevo
+(define (tick-game g)
+  (cond [(get-food? g (worm-cabeza (ejecutar-worm g))) (largo g)]
+        [else (tick-another-worm g)]))
+
+(define (tick-worm w)
+  (make-worm (tick-cabeza (worm-cabeza w) (worm-direccion w))
+             (tick-cola (worm-cola w) (worm-cabeza w))
+             (worm-direccion w)))
+
+; mueve la cola (o cuerpo del gusano)
+
+(define (tick-cola cola cabeza)
+  (cond [(empty? cola) (cons cabeza empty)]   
+        [else (cons cabeza (reverse (rest (reverse cola))))]))  
+
+(check-expect (tick-cola empty (make-posn 40 40)) (cons (make-posn 40 40) empty))
+;(check-expect (tick-cola (list (make-posn 100 90) (make-posn 100 100)) (make-posn 100 80))
+ ;             (list (make-posn 100 80) (make-posn 100 90)))
+
+
+; mueve su cabeza
+
+(define (tick-cabeza cabeza direccion)
+  (cond [(string=? direccion "up") (make-posn (posn-x cabeza) (- (posn-y cabeza) DELTA))] 
+                                        
+        [(string=? direccion "down") (make-posn (posn-x cabeza) (+ (posn-y cabeza) DELTA))]  
+                                         
+        [(string=? direccion "left") (make-posn (- (posn-x cabeza) DELTA) (posn-y cabeza))] 
+                                         
+        [(string=? direccion "right") (make-posn (+ (posn-x cabeza) DELTA) (posn-y cabeza))]))
 
 
 
 ;========================================================================================= on-key
+
+
+; on-key
+; key-game : Game, keyEvent -> Ggme
+; cambia el juego basado en la teclas
+(define (key-game g ke)
+  (make-ejecutar 1 (key-worm (ejecutar-worm g) ke)
+             (ejecutar-comida g) (ejecutar-score g)))
+
+
+; movimientos del gusano
+(define (key-worm w ke)
+  (cond [(and (string=? (worm-direccion w) "left") (key=? ke "right")) w]
+        [(and (string=? (worm-direccion w) "right") (key=? ke "left")) w]
+        [(and (string=? (worm-direccion w) "up") (key=? ke "down")) w]
+        [(and (string=? (worm-direccion w) "down") (key=? ke "up")) w]
+        [(key=? ke "up") (make-worm (worm-cabeza w)
+                                    (worm-cola w)
+                                    "up")]
+        [(key=? ke "down") (make-worm (worm-cabeza w)
+                                      (worm-cola w)
+                                      "down")]
+        [(key=? ke "left") (make-worm (worm-cabeza w)
+                                      (worm-cola w)
+                                      "left")]
+        [(key=? ke "right") (make-worm (worm-cabeza w)
+                                       (worm-cola w)
+                                       "right")]))
+
+
+
+
+
+
+
 
 ;========================================================================================= on-mouse
 ;LIMITEBOTON funciones auxiliares de mouse-handler
@@ -411,6 +458,6 @@ funcion definitiva
           [on-tick tick-game 0.05]
           [on-key key-game]
           [on-mouse mouse-handler]
-          [close-on-stop close]
+          [stop-when close]
           )
 

@@ -32,14 +32,22 @@ para agregar
 (define MINIMO-PARED 100)
 (define MAXIMO-PARED (- ALTO 5))
 
-(define VALOR-DE-CERCANIA 5)
+(define VALOR-DE-CERCANIA 99) ;ORIGINAL 5 
+(define SPEED 0.02) ;ORIGINAL 0.05 MAS CHICO MAS RAPIDO
+
+(define CREDITOS (place-images
+   (list (circle 50 "solid" "blue")
+         )
+   (list (make-posn (/ ANCHO 2) (/ ALTO 2))
+         )
+   escena))
 ;-----------------------------------------------------------------------Estructura
 (define-struct worm [cabeza cola direccion]) ;estructura auxiliar 
 ;cabeza: posn
 ;cola: lista de posn
 ;direccion: string
 
-(define-struct ejecutar [instancia worm comida score]) ;estructura principal
+(define-struct ejecutar [instancia muerte worm comida score]) ;estructura principal
 
 
 ;instancia: number
@@ -54,6 +62,7 @@ para agregar
 ;---------------------------------------------------------------------------INICIAL
 
 (define INICIAL (make-ejecutar 0    ;instancia
+                               #false ;muerte
                 (make-worm (make-posn 100 150) ;
                 (list (make-posn 100 160) (make-posn 150 150))    ;  worm
                                           "right")                                          ;
@@ -92,7 +101,7 @@ para agregar
   );define
 
 ;======================================================================================== menu
-(define (menu INICIAL
+(define (menu e
               ) ;antes iba INICIAL en lugar de e, si falla cambiarlo
   (place-images
    (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
@@ -102,6 +111,19 @@ para agregar
          )
    vacio
    ))
+
+
+(define (opciones e
+              ) ;antes iba INICIAL en lugar de e, si falla cambiarlo
+  (place-images
+   (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
+   (list (make-posn (/ ANCHO 2) 50)
+         (make-posn (/ ANCHO 2) (/ ALTO 2))
+         (make-posn (/ ANCHO 2) (- ALTO 50))
+         )
+   vacio
+   ))
+
 
 ;======================================================================================== game
 
@@ -141,7 +163,7 @@ para agregar
 
 
 ; despliega los avisos
-
+;kills the snake
 (define (render-worm w)
   (cond [(hits-wall? w) (place-image (text "Has chocado la pared" 20 "white")
                                   100 300 escena)]
@@ -218,7 +240,7 @@ funcion definitiva
 ; largo: Game -> game
 ; cambia el juego hacia uno nuevo, coloca las frutas
 (define (largo g) ;CAMBIAR ACA PARA LAS POSICIONES DE LAS FRUTAS
-  (make-ejecutar 1 (make-worm (make-new-head (ejecutar-worm g))
+  (make-ejecutar 1 #false (make-worm (make-new-head (ejecutar-worm g))
                         (add-to-cola (worm-cola (ejecutar-worm g)) (worm-cabeza (ejecutar-worm g)))
                         (worm-direccion (ejecutar-worm g)))
              (make-posn
@@ -248,7 +270,7 @@ funcion definitiva
 ; tick-another-worm Game -> game
 ; cambia el juego hacia uno nuevo
 (define (tick-another-worm e)
-  (make-ejecutar (ejecutar-instancia e) (tick-worm (ejecutar-worm e))
+  (make-ejecutar (ejecutar-instancia e) (ejecutar-muerte e) (tick-worm (ejecutar-worm e))
              (ejecutar-comida e) (ejecutar-score e)))
 
 
@@ -304,10 +326,15 @@ funcion definitiva
                                  [
                                   (= 1 (ejecutar-instancia e)) (render-game e)
                                   ]
-                                 ;[(= 2 (ejecutar-instancia e)) (opciones e)]
+                                 [(= 2 (ejecutar-instancia e)) (opciones e)]
                                 ; [(= 3 (ejecutar-instancia e)) (creditos e)]
+    ;                             [= 4 (ejecutar-instancia e) (muerte-pared e)]
+     ;                            [= 5 (ejecutar-instancia e) (muerte-cola e)]
                                  ))
 
+;(define (muerte-pared e)
+ ; (cond
+  ;  [(and (ejecutar-muerte )())]
 ;========================================================================================= on-tick
 
 ; on-tick
@@ -353,8 +380,17 @@ funcion definitiva
 ; key-game : Game, keyEvent -> Ggme
 ; cambia el juego basado en la teclas
 (define (key-game g ke)
-  (make-ejecutar 1 (key-worm (ejecutar-worm g) ke)
-             (ejecutar-comida g) (ejecutar-score g)))
+
+  (if (worm? (key-worm (ejecutar-worm g) ke))
+      
+  (make-ejecutar
+   (ejecutar-instancia g) (ejecutar-muerte g) (key-worm (ejecutar-worm g) ke)
+             (ejecutar-comida g) (ejecutar-score g))
+
+
+  INICIAL
+
+  ))
 
 
 ; movimientos del gusano
@@ -374,7 +410,8 @@ funcion definitiva
                                       "left")]
         [(key=? ke "right") (make-worm (worm-cabeza w)
                                        (worm-cola w)
-                                       "right")]))
+                                       "right")]
+        [(key=? ke " ") INICIAL]))
 
 
 
@@ -409,7 +446,7 @@ funcion definitiva
   (and
    (= 0 (ejecutar-instancia e))
    (and
-    (<= (- ALTO 50) y) (<= y ALTO)
+    (<= (- ALTO 100) y) (<= y ALTO)
     )
    )
   )
@@ -419,35 +456,53 @@ funcion definitiva
 (define (mouse-handler e x y event) 
   (if (string=? event "button-down") 
          (cond
-           [
-            (LIMITEBOTON1 e y)
-            (make-ejecutar 1
-                           (make-worm (make-posn 100 150)                               ;
-                                      (list (make-posn 100 160) (make-posn 100 170))    ;  worm
-                                          "right")                                          ;
+           [(= (ejecutar-instancia e) 0)
+            
+          (cond
+            [ (LIMITEBOTON1 e y)
+              (make-ejecutar 1  #false
+                           (make-worm (make-posn 100 150) 
+                                      (list
+                                       (make-posn 100 160)
+                                       (make-posn 100 170))    ;  worm
+                                      "right")
                            (ejecutar-comida e)       ;comida            
-                               0   ;score inicial
+                           0   ;score inicial
+                           ) ]
+           [ (LIMITEBOTON2 e y)
+            (make-ejecutar 2   #false
+                           (make-worm (make-posn 100 150) 
+                                      (list
+                                       (make-posn 100 160)
+                                       (make-posn 100 170))    ;  worm
+                                      "right")
+                           (ejecutar-comida e)       ;comida            
+                           0   ;score inicial
                            )
-            ]
-           [
-            (LIMITEBOTON2 e y)
-            (make-ejecutar 2
-                           (ejecutar-worm e)
-                           (ejecutar-comida e)
-                           (ejecutar-score e))
             ]
            [
             (LIMITEBOTON3 e y)
             (make-ejecutar 3
+                           (ejecutar-muerte e)
                            (ejecutar-worm e)
                            (ejecutar-comida e)
                            (ejecutar-score e))
             ]
 [else (make-ejecutar 0
+                     (ejecutar-muerte e)
                      (ejecutar-worm e)
                      (ejecutar-comida e)
                      (ejecutar-score e))]
-        ) e
+        )]
+           ;[
+             
+
+
+            ;]
+
+
+
+           )e
         ))
 
 ;devuelve verdadero o falso
@@ -465,12 +520,7 @@ funcion definitiva
    ;    )
 
 (define (creditos e)
-  (place-images
-   (list (circle 50 "solid" "blue")
-         )
-   (list (make-posn (/ ANCHO 2) (/ ALTO 2))
-         )
-   escena))
+  CREDITOS)
 
 #|(define (close-check e x y )
   (if (and (string=? event "button-down")
@@ -481,7 +531,7 @@ funcion definitiva
 
 (big-bang INICIAL 
           [to-draw manejador-pantalla]
-          [on-tick tick-game 0.05]
+          [on-tick tick-game SPEED]
           [on-key key-game]
           [on-mouse mouse-handler]
           [stop-when close creditos]

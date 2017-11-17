@@ -271,3 +271,12 @@ Ejercicio 7. Diseñe una función multPos, que dada una lista de números, multi
 
 ;multiPos: ListaNum -> Num
 ;declaracion: calcula el producto de los elementos postivos de la lista
+
+
+(define (multiPos l)
+  (foldr * 1 (filter positive? l)))
+
+(check-expect (multiPos empty) 1)
+(check-expect (multiPos (list 3 -2 4 0 1 -5)) 12)
+(check-expect (multiPos (list 5)) 5)
+(check-expect (multiPos (list -5)) 1)

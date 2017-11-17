@@ -1,4 +1,4 @@
---------------------------------------------------------------------
+;--------------------------------------------------------------------
 
 ;ejemplo con sqr, funcionamiento de map
 
@@ -92,3 +92,182 @@ g) (map random (list 3 10 2 100 14 50))
 ;Filter P list) -> lista que cumpla con predicado p
 
 
+;=========================================================================
+
+
+;Ejercicio 5. Diseñe una función sumcuad que dada una lista de números devuelve la suma de sus cuadrados. Para la lista vacía, devuelve 0.
+
+;sumcuado
+;lista numeros; cons
+
+
+#;(
+Diseño de datos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+ListaNum es
+;- empty ('())
+;-(cons Number ListaNum)
+
+;Interpretacion:
+ListadeNum es una lista de numbero enteros
+
+   )
+
+;sumCuad: ListaNum -> Number
+;Declaracion de proposito: dado una lista de numberos, sumcuad calcula la sumade la misma
+
+#;(
+   Ejemplos
+   (sumCuad empty) = 0
+   (sumCuad (list 1 2 3)) = 14
+   (sumCuad (list 4)) = 16
+   )
+
+(define (sumCuad l)
+  (cond
+    [(empty? l) 0]
+    [else
+     (+ (sqr (first l)) (sumCuad (rest l)))]))
+
+    (check-expect (sumCuad empty) 0)
+(check-expect (sumCuad (list 1 2 3)) 14)
+(check-expect (sumCuad (list 4)) 16)
+
+
+(define (mf-sumCuad l) (foldr + 0 (map sqr l)))
+(check-expect  (mf-sumCuad empty) 0)
+(check-expect (mf-sumCuad (list 1 2 3)) 14)
+(check-expect (mf-sumCuad (list 4)) 16)
+
+#| variantes para practica
+----suma de las raices de los elementos de una lista
+----producto de los cuadrados de los elemmentos de una nota
+|#
+
+;TIPO!!!!! Sumaraices: listanumb -> number
+;----recibe una lista de numeros y devuelve el la suma de las raices de sus elementos
+(define (Sumaraices l)
+  (cond
+    [(empty? l) 0]
+    [else
+     (+ (sqrt (first l)) (Sumaraices (rest l)))]))
+
+(check-expect (Sumaraices (list 1 4 9)) 6)
+(check-expect (Sumaraices empty) 0)
+(check-expect (Sumaraices (list 100)) 10)
+
+
+;CON FOLD Y MAP
+(define (mf-Sumaraices l) (foldr + 0 (map sqrt l)))
+
+(check-expect (mf-Sumaraices (list 1 4 9)) 6)
+(check-expect (mf-Sumaraices empty) 0)
+(check-expect (mf-Sumaraices (list 100)) 10)
+
+;Multiplocuad: listanumb -> number    (tipo)
+;----recibe una lista de numeros y devuelve el producto del cuadrado de sus elementos
+
+(define (Multiplocuad l)
+  (cond
+    [(empty? l) 1]
+    [else
+     (* (sqr (first l)) (Multiplocuad (rest l)))]))
+
+(check-expect (Multiplocuad (list 1 2 3)) 36)
+(check-expect (Multiplocuad empty) 1)
+(check-expect (Multiplocuad (list 100)) 10000)
+
+
+;CON FOLD Y MAP
+(define (mf-Multiplocuad l) (foldr * 1 (map sqr l)))
+
+(check-expect (mf-Multiplocuad (list 1 2 3)) 36)
+(check-expect (mf-Multiplocuad empty) 1)
+(check-expect (mf-Multiplocuad (list 100)) 10000)
+
+#;(
+   Ejercicio 6. Diseñe la función sumdist, que dada una lista l de estructuras posn, devuelve la suma de las distancias al origen de cada elemento de l. Por ejemplo:
+          
+          (check-expect (sumdist (list (make-posn 3 4) (make-posn 0 3)))
+                  8)
+   )
+
+
+#|
+Diseño de datos
+ListaCoord es
+-empty ('())
+-(cons posn ListaCoord)
+
+;interpretacion: lista coord es una lista de puntos en el plano. utilizando la estreuctura posn para representar un punto
+
+;TIPO
+Sundist
+
+listaCoord -> number
+
+;descripcion
+declaracion de proposito: calcula la suma de las distancias al origen de los puntos en la lista
+|#
+
+;distancia: posn -> number
+(define (distancia p)
+  (sqrt (+ (sqr (posn-x p)) (sqr (posn-y p))))) 
+
+;b) map foldr en linea
+
+
+(define (mf-sumdist l)  (foldr + 0 (map distancia l)))
+
+
+
+(check-expect (mf-sumdist (list (make-posn 3 4) (make-posn 0 3)))
+                  8)
+(check-expect (mf-sumdist empty) 0)
+(check-expect (mf-sumdist (list (make-posn 0 25) )) 25)
+
+;a) sin map y foldr
+(define (sumdist l)
+  (cond
+    [(empty? l) 0]
+    [else
+     (+ (distancia (first l)) (sumdist (rest l)))]))
+
+(check-expect (sumdist (list (make-posn 3 4) (make-posn 0 3)))
+                  8)
+(check-expect (sumdist empty) 0)
+(check-expect (sumdist (list (make-posn 0 25) )) 25)
+
+;c) map-fold por partes
+;TIPO: list-distancia: listacoord -> listanum
+(define (list-distancia l)
+  (map distancia l))
+
+;list-suma: listnum->num
+
+(define (list-suma l)
+  (foldr + 0 l))
+
+(define
+  (mf-p-sumdist l)
+  (list-suma (list-distancia l)))
+
+(check-expect (mf-p-sumdist (list (make-posn 3 4) (make-posn 0 3)))
+                  8)
+(check-expect (mf-p-sumdist empty) 0)
+(check-expect (mf-p-sumdist (list (make-posn 0 25) )) 25)
+
+
+
+;========================ejercicio 7
+
+#|
+Ejercicio 7. Diseñe una función multPos, que dada una lista de números, multiplique los números positivos de l.
+
+    (check-expect (multPos (list 3 -2 4 0 1 -5))
+                  12)
+
+|#
+
+;multiPos: ListaNum -> Num
+;declaracion: calcula el producto de los elementos postivos de la lista

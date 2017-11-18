@@ -1,0 +1,214 @@
+;=========================COMENTARIO=========================
+#;(
+
+CONSTANTES
+   
+)
+;=========================COMENTARIO=========================
+(define ALTO 600)
+(define ANCHO 800)
+(define COLORBOTONPLAY1 "red")
+(define COLORBOTONPLAY2 "pink")
+
+(define DELTA 10)
+(define segmento (square 10 "solid" "green"))
+(define escena (rectangle ANCHO ALTO "solid" "black"))
+
+
+(define BOTONPLAY (rectangle (/ ANCHO 2) 100 "solid" "green"))
+(define BOTONOPCIONES (rectangle (/ ANCHO 2) 100 "solid" "yellow"))
+(define BOTONSALIR (rectangle (/ ANCHO 2) 100 "solid" "red"))
+
+(define vacio (empty-scene ANCHO ALTO "transparent"))
+(define FONDOOPCIONES (rectangle ANCHO ALTO "solid" "blue"))
+(define comida (square 10 "solid" "red"))
+
+(define MINIMO-PARED 100)
+(define MAXIMO-PARED (- ALTO 5))
+
+(define VALOR-DE-CERCANIA 99) ;ORIGINAL 5 
+(define SPEED 0.02) ;ORIGINAL 0.05 MAS CHICO MAS RAPIDO
+
+
+;===========================================================IMAGENES CONSTANTES
+
+
+
+
+(define CREDITOS (place-images
+   (list (circle 50 "solid" "blue")
+         )
+   (list (make-posn (/ ANCHO 2) (/ ALTO 2))
+         )
+   escena))
+
+
+
+(define menu
+  (place-images
+   (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
+   (list (make-posn (/ ANCHO 2) 50)
+         (make-posn (/ ANCHO 2) (/ ALTO 2))
+         (make-posn (/ ANCHO 2) (- ALTO 50))
+         )
+   vacio
+   ))
+
+
+(define opciones e
+              
+  (place-images
+   (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
+   (list (make-posn (/ ANCHO 2) 50)
+         (make-posn (/ ANCHO 2) (/ ALTO 2))
+         (make-posn (/ ANCHO 2) (- ALTO 50))
+         )
+   FONDOOPCIONES
+   ))
+;=========================BARRA=========================
+#;(
+
+ESTADO: ESTRUCTURA
+
+
+
+(define-struct
+  nucleo
+  [juego ;number que juego es 1-snake 2-dodger
+   gname ;string nombre de la ventana
+   instancia ;number
+   stopORstart 
+   vidas ;number default 1, cuando es 0 cambia el campo alive
+   alive ;boolean true = vivo
+   snake ;posn
+   tail ;lista de posn
+   colorchar ;string 
+   colorback ;string
+   food ;posn
+   score ;number
+   cercania ;number, el default es 5
+   speed ;number, el default es 0.05 mas chico el num mas rapido el juego
+   fantasma ;boolean
+   modopantalla ;'fullscreen o 'normal
+   timer ;number
+   ])
+
+
+(make-nucleo
+ (nucleo-juego e)
+ (nucleo-fondo e)
+ (nucleo-gname e)
+ (nucleo-instancia e)
+ (nucleo-stopORstart e)
+ (nucleo-vidas e)
+ (nucleo-alive e)
+ (nucleo-snake e)
+ (nucleo-tail e)
+ (nucleo-colorchar e)
+ (nucleo-colorback e)
+ (nucleo-food e)
+ (nucleo-score e)
+ (nucleo-cercania e)
+ (nucleo-speed e)
+  (nucleo-fantasma e)
+ (nucleo-modopantalla e))
+(nucleo-timer e)
+
+)
+
+
+;=========================COMENTARIO=========================
+(define-struct
+  nucleo
+  [juego ;number que juego es
+   fondo ;fondodelmenu imagen
+   gname ;string nombre de la ventana
+   instancia ;number
+   vidas ;number default 1, cuando es 0 cambia el campo alive
+   alive ;boolean true = vivo
+   snake ;posn cabeza de snake
+   tail ;lista de posn
+   colorchar ;string 
+   colorback ;string
+   food ;posn
+   score ;number
+   cercania ;number, el default es 5
+   speed ;number, el default es 0.05 mas chico el num mas rapido el juego
+   fantasma ;boolean, "godmode"
+   modopantalla ;'fullscreen o 'normal
+   timer ;number
+   ])
+;=========================COMENTARIO=========================
+
+(define INICIAL
+  (make-nucleo
+   0 ;juego nucleo
+   menu ;fondo
+   "Nucleo"
+   00 ;instancia de menu
+   "stop" ;empieza detenido
+   0 ;vidas ;cantidad de vidas disponibles
+   #false ;alive
+   (make-posn 0 0) ;snake head
+   (list (make-posn 0 0) (make-posn 0 0)) ;cola
+   "green" ;color personaje
+   "black" ;color fondo
+   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
+   0
+   400 ;cercania
+   0.02 ;speed
+   #false
+   'normal
+   0 ;timer
+   ))
+
+;=========================COMENTARIO=========================
+#;(
+
+                            FUNCIONES AUXILIARES
+   
+)
+
+
+
+; number number -> boolean
+;puntos cercanos toma dos numeros y dicta si estos estan cerca o no, sirve para determinar si el gusano come o no la fruta dependiendo su cercania
+(define (puntos-cercanos a b)
+  (and (<= (- a b) VALOR-DE-CERCANIA) (>= (- a b) (- VALOR-DE-CERCANIA))))
+
+;----------------------------------------------------------------------
+
+;round-to-multiplodiez
+;recibe un numero y lo redondea hacia abajo
+(define (round-to-mutiplodiez number)
+  (- number (modulo number 10)))
+;----------------------------------------------------------
+
+;random-acotado toma un valor al azar dentro de un intervalo inf-sup
+;number number -> number
+(define (random-acotado inf sup)
+         (let ( [rand (random sup)])
+              (if
+               (and (< rand sup) (> rand inf))
+               rand
+               (let ( [rand (random sup)])
+                  (cond
+                    [(and (< rand sup) (> rand inf)) rand]
+                    [else (random-acotado inf sup)]))
+                  ) 
+ ); let
+  );define
+
+;=========================COMENTARIO=========================
+
+
+
+;game manager
+;cambia el estado del juego segun lo que pase
+
+(define (game-manager estado)
+
+  (cond
+    [(and (= 1 (nucleo-juego estado)) (= 1 (nucleo-instancia estado)))
+     
+     ] 

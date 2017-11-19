@@ -111,7 +111,7 @@ ESTADO: ESTRUCTURA
   (nucleo-fantasma e)
  (nucleo-modopantalla e)
 (nucleo-timer e)
-;(nucleo-highscores e)
+(nucleo-highscores e)
 )
 
 )
@@ -120,12 +120,12 @@ ESTADO: ESTRUCTURA
 ;=========================COMENTARIO=========================
 (define-struct
   nucleo
-  [juego ;number que juego es
-   fondo ;fondodelmenu imagen
+  [juego ;number number que juego es
+   fondo ;img fondodelmenu imagen
    gname ;string nombre de la ventana
    instancia ;number
    preselector ;string, pre selecciona lo que pasara al apretar play
-   stopORstart ;strin: "stop" o "star"
+   stopORstart ;string: "stop" o "star"
    vidas ;number default 1, cuando es 0 cambia el campo alive
    alive ;boolean true = vivo
    snake ;posn cabeza de snake
@@ -243,7 +243,7 @@ ESTADO: ESTRUCTURA
 
 ;game manager
 ;cambia el estado del juego segun lo que pase
-
+#;(
 (define (world-manager estado)
 
   (cond
@@ -254,6 +254,7 @@ ESTADO: ESTRUCTURA
       (nucleo-fondo estado)                                                                ;DENTRO 
       (nucleo-gname estado)                                                                ;DEL
       (nucleo-instancia estado)                                                            ;SNAKE
+      (nucleo-preselector estado)                                                          ;
       (nucleo-stopORstart "stop")                                                          ;
       (nucleo-vidas 3)                                                                     ;
       (nucleo-alive #true)                                                                 ;        
@@ -274,7 +275,7 @@ ESTADO: ESTRUCTURA
      ]                                                                                     ; 
 
 
-
+)))
 ;=========================COMENTARIO=========================
 #;(
 ;TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW
@@ -338,7 +339,7 @@ graficador: estado-> imagen
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~snake
 ;snake recibe el estado de el graficador y empieza a correr el snake
 
-(define (snake e)
+#;(define (snake e))
 
 ;=========================COMENTARIO=========================
 #;(
@@ -392,28 +393,57 @@ graficador: estado-> imagen
   (and
    (= queinstancia (nucleo-instancia estado))
    (and
-    (<= min-x x) (<= x max-x) (<= min-y y) (<= y max-y)))) 
+    (< min-x x) (< x max-x) (< min-y y) (< y max-y)))) 
 
 ;---------------------------------------------------------------------------------------------------LIMITES MENU
   
-  (define (LIMITEBOTON-0-0-0 estado x y) ;boton "play"
+  (define (limite-boton-0-0-0 estado x y) ;boton "play"
     (limitar-area estado 0 x 200 600 y 0 100)
-      )
+    )
 
-(define (LIMITEBOTON-0-0-0 estado x y) ;boton "play"
-    (limitar-area estado 0 x 200 600 y 0 100)
-      )
+  (define (limite-preselector-izq estado x y) ;PRESELECTOR IZQUIERDO
+    (limitar-area estado 0 x 100 200 y 0 100)
+    )
 
-;
-(define (LIMITEBOTON-0-0-1 estado x y) ;boton "opciones"
-  (limitar-area estado 0 x 200 600 y (- (/ ALTO 2) 50) (+ (/ ALTO 2) 50)) 
-  )
 
-(define (LIMITEBOTON-0-0-2 e y) ;boton "salir"
-  (limitar-area estado 0 x 200 600 y (- ALTO 100) ALTO)
-  )
+  (define (limite-preselector-der estado x y) ;PRESELECTOR DERECHO
+    (limitar-area estado 0 x 600 700 y 0 100))
+  
+  
+  (define (limite-boton-highscore e x y)
+    (limitar-area estado 0 x 200 600 y 125 225)) ;BOTON HIGHSCORE
 
   
+  (define (limite-boton-0-0-1 estado x y) ;boton "opciones"
+    (limitar-area estado 0 x 200 600 y (- (/ ALTO 2) 50) (+ (/ ALTO 2) 50)) 
+    )
+
+
+  (define (limite-boton-instrucciones estado x y) ;boton "instrucciones"
+    (limitar-area estado 0 x 200 600 y 425 525) 
+    )
+
+  
+  (define (limite-boton-0-0-2 e x y) ;boton "salir"
+    (limitar-area estado 0 x 200 600 y (- ALTO 100) ALTO)
+    )
+
+;-----------------------------------------------------------------------------------LIMITES OPCIONES
+  
+(define (limite-boton- estado x y) ;boton "play"
+    (limitar-area estado 1 x 200 600 y 0 100)
+    )
+
+  (define (limite-preselector-izq estado x y) ;PRESELECTOR IZQUIERDO
+    (limitar-area estado 1 x 100 200 y 0 100)
+    )
+
+
+  (define (limite-preselector-der estado x y) ;PRESELECTOR DERECHO
+    (limitar-area estado 1 x 600 700 y 0 100))
+
+
+
 ;=========================COMENTARIO=========================
 
 (define (mouse-handler estado x y event)
@@ -421,14 +451,45 @@ graficador: estado-> imagen
    (string? "button-down")
   (cond
 ;----------------------------------boton play del menu
-    [(LIMITEBOTON-0-0-0 estado x y)
+    [(limite-boton-0-0-0 estado x y)
 
      (make-nucleo
-      (nucleo-juego 1)
+      (nucleo-juego (cond
+                      [(equal? "run-snake" (nucleo-preselector estado)) 3]
+                      [(equal? "juego-2" (nucleo-preselector estado)) 7]
+                      ))
       (nucleo-fondo e)
       (nucleo-gname e)
-      (nucleo-instancia 0)
-      (nucleo-preselector 1)
+      0
+      "run-snake"
+      "stop"
+      (nucleo-vidas e)
+      #true
+      (make-posn 100 400)
+      (list (make-posn 90 400) (make-posn 80-400))
+      "quieto"
+      (nucleo-colorchar e)
+      (nucleo-colorback e)
+      (make-posn (/ ANCHO 2) (/ ALTO 2))
+      0
+      (nucleo-cercania e)
+      (nucleo-speed e)
+      (nucleo-fantasma e)
+      (nucleo-modopantalla e)
+      (nucleo-timer e)
+      (nucleo-highscore))
+       
+      ]
+;----------------------------------selectores
+
+    [(limite-preselector-izq estado x y)
+     (make-nucleo
+      (nucleo-juego e)
+      (nucleo-fondo e)
+      (nucleo-gname e)
+      (nucleo-instancia e)
+      (cond [(equal? (nucleo-preselector estado) "run-snake") "juego-2" ]
+            [(equal? (nucleo-preselector estado) "juego-2") "run-snake" ])
       (nucleo-stopORstart e)
       (nucleo-vidas e)
       (nucleo-alive e)
@@ -444,20 +505,144 @@ graficador: estado-> imagen
       (nucleo-fantasma e)
       (nucleo-modopantalla e)
       (nucleo-timer e)
-      (nucleo-highscore))
+      (nucleo-highscores e))]
+
+     [(limite-preselector-der estado x y)
+     (make-nucleo
+      (nucleo-juego e)
+      (nucleo-fondo e)
+      (nucleo-gname e)
+      (nucleo-instancia e)
+      (cond [(equal? (nucleo-preselector estado) "run-snake") "juego-2" ]
+            [(equal? (nucleo-preselector estado) "juego-2") "run-snake" ])
+      (nucleo-stopORstart e)
+      (nucleo-vidas e)
+      (nucleo-alive e)
+      (nucleo-snake e)
+      (nucleo-tail e)
+      (nucleo-direccion e)
+      (nucleo-colorchar e)
+      (nucleo-colorback e)
+      (nucleo-food e)
+      (nucleo-score e)
+      (nucleo-cercania e)
+      (nucleo-speed e)
+      (nucleo-fantasma e)
+      (nucleo-modopantalla e)
+      (nucleo-timer e)
+      (nucleo-highscores e))]
+
+;----------------------------------------------------highscore     
+     [(limite-boton-highscore estado x y)
+      (make-nucleo
+       6
+       (nucleo-fondo e)
+       (nucleo-gname e)
+       (nucleo-instancia e)
+       (nucleo-selector e)
+       (nucleo-stopORstart e)
+       (nucleo-vidas e)
+       (nucleo-alive e)
+       (nucleo-snake e)
+       (nucleo-tail e)
+       (nucleo-direccion e)
+       (nucleo-colorchar e)
+       (nucleo-colorback e)
+       (nucleo-food e)
+       (nucleo-score e)
+       (nucleo-cercania e)
+       (nucleo-speed e)
+       (nucleo-fantasma e)
+       (nucleo-modopantalla e)
+       (nucleo-timer e)
+       (nucleo-highscores e)
+       )]
+;----------------------------------------------------OPCIONES
+
+     [(limite-boton-0-0-1 estado x y)
+      
+      (make-nucleo
+       (nucleo-juego e)
+       (nucleo-fondo e)
+       (nucleo-gname e)
+       1
+       (nucleo-selector e)
+       (nucleo-stopORstart e)
+       (nucleo-vidas e)
+       (nucleo-alive e)
+       (nucleo-snake e)
+       (nucleo-tail e)
+       (nucleo-direccion e)
+       (nucleo-colorchar e)
+       (nucleo-colorback e)
+       (nucleo-food e)
+       (nucleo-score e)
+       (nucleo-cercania e)
+       (nucleo-speed e)
+       (nucleo-fantasma e)
+       (nucleo-modopantalla e)
+       (nucleo-timer e)
+       (nucleo-highscores e)
+       )]
+
+;----------------------------------------------------INSTRUCCIONES
+      [(limite-boton-instrucciones estado x y)
+       (make-nucleo
+        6
+        (nucleo-fondo e)
+        (nucleo-gname e)
+        (nucleo-instancia e)
+        (nucleo-selector e)
+        (nucleo-stopORstart e)
+        (nucleo-vidas e)
+        (nucleo-alive e)
+        (nucleo-snake e)
+        (nucleo-tail e)
+        (nucleo-direccion e)
+        (nucleo-colorchar e)
+        (nucleo-colorback e)
+        (nucleo-food e)
+        (nucleo-score e)
+        (nucleo-cercania e)
+        (nucleo-speed e)
+        (nucleo-fantasma e)
+        (nucleo-modopantalla e)
+        (nucleo-timer e)
+        (nucleo-highscores e)
+        )]
+
+;----------------------------------------------------SALIDA
+
+      [ (limite-boton-0-0-2 e x y) ;boton "salir"
        
-      ]
-;----------------------------------boton opciones del menu
+      
+      (make-nucleo
+       (nucleo-juego e)
+       (nucleo-fondo e)
+       (nucleo-gname e)
+       2
+       (nucleo-selector e)
+       (nucleo-stopORstart e)
+       (nucleo-vidas e)
+       (nucleo-alive e)
+       (nucleo-snake e)
+       (nucleo-tail e)
+       (nucleo-direccion e)
+       (nucleo-colorchar e)
+       (nucleo-colorback e)
+       (nucleo-food e)
+       (nucleo-score e)
+       (nucleo-cercania e)
+       (nucleo-speed e)
+       (nucleo-fantasma e)
+       (nucleo-modopantalla e)
+       (nucleo-timer e)
+       (nucleo-highscores e)
+       )]
 
+      ;========================================================DENTRO DEL MENU OPCIONES
 
-    
-
-
-
-
-
-
-
+      
 
 ;=========================COMENTARIO=========================
 #;(

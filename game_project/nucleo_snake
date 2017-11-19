@@ -29,12 +29,21 @@ CONSTANTES
 (define VALOR-DE-CERCANIA 99) ;ORIGINAL 5 
 (define SPEED 0.02) ;ORIGINAL 0.05 MAS CHICO MAS RAPIDO
 
+(define SNAKEINICIAL (make-posn 100 200))
+(define TAILINICIAL (list (make-posn 90 200) (make-posn 80 200)))
 
-;===========================================================IMAGENES CONSTANTES
+(define FOODINICIAL (make-posn (/ ANCHO 2) (+ (/ ALTO 2) 50)))
+
+;(define LISTAHIGHSCORES (list
+
+;=======================================================================================IMAGENES CONSTANTES
+;funcion auxiliar poner-texto: string color color -> img
+;recibe una string y dos colores y genera una imagen de 400x100
+(define (poner-texto string colortxt colorfondo )
+  (place-image/align (text string 70 colortxt) (/ ANCHO 4) 50 "center" "center" (rectangle (/ ANCHO 2) 100 "solid" colorfondo)))
 
 
-
-
+;CREDITOS
 (define CREDITOS (place-images
    (list (circle 50 "solid" "blue")
          )
@@ -43,7 +52,7 @@ CONSTANTES
    escena))
 
 
-
+;MENU
 (define menu
   (place-images
    (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
@@ -54,7 +63,7 @@ CONSTANTES
    vacio
    ))
 
-
+;OPCIONES
 (define opciones e
               
   (place-images
@@ -65,33 +74,20 @@ CONSTANTES
          )
    FONDOOPCIONES
    ))
+
+(define PRESELECTORIZQ (place-image (rotate 90 (triangle 80 "solid" "red")) 50 50 (rectangle 100 100 "solid" "blue")))
+
+(define PRESELECTORDER (place-image (rotate -90 (triangle 80 "solid" "red")) 50 50 (rectangle 100 100 "solid" "blue")))
+
+(define BOTON-0-0-0 (poner-texto "Jugar" "white" "blue"))
+
+(define BOTON-0-0-1 (poner-texto "Opciones" "black" "yellow"))
+
+(defien BOTON-0-0-2 (poner-texto "Salir" "black" "red"))
 ;=========================BARRA=========================
 #;(
 
 ESTADO: ESTRUCTURA
-
-
-
-(define-struct
-  nucleo
-  [juego ;number que juego es 1-snake 2-dodger
-   gname ;string nombre de la ventana
-   instancia ;number
-   stopORstart 
-   vidas ;number default 1, cuando es 0 cambia el campo alive
-   alive ;boolean true = vivo
-   snake ;posn
-   tail ;lista de posn
-   colorchar ;string 
-   colorback ;string
-   food ;posn
-   score ;number
-   cercania ;number, el default es 5
-   speed ;number, el default es 0.05 mas chico el num mas rapido el juego
-   fantasma ;boolean
-   modopantalla ;'fullscreen o 'normal
-   timer ;number
-   ])
 
 
 (make-nucleo
@@ -99,11 +95,13 @@ ESTADO: ESTRUCTURA
  (nucleo-fondo e)
  (nucleo-gname e)
  (nucleo-instancia e)
+ (nucleo-selector e)
  (nucleo-stopORstart e)
  (nucleo-vidas e)
  (nucleo-alive e)
  (nucleo-snake e)
  (nucleo-tail e)
+ (nucleo-direccion e)
  (nucleo-colorchar e)
  (nucleo-colorback e)
  (nucleo-food e)
@@ -111,8 +109,10 @@ ESTADO: ESTRUCTURA
  (nucleo-cercania e)
  (nucleo-speed e)
   (nucleo-fantasma e)
- (nucleo-modopantalla e))
+ (nucleo-modopantalla e)
 (nucleo-timer e)
+;(nucleo-highscores e)
+)
 
 )
 
@@ -124,10 +124,13 @@ ESTADO: ESTRUCTURA
    fondo ;fondodelmenu imagen
    gname ;string nombre de la ventana
    instancia ;number
+   preselector ;string, pre selecciona lo que pasara al apretar play
+   stopORstart ;strin: "stop" o "star"
    vidas ;number default 1, cuando es 0 cambia el campo alive
    alive ;boolean true = vivo
    snake ;posn cabeza de snake
    tail ;lista de posn
+   direccion
    colorchar ;string 
    colorback ;string
    food ;posn
@@ -137,35 +140,39 @@ ESTADO: ESTRUCTURA
    fantasma ;boolean, "godmode"
    modopantalla ;'fullscreen o 'normal
    timer ;number
+   highscores
    ])
 ;=========================COMENTARIO=========================
-
+;INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL
 (define INICIAL
   (make-nucleo
    0 ;juego nucleo
-   menu ;fondo
-   "Nucleo"
-   00 ;instancia de menu
+   menu ;fondo del menu
+   "Nucleo" ;gname
+   0 ;instancia de menu
+   "run-snake" ;- preselector
    "stop" ;empieza detenido
    0 ;vidas ;cantidad de vidas disponibles
    #false ;alive
    (make-posn 0 0) ;snake head
    (list (make-posn 0 0) (make-posn 0 0)) ;cola
+   "quieto" ;direccion
    "green" ;color personaje
    "black" ;color fondo
    (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
    0
    400 ;cercania
    0.02 ;speed
-   #false
-   'normal
+   #false ;fantasta
+   'normal ;modo pantalla
    0 ;timer
+   empty ;highscores
    ))
-
+;INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL
 ;=========================COMENTARIO=========================
 #;(
 
-                            FUNCIONES AUXILIARES
+                            FUNCIONES AUXILIARES---------------------------------------------------------------------
    
 )
 
@@ -176,13 +183,13 @@ ESTADO: ESTRUCTURA
 (define (puntos-cercanos a b)
   (and (<= (- a b) VALOR-DE-CERCANIA) (>= (- a b) (- VALOR-DE-CERCANIA))))
 
-;----------------------------------------------------------------------
+;------------------------------------------------------------
 
 ;round-to-multiplodiez
 ;recibe un numero y lo redondea hacia abajo
 (define (round-to-mutiplodiez number)
   (- number (modulo number 10)))
-;----------------------------------------------------------
+;------------------------------------------------------------
 
 ;random-acotado toma un valor al azar dentro de un intervalo inf-sup
 ;number number -> number
@@ -199,6 +206,37 @@ ESTADO: ESTRUCTURA
  ); let
   );define
 
+;------------------------------------------------------------
+#;(
+(remove x l) ;remove x element from l list
+
+(list-ref x i) ;Extracts the x-th item from the list.
+
+(length l) ;Evaluates the number of items on a list. 
+)
+
+;recibe una lista y devuelve la misma lista sin su ultimo elemento
+
+(define (quitar-ultimo lista)
+  (remove (list-ref lista (-(length lista) 1)) lista))
+
+(define testlist (list "a" "b" "c" "d"))
+
+(check-expect (quitar-ultimo testlist) (list "a" "b" "c"))
+
+;------------------------------------------------------------
+;toma un elemento y lo agrega en la ultima posicion de una lista
+(define (agregar-elemento-ultimo elemento lista) (reverse (cons elemento (reverse lista))))
+
+(check-expect (agregar-elemento-ultimo "e" testlist) (list "a" "b" "c" "d" "e"))
+
+
+;--------------------------------------------------------------------------------
+
+
+
+
+
 ;=========================COMENTARIO=========================
 
 
@@ -206,9 +244,240 @@ ESTADO: ESTRUCTURA
 ;game manager
 ;cambia el estado del juego segun lo que pase
 
-(define (game-manager estado)
+(define (world-manager estado)
 
   (cond
-    [(and (= 1 (nucleo-juego estado)) (= 1 (nucleo-instancia estado)))
-     
-     ] 
+    [                                                                                      ;
+     (and (= 1 (nucleo-juego estado)) (= 0 (nucleo-instancia estado)))                     ;
+     (make-nucleo                                                                          ;
+      (nucleo-juego estado)                                                                ;                                                           ;
+      (nucleo-fondo estado)                                                                ;DENTRO 
+      (nucleo-gname estado)                                                                ;DEL
+      (nucleo-instancia estado)                                                            ;SNAKE
+      (nucleo-stopORstart "stop")                                                          ;
+      (nucleo-vidas 3)                                                                     ;
+      (nucleo-alive #true)                                                                 ;        
+      (nucleo-snake SNAKEINICIAL)                                                          ;
+      (nucleo-tail TAILINICIAL)                                                            ;
+      (nucleo-direccion "quieto")                                                          ;
+      (nucleo-preselector e)                                                               ;
+      (nucleo-colorchar estado)                                                            ;
+      (nucleo-colorback estado)                                                            ;
+      (nucleo-food FOODINICIAL)                                                            ;
+      (nucleo-score estado)                                                                ;
+      (nucleo-cercania estado)                                                             ;
+      (nucleo-speed estado)                                                                ;
+      (nucleo-fantasma estado)                                                             ;
+      (nucleo-modopantalla estado)                                                         ;
+      (nucleo-timer estado)                                                                ;
+      (nucleo-highscores estado))                                                          ;
+     ]                                                                                     ; 
+
+
+
+;=========================COMENTARIO=========================
+#;(
+;TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW
+                                            TO-DRAW
+;TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW   
+                                            juego
+                                            0 -> 
+                                                 instancia
+                                                 0 menu
+                                                 1 opciones
+                                                 2 creditos y salir
+                                            3 ->
+                                                 instancia
+                                                 4 snake
+                                                 5 post-deth
+                                            6 instrucciones
+                                            7 -> 8
+                                           
+                                                 
+                                              
+
+
+graficador: estado-> imagen
+           recibe un estado y grafica una imagen                                      )
+;=========================COMENTARIO=========================
+
+(define (graficador e)
+  (cond
+                                                               ;dentro del menu
+    [(and (= (nucleo-juego e) 0) (= (nucleo-instancia e) 0))
+     menu]
+
+    
+    [(and (= (nucleo-juego e) 0) (= (nucleo-instancia e) 1))
+     opciones
+     ]
+
+    
+    [(and (= (nucleo-juego e) 0) (= (nucleo-instancia e) 2))
+     creditos
+     ]                                                          ; fin
+
+    []
+
+    [(and (= (nucleo-juego e) 3) (= (nucleo-instancia e) 4))    ;dentro del snake, vivo
+     (snake e)
+     ]
+
+   
+    [(and (= (nucleo-juego e) 3) (= (nucleo-instancia e) 5))    ;dentro del snake, muerto
+     (post-deth e)
+     ]
+
+    
+    [(= (nucleo-juego e) 6)    ;instrucciones
+     (instrucciones e)
+     ]
+    
+))
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~snake
+;snake recibe el estado de el graficador y empieza a correr el snake
+
+(define (snake e)
+
+;=========================COMENTARIO=========================
+#;(
+;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
+                                            ON-TICK
+;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
+)
+;=========================COMENTARIO=========================
+
+
+
+
+
+
+
+
+
+;=========================COMENTARIO=========================
+#;(
+;ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=
+                                            ON-KEY
+;ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=ON-KEY=
+)
+;=========================COMENTARIO=========================
+
+
+
+
+
+
+
+
+;=========================COMENTARIO=========================
+#;(
+;ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=
+                                            ON-MOUSE
+;ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=
+)
+
+;                                              LIMITES DE LOS BOTONES
+
+
+  ;                                           LIMITES DEL MENU juego 0 instancia 0
+
+  
+;limitar-area; estado number x (mouse) number number y (mouse) number number -> boolean
+  
+;recibe la instancia del estado y las posiciones del mouse, y donde debe clickear para que devuelva verdadero
+
+  (define (limitar-area estado queinstancia x min-x max-x y min-y max-y)
+  (and
+   (= queinstancia (nucleo-instancia estado))
+   (and
+    (<= min-x x) (<= x max-x) (<= min-y y) (<= y max-y)))) 
+
+;---------------------------------------------------------------------------------------------------LIMITES MENU
+  
+  (define (LIMITEBOTON-0-0-0 estado x y) ;boton "play"
+    (limitar-area estado 0 x 200 600 y 0 100)
+      )
+
+(define (LIMITEBOTON-0-0-0 estado x y) ;boton "play"
+    (limitar-area estado 0 x 200 600 y 0 100)
+      )
+
+;
+(define (LIMITEBOTON-0-0-1 estado x y) ;boton "opciones"
+  (limitar-area estado 0 x 200 600 y (- (/ ALTO 2) 50) (+ (/ ALTO 2) 50)) 
+  )
+
+(define (LIMITEBOTON-0-0-2 e y) ;boton "salir"
+  (limitar-area estado 0 x 200 600 y (- ALTO 100) ALTO)
+  )
+
+  
+;=========================COMENTARIO=========================
+
+(define (mouse-handler estado x y event)
+  (if
+   (string? "button-down")
+  (cond
+;----------------------------------boton play del menu
+    [(LIMITEBOTON-0-0-0 estado x y)
+
+     (make-nucleo
+      (nucleo-juego 1)
+      (nucleo-fondo e)
+      (nucleo-gname e)
+      (nucleo-instancia 0)
+      (nucleo-preselector 1)
+      (nucleo-stopORstart e)
+      (nucleo-vidas e)
+      (nucleo-alive e)
+      (nucleo-snake e)
+      (nucleo-tail e)
+      (nucleo-direccion e)
+      (nucleo-colorchar e)
+      (nucleo-colorback e)
+      (nucleo-food e)
+      (nucleo-score e)
+      (nucleo-cercania e)
+      (nucleo-speed e)
+      (nucleo-fantasma e)
+      (nucleo-modopantalla e)
+      (nucleo-timer e)
+      (nucleo-highscore))
+       
+      ]
+;----------------------------------boton opciones del menu
+
+
+    
+
+
+
+
+
+
+
+
+;=========================COMENTARIO=========================
+#;(
+;ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=
+                                            STOP-WHEN
+;ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=
+)
+
+;=========================COMENTARIO=========================
+
+(big-bang INICIAL 
+          [to-draw graficador]
+          [on-tick tick-tock (nucleo-speed INICIAL)]
+          [on-key key-handler]
+          [on-mouse mouse-handler]
+          [stop-when close]
+          [close-on-stop 2]
+          [display-mode (nucleo-modopantalla)]
+          [name (nucleo-gname INICIAL)]
+)
+  
+
+    

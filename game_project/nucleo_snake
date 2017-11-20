@@ -409,7 +409,7 @@ Example:
 ;lista-de-snake combina las posiciones que dibujaran la serpiente en una lista
 ; estado -> list
 (define (lista-de-snake estado)
-  (cons (nucleo-snake estado) (nucleo-cola estado)))
+  (cons (nucleo-snake estado) (nucleo-tail estado)))
 
 
 ;estado-> image (hace un cuadrado de 10px el cual formara cada cuadrado de la serpiente, toma el color del estado
@@ -491,7 +491,7 @@ Example:
   (cond
     [(equal? "quieto" (nucleo-direccion estado)) estado ]
 
-    [(equal? "arriba" (nucleo-direccion estado))
+    [(and (equal? "start" (nucleo-stopORstart estado)) (equal? "arriba" (nucleo-direccion estado)))
      (make-nucleo
       (nucleo-juego estado)
       (nucleo-fondo estado)
@@ -517,7 +517,7 @@ Example:
        )
      ]
 
-    [(equal? "abajo" (nucleo-direccion estado))
+    [(and (equal? "start" (nucleo-stopORstart estado)) (equal? "abajo" (nucleo-direccion estado)))
      (make-nucleo
       (nucleo-juego estado)
       (nucleo-fondo estado)
@@ -545,7 +545,7 @@ Example:
 
 
 
-    [(equal? "izquierda" (nucleo-direccion estado))
+    [(and (equal? "start" (nucleo-stopORstart estado)) (equal? "izquierda" (nucleo-direccion estado)))
      (make-nucleo
       (nucleo-juego estado)
       (nucleo-fondo estado)
@@ -573,7 +573,7 @@ Example:
 
 
 
-    [(equal? "derecha" (nucleo-direccion estado))
+    [(and (equal? "start" (nucleo-stopORstart estado)) (equal? "derecha" (nucleo-direccion estado)))
      (make-nucleo
       (nucleo-juego estado)
       (nucleo-fondo estado)
@@ -599,6 +599,8 @@ Example:
        )
      ]
 
+
+    ;en caso de que la posicione de la cabeza sea igual a la de la comida, agrega un elemento a la lista de la cola y genera una nueva posicion de la comida
     [(and (puntos-cercanos estado (posn-x (nucleo-snake estado)) (posn-x (nucleo-food estado)))
               (puntos-cercanos estado (posn-y (nucleo-snake estado)) (posn-y (nucleo-food estado))))
      (make-nucleo
@@ -618,7 +620,7 @@ Example:
        (make-posn
         (random-acotado 10 (- ANCHO 10))            ;nueva posiciones de comida
         (round-to-mutiplodiez (random-acotado 110 (- ALTO 10))) )
-       (nucleo-score estado)
+       (+ 10 (nucleo-score estado))
        (nucleo-rango estado)
        (nucleo-speed estado)
        (nucleo-fantasma estado)
@@ -628,24 +630,10 @@ Example:
        ) ]
 
 
+    ;en caso de que choque la pared o que choque su cola cambia la instancia
+    #;( basado en esta funcion hecha en clase
 
-
-
-
-
-
-
-
-
-    ))
-
-
-
-
-
-
-
-
+       
   ;contiene-amigo?: string list -> boolean
 ;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
 #|(define (contiene-amigo1? nombre-amigo lista) (cond [(empty? lista) #false]
@@ -661,10 +649,166 @@ Example:
 (contiene-amigo-lista? nombre-amigo (rest lista)))]))
 
 
+;-----------------
+)
 
 
-  ;cuando se termine el programa ejecutar un let INICIAL -> string " gracias por jugar, de esa forma saldra en las
-  ;interacciones"
+    #|
+(define (se-choca-con-la-cola cabeza lista)
+  (cond 
+    [(empty? lista) #false]
+    [(cons? lista) (if (equal? (first lista) cabeza)
+                       #true
+                       (se-choca-con-la-cola cabeza (rest lista)))]))
+
+
+|#
+
+(define (se-choca-con-la-cola estado)
+  (cond 
+    [(empty? (nucleo-tail estado)) #false]
+    [(cons? (nucleo-tail estado)) (if (equal? (first (nucleo-tail estado)) (nucleo-snake estado))
+                       #true
+                       (se-choca-con-la-cola cabeza (rest (nucleo-tail estado))))]))
+
+
+
+    
+(define (se-choca-con-la-pared estado)
+  (if (or (< (posn-x (nucleo-snake estado)) 0) 
+          (< (posn-y (nucleo-snake estado)) MINIMO-PARED) 
+          (> (posn-x (nucleo-snake estado)) (- ANCHO 10)) 
+          (> (posn-y (nucleo-snake estado)) MAXIMO-PARED))
+#true #false))
+
+    [(or (se-choca-con-la-cola estado) (se-choca-con-la-pared estado))
+     (make-nucleo
+       (nucleo-juego estado)
+       (nucleo-fondo estado)
+       (nucleo-gname estado)
+       (nucleo-instancia estado)
+       (nucleo-selector estado)
+       (nucleo-stopORstart estado)
+       (- (nucleo-vidas estado) 1)
+       (nucleo-alive estado)
+       (nucleo-snake estado)
+       (nucleo-tail estado)
+       (nucleo-direccion estado)
+       (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (nucleo-timer estado)
+       (nucleo-highscores estado)
+       )
+     ]
+
+    #|
+
+(quicksort '(6 7 2 1 3 4 0 5 9 8) <)
+
+(quicksort l comp) → (listof X)
+Sorts the items on l, in an order according to comp (using the quicksort algorithm).
+
+
+(sort l comp) → (listof X)
+Sorts the items on l, in an order according to comp. 
+
+> (sort '(6 7 2 1 3 4 0 5 9 8) >)
+|#
+    [(>= 0 (nucleo-vidas estado))
+     (make-nucleo
+       (nucleo-juego estado)
+       (nucleo-fondo estado)
+       (nucleo-gname estado)
+       5
+       (nucleo-selector estado)
+       (nucleo-stopORstart estado)
+       (nucleo-vidas estado)
+       (nucleo-alive estado)
+       (nucleo-snake estado)
+       (nucleo-tail estado)
+       (nucleo-direccion estado)
+       (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (nucleo-timer estado)
+       (quicksort (cons (nucleo-score estado) (nucleo-highscores estado)) >)
+       )
+     ]
+
+
+
+
+
+    
+    [else estado]
+    ))
+
+
+
+
+
+
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+;(post-deth e)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
 
 ;PUEDO SACAR EL ULTIMO ELEMENTO DE LA LISTA CON FILTER1111111111111111111
 
@@ -950,7 +1094,7 @@ Returns the last element of the list.
                       ))
       (nucleo-fondo estado)
       (if (equal? "run-snake" (nucleo-selector estado)) "Snake.rkt" "juego-2")
-      0
+      4
       "run-snake"
       "stop"
       (nucleo-vidas estado)

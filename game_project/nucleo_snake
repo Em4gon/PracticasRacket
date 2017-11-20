@@ -33,6 +33,7 @@ CONSTANTES
 (define TAILINICIAL (list (make-posn 90 200) (make-posn 80 200)))
 
 (define FOODINICIAL (make-posn (/ ANCHO 2) (+ (/ ALTO 2) 50)))
+(define TAMAÑO-TEXTO 30)
 
 ;(define LISTAHIGHSCORES (list
 
@@ -149,7 +150,7 @@ ESTADO: ESTRUCTURA
   (make-nucleo
    0 ;juego nucleo
    menu ;fondo del menu
-   "Nucleo" ;gname
+   "Nucleo - Emanuel Gonzalez" ;gname
    0 ;instancia de menu
    "run-snake" ;- preselector
    "stop" ;empieza detenido
@@ -247,9 +248,10 @@ ESTADO: ESTRUCTURA
 
 (define ALEATORIO (make-color (random 255) (random 255) (random 255)))
 
-(define COLORESPERSONAJE (list ALEATORIO "black" "white" "red" "blue" "green" "yellow"))
+(define COLORESPERSONAJE (list "black"   "white" ALEATORIO "red" "blue" "green" "yellow"))
+(define COLORESFONDO (list "GhostWhite" "DeepSkyBlue" "white" "Salmon" "DarkGreen" "Violet" "LightSlateGray"))
 (define n 1)
-(define (lista-izq l) (list-ref (let (restar1 n)) (COLORESPERSONAJE)))   
+;(define (lista-izq l) (list-ref (let (restar1 n)) COLORESPERSONAJE)))   
 
 
 
@@ -278,7 +280,7 @@ ESTADO: ESTRUCTURA
       (nucleo-juego estado)                                                                ;                                                           ;
       (nucleo-fondo estado)                                                                ;DENTRO 
       (nucleo-gname estado)                                                                ;DEL
-      (nucleo-instancia estado)                                                            ;SNAKE
+      (nucleo-instancia estado)                                                            ;SNAKE         CREO QUE NO SE VA A USAR......
       (nucleo-preselector estado)                                                          ;
       (nucleo-stopORstart "stop")                                                          ;
       (nucleo-vidas 3)                                                                     ;
@@ -361,14 +363,187 @@ graficador: estado-> imagen
     
 ))
 
-;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~snake
+;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
+;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
 ;snake recibe el estado de el graficador y empieza a correr el snake
 
 #;(define (snake e)
+    (place-images 
 
 
 
 
+
+
+     
+
+#|((define (lista-snake estado)
+  (list (nucleo-snake estado) (nucleo-tail estado)))
+
+(define (armar-snake estado)
+  (place-images
+   |#
+
+(define listasnake (list 111))
+
+(define listacola (list 222 333))
+
+(define listatodo (cons (first listasnake) listacola))
+
+listatodo
+
+(define listacons (reverse (cons 888 (reverse listatodo))))
+
+#|
+        (make-list k v) → list?
+
+      k : exact-nonnegative-integer?
+      v : any/c
+
+Returns a newly constructed list of length k, holding v in all positions.
+
+Example:
+
+    > (make-list 7 'foo)
+
+    '(foo foo foo foo foo foo foo)
+
+|#
+(define (agregar-elemento-ultimo elemento lista) (reverse (cons elemento (reverse lista))))
+
+;lista-de-snake combina las posiciones que dibujaran la serpiente en una lista
+; estado -> list
+(define (lista-de-snake estado)
+  (cons (nucleo-snake estado) (nucleo-cola estado)))
+
+
+;estado-> image (hace un cuadrado de 10px el cual formara cada cuadrado de la serpiente, toma el color del estado
+(define (parte-snake estado)
+  (square 10 "solid" (list-ref COLORESPERSONAJE (nucleo-colorchar estado))))  
+
+
+;lista-de-snake-imagenes:
+;estado -> lista
+;hace la primera parte del grafico de la serpiente, place-image requiere una lista con todas las imagenes
+; esta funcion la "fabrica" 
+(define (lista-de-snake-imagenes estado)
+  (make-list (length (lista-de-snake estado)) (parte-snake estado)))
+
+
+;fondo dentro del juego
+(define (fondo-snake estado)
+         (place-image (rectangle 800 100 "solid" "black") 400 50 (rectangle 800 600 "solid" (list-ref COLORESFONDO (nucleo-colorback estado)))))
+
+;generador-fondo-snake; estado -> imagen
+;recibe usa el score y el timer para cambiar la barra superior del fondo
+(define (generador-fondo-snake estado)
+  (place-images
+   (list
+    (text (string-append "Velocidad: " (number->string (nucleo-speed estado))) 25 (make-color 100 100 100))
+    (text (string-append "Rango: " (number->string (nucleo-rango estado))) 25 (make-color 100 100 100))
+    (text (string-append "Vidas: " (number->string (nucleo-vidas estado))) TAMAÑO-TEXTO (make-color 228 48 48))
+   
+    (text (string-append "Tiempo: " (number->string (nucleo-timer estado))) TAMAÑO-TEXTO (make-color 255 255 255))
+    (text (string-append "Puntaje: " (number->string (nucleo-score estado))) TAMAÑO-TEXTO (make-color 216 255 21))
+    (text (nucleo-gname estado) 15 (make-color 100 100 100))
+    )
+
+   (list (make-posn 100 30)
+         (make-posn 100 60)
+         (make-posn 300 70)
+         (make-posn 500 70)
+         (make-posn 700 70)
+         (make-posn 700 10))
+    (fondo-snake estado)))
+  
+(define (snake estado)
+ (place-images
+  
+
+
+  ;contiene-amigo?: string list -> boolean
+;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
+#|(define (contiene-amigo1? nombre-amigo lista) (cond [(empty? lista) #false]
+                                                   [(cons? lista) (if (string=? (amigo-nombre (first lista)) nombre-amigo)
+                                                                      #true
+(contiene-amigo1? nombre-amigo (rest lista)))]))
+|#
+
+(define (contiene-amigo-lista? nombre-amigo lista) (cond 
+                                                     [(empty? lista) #false]
+                                                     [(cons? lista) (if (equal? (first lista) nombre-amigo)
+                                                                        #true
+(contiene-amigo-lista? nombre-amigo (rest lista)))]))
+
+
+
+
+  ;cuando se termine el programa ejecutar un let INICIAL -> string " gracias por jugar, de esa forma saldra en las
+  ;interacciones"
+
+;PUEDO SACAR EL ULTIMO ELEMENTO DE LA LISTA CON FILTER1111111111111111111
+
+#|
+        (last lst) → any
+
+      lst : list?
+
+Returns the last element of the list.
+|#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
+;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
+
+
+
+
+
+
+
+
+
+     
 
 
 
@@ -587,11 +762,11 @@ graficador: estado-> imagen
 
      (make-nucleo
       (nucleo-juego (cond
-                      [(equal? "run-snake" (nucleo-preselector estado)) 3]
-                      [(equal? "juego-2" (nucleo-preselector estado)) 7]
+                      [(equal? "run-snake" (nucleo-selector estado)) 3]
+                      [(equal? "juego-2" (nucleo-selector estado)) 7]
                       ))
       (nucleo-fondo estado)
-      (nucleo-gname estado)
+      (if (equal? "run-snake" (nucleo-selector estado)) "Snake.rkt" "juego-2")
       0
       "run-snake"
       "stop"
@@ -1142,7 +1317,7 @@ graficador: estado-> imagen
        (make-nucleo
         0 ;juego nucleo
         menu ;fondo del menu
-        "Nucleo" ;gname
+        "Nucleo - Emanuel Gonzalez" ;gname
         0 ;instancia de menu
         "run-snake" ;- preselector
         "stop" ;empieza detenido

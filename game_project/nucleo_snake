@@ -65,7 +65,7 @@ CONSTANTES
    ))
 
 ;OPCIONES
-(define opciones e
+(define (opciones e)
               
   (place-images
    (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
@@ -84,7 +84,7 @@ CONSTANTES
 
 (define BOTON-0-0-1 (poner-texto "Opciones" "black" "yellow"))
 
-(defien BOTON-0-0-2 (poner-texto "Salir" "black" "red"))
+(define BOTON-0-0-2 (poner-texto "Salir" "black" "red"))
 ;=========================BARRA=========================
 #;(
 
@@ -186,8 +186,8 @@ ESTADO: ESTRUCTURA
 
 ; number number -> boolean
 ;puntos cercanos toma dos numeros y dicta si estos estan cerca o no, sirve para determinar si el gusano come o no la fruta dependiendo su rango
-(define (puntos-cercanos a b)
-  (and (<= (- a b) VALOR-DE-RANGO) (>= (- a b) (- VALOR-DE-RANGO))))
+(define (puntos-cercanos estado a b)
+  (and (<= (- a b) (nucleo-rango estado)) (>= (- a b) (- (nucleo-rango estado)))))
 
 ;------------------------------------------------------------
 
@@ -229,6 +229,11 @@ ESTADO: ESTRUCTURA
 (define testlist (list "a" "b" "c" "d"))
 
 (check-expect (quitar-ultimo testlist) (list "a" "b" "c"))
+
+;----------------------------------
+;receibe una lista y devuelve su ultimo elemento (last)
+(define (devolver-ultimo-elemento lista)
+ (list-ref lista (length lista)))
 
 ;------------------------------------------------------------
 ;toma un elemento y lo agrega en la ultima posicion de una lista
@@ -345,7 +350,7 @@ graficador: estado-> imagen
      creditos
      ]                                                          ; fin
 
-    []
+   ; []
 
     [(and (= (nucleo-juego e) 3) (= (nucleo-instancia e) 4))    ;dentro del snake, vivo
      (snake e)
@@ -367,8 +372,6 @@ graficador: estado-> imagen
 ;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
 ;snake recibe el estado de el graficador y empieza a correr el snake
 
-#;(define (snake e)
-    (place-images 
 
 
 
@@ -384,15 +387,7 @@ graficador: estado-> imagen
   (place-images
    |#
 
-(define listasnake (list 111))
 
-(define listacola (list 222 333))
-
-(define listatodo (cons (first listasnake) listacola))
-
-listatodo
-
-(define listacons (reverse (cons 888 (reverse listatodo))))
 
 #|
         (make-list k v) → list?
@@ -409,7 +404,7 @@ Example:
     '(foo foo foo foo foo foo foo)
 
 |#
-(define (agregar-elemento-ultimo elemento lista) (reverse (cons elemento (reverse lista))))
+
 
 ;lista-de-snake combina las posiciones que dibujaran la serpiente en una lista
 ; estado -> list
@@ -423,19 +418,26 @@ Example:
 
 
 ;lista-de-snake-imagenes:
-;estado -> lista
+;estado -> lista de imagenes
 ;hace la primera parte del grafico de la serpiente, place-image requiere una lista con todas las imagenes
 ; esta funcion la "fabrica" 
 (define (lista-de-snake-imagenes estado)
   (make-list (length (lista-de-snake estado)) (parte-snake estado)))
 
 
-;fondo dentro del juego
+
+
+;fondo dentro del juego con la comida incluida
+;estado ->fondo dentro del juego
 (define (fondo-snake estado)
-         (place-image (rectangle 800 100 "solid" "black") 400 50 (rectangle 800 600 "solid" (list-ref COLORESFONDO (nucleo-colorback estado)))))
+  (place-image comida (posn-x (nucleo-food estado)) (posn-y (nucleo-food estado)) 
+               (place-image (rectangle 800 100 "solid" "black") 400 50 (rectangle 800 600 "solid" (list-ref COLORESFONDO (nucleo-colorback estado))))))
+
+
 
 ;generador-fondo-snake; estado -> imagen
 ;recibe usa el score y el timer para cambiar la barra superior del fondo
+;estado -> fondo del juego con una barra superior
 (define (generador-fondo-snake estado)
   (place-images
    (list
@@ -455,10 +457,193 @@ Example:
          (make-posn 700 70)
          (make-posn 700 10))
     (fondo-snake estado)))
-  
+
+
+;se llama a graficar esta funcion
+;snake: estado -> imagen
 (define (snake estado)
- (place-images
-  
+  (place-images
+   (lista-de-snake-imagenes estado)
+   (lista-de-snake)
+   (generador-fondo-snake estado)))
+   
+
+
+
+
+;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
+;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
+
+
+
+
+;=========================COMENTARIO=========================
+#;(
+;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
+                                            ON-TICK
+;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
+)
+;=========================COMENTARIO=========================
+
+
+
+(define (tick-tock estado)
+  (cond
+    [(equal? "quieto" (nucleo-direccion estado)) estado ]
+
+    [(equal? "arriba" (nucleo-direccion estado))
+     (make-nucleo
+      (nucleo-juego estado)
+      (nucleo-fondo estado)
+      (nucleo-gname estado)
+      (nucleo-instancia estado)
+      (nucleo-selector estado)
+      (nucleo-stopORstart estado)
+      (nucleo-vidas estado)
+      (nucleo-alive estado)
+      (make-posn (posn-x (nucleo-snake estado)) (- DELTA (posn-y (nucleo-snake estado))))
+      (cosn (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
+      "arriba"
+      (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (- (nucleo-timer estado) (/ 1 (nucleo-speed estado)))
+       (nucleo-highscores estado)
+       )
+     ]
+
+    [(equal? "abajo" (nucleo-direccion estado))
+     (make-nucleo
+      (nucleo-juego estado)
+      (nucleo-fondo estado)
+      (nucleo-gname estado)
+      (nucleo-instancia estado)
+      (nucleo-selector estado)
+      (nucleo-stopORstart estado)
+      (nucleo-vidas estado)
+      (nucleo-alive estado)
+      (make-posn (posn-x (nucleo-snake estado)) (+ DELTA (posn-y (nucleo-snake estado))))
+      (cosn (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
+      "abajo"
+      (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (- (nucleo-timer estado) (/ 1 (nucleo-speed estado)))
+       (nucleo-highscores estado)
+       )
+     ]
+
+
+
+    [(equal? "izquierda" (nucleo-direccion estado))
+     (make-nucleo
+      (nucleo-juego estado)
+      (nucleo-fondo estado)
+      (nucleo-gname estado)
+      (nucleo-instancia estado)
+      (nucleo-selector estado)
+      (nucleo-stopORstart estado)
+      (nucleo-vidas estado)
+      (nucleo-alive estado)
+      (make-posn (- (posn-x (nucleo-snake estado)) DELTA) (posn-y (nucleo-snake estado)))
+      (cosn (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
+      "izquierda"
+      (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (- (nucleo-timer estado) (/ 1 (nucleo-speed estado)))
+       (nucleo-highscores estado)
+       )
+     ]
+
+
+
+    [(equal? "derecha" (nucleo-direccion estado))
+     (make-nucleo
+      (nucleo-juego estado)
+      (nucleo-fondo estado)
+      (nucleo-gname estado)
+      (nucleo-instancia estado)
+      (nucleo-selector estado)
+      (nucleo-stopORstart estado)
+      (nucleo-vidas estado)
+      (nucleo-alive estado)
+      (make-posn (+ DELTA (posn-x (nucleo-snake estado))) (posn-y (nucleo-snake estado)))
+      (cosn (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
+      "derecha"
+      (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (- (nucleo-timer estado) (/ 1 (nucleo-speed estado)))
+       (nucleo-highscores estado)
+       )
+     ]
+
+    [(and (puntos-cercanos estado (posn-x (nucleo-snake estado)) (posn-x (nucleo-food estado)))
+              (puntos-cercanos estado (posn-y (nucleo-snake estado)) (posn-y (nucleo-food estado))))
+     (make-nucleo
+       (nucleo-juego estado)
+       (nucleo-fondo estado)
+       (nucleo-gname estado)
+       (nucleo-instancia estado)
+       (nucleo-selector estado)
+       (nucleo-stopORstart estado)
+       (nucleo-vidas estado)
+       (nucleo-alive estado)
+       (nucleo-snake estado)
+       (agregar-elemento-ultimo  (devolver-ultimo-elemento (nucleo-tail estado)) (nucleo-tail estado)) ;agrega un cuadrado a la vibora
+       (nucleo-direccion estado)
+       (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (make-posn
+        (random-acotado 10 (- ANCHO 10))            ;nueva posiciones de comida
+        (round-to-mutiplodiez (random-acotado 110 (- ALTO 10))) )
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (nucleo-timer estado)
+       (nucleo-highscores estado)
+       ) ]
+
+
+
+
+
+
+
+
+
+
+
+    ))
+
+
+
+
+
+
 
 
   ;contiene-amigo?: string list -> boolean
@@ -532,8 +717,6 @@ Returns the last element of the list.
 
 
 
-;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
-;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
 
 
 
@@ -1399,6 +1582,11 @@ Returns the last element of the list.
 ;ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=ON-MOUSE=
 )
 
+(define (close estado)
+   (equal? (nucleo-instancia estado) 2))
+
+(define (creditos e)
+  CREDITOS)
 ;=========================COMENTARIO=========================
 
 (big-bang INICIAL 
@@ -1407,10 +1595,14 @@ Returns the last element of the list.
           [on-key key-handler]
           [on-mouse mouse-handler]
           [stop-when close]
-          [close-on-stop 2]
+          [close-on-stop 3]
           [display-mode (nucleo-modopantalla)]
           [name (nucleo-gname INICIAL)]
 )
   
+(printf "gracias por jugar
 
+
+
+")
     

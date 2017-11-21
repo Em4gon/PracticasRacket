@@ -35,6 +35,8 @@ CONSTANTES
 (define FOODINICIAL (make-posn (/ ANCHO 2) (+ (/ ALTO 2) 50)))
 (define TAMAÑO-TEXTO 30)
 
+(define instrucciones (rectangle 800 600 "solid" "pink"))
+
 ;(define LISTAHIGHSCORES (list
 
 ;=======================================================================================IMAGENES CONSTANTES
@@ -273,7 +275,7 @@ ESTADO: ESTRUCTURA
 ;------------------------------------------------------------
 
 ;RECIBE UNA LISTA, DEVUELVE LOS PRIMEROS 5 ELEMENTOS
-(define (TOP5 elemento)
+(define (top-5 elemento)
   (quicksort
    (list (list-ref elemento 0)
           (list-ref elemento 1)
@@ -502,11 +504,11 @@ Example:
   ;------------------------------------
 (define (lista-puntaje-img estado)
  (list
-  (text (string-append "Primero:......." (number->string (list-ref (top-5 (nucleo-highscore estado)) 0))) 25 "white")
-  (text (string-append "Segundo:......." (number->string (list-ref (top-5 (nucleo-highscore estado)) 1))) 25 "white")
-  (text (string-append "Tercero:......." (number->string (list-ref (top-5 (nucleo-highscore estado)) 2))) 25 "white")
-  (text (string-append "Cuarto:........" (number->string (list-ref (top-5 (nucleo-highscore estado)) 3))) 25 "white")
-  (text (string-append "Quinto:........" (number->string (list-ref (top-5 (nucleo-highscore estado)) 4))) 25 "white")
+  (text (string-append "Primero:......." (number->string (list-ref (top-5 (nucleo-highscores estado)) 0))) 25 "white")
+  (text (string-append "Segundo:......." (number->string (list-ref (top-5 (nucleo-highscores estado)) 1))) 25 "white")
+  (text (string-append "Tercero:......." (number->string (list-ref (top-5 (nucleo-highscores estado)) 2))) 25 "white")
+  (text (string-append "Cuarto:........" (number->string (list-ref (top-5 (nucleo-highscores estado)) 3))) 25 "white")
+  (text (string-append "Quinto:........" (number->string (list-ref (top-5 (nucleo-highscores estado)) 4))) 25 "white")
   (rectangle 400 600 "solid" "black")))
 
 (define (lista-puntaje-posn estado)
@@ -628,7 +630,7 @@ Example:
     [(empty? (nucleo-tail estado)) #false]
     [(cons? (nucleo-tail estado)) (if (equal? (first (nucleo-tail estado)) (nucleo-snake estado))
                        #true
-                       (se-choca-con-la-cola cabeza (rest (nucleo-tail estado))))]))
+                       (se-choca-con-la-cola (rest (nucleo-tail estado))))]))
 
 
 
@@ -660,12 +662,12 @@ Example:
       (nucleo-fondo estado)
       (nucleo-gname estado)
       (nucleo-instancia estado)
-      (nucleo-selector estado)
+      (nucleo-preselector estado)
       (nucleo-stopORstart estado)
       (nucleo-vidas estado)
       (nucleo-alive estado)
       (make-posn (posn-x (nucleo-snake estado)) (- DELTA (posn-y (nucleo-snake estado))))
-      (cosn (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
+      (cons (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
       "arriba"
       (nucleo-colorchar estado)
        (nucleo-colorback estado)
@@ -686,12 +688,12 @@ Example:
       (nucleo-fondo estado)
       (nucleo-gname estado)
       (nucleo-instancia estado)
-      (nucleo-selector estado)
+      (nucleo-preselector estado)
       (nucleo-stopORstart estado)
       (nucleo-vidas estado)
       (nucleo-alive estado)
       (make-posn (posn-x (nucleo-snake estado)) (+ DELTA (posn-y (nucleo-snake estado))))
-      (cosn (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
+      (cons (nucleo-snake estado) (quitar-ultimo (nucleo-tail estado)))
       "abajo"
       (nucleo-colorchar estado)
        (nucleo-colorback estado)

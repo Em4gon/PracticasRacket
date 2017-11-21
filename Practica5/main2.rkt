@@ -296,4 +296,83 @@ Ejercicio 7. Diseñe una función multPos, que dada una lista de números, multi
 (check-expect (no-multiPos (list 3 -2 4 0 1 -5)) 12)
 (check-expect (no-multiPos (list 5)) 5)
 (check-expect (no-multiPos (list -5)) 1)
-        
+
+
+#|
+Variantes
+-suma positivos de una lista de numeros
+-suma pares de una lista de numeros
+-producto de los impares
+-suma de los multiplos de 5 de una lista
+-suma de los cuadrados de los elementos impares de una lista
+
+
+
+|#
+
+(define (multPos l)
+  (cond
+    [(empty? l) 0]
+    [(one? l) (if (positive? (first l)) (first l) 1)]
+    [
+     (and (cons? l) (not (one? l)))
+     (if (positive? (first l))
+         (* (first l) (multPos (rest l)))
+            (multPos (rest l)))]))
+
+
+
+;filter > map > foldr +
+
+(define (sumCuadPar l)
+  (cond [(empty? l) 0]
+        [(cons? l)
+         (if (even? (first l))
+             (+ (sqr (first l)) (sumCuadPar (rest l)))
+             (sumCuadPar (rest l)))]))
+
+;filter gordas (elimina las flacas) > map areas (calcula el area > (
+
+#;
+(
+
+map suma-lista aplico la funcion suma a los elementos de la lista
+filter positive? elimino los negativos
+empty
+
+ 
+listanum es
+         -empty ('())
+         -(cons num listanum)
+
+;listalistanum es
+         -empty
+         -(cons listanum listalistanum)
+
+         ejemplos
+    algun-pos (list empty (list 123))
+    algun-pos (list 5) (list -1 -22)
+    algun-pos empty
+    algun-pos (list empty)
+    lista todos sumas positivas
+    lista todos sumas negativas
+         
+
+ )
+;forma a
+(define
+  (algun-pos ll)
+  (cond
+    [(empty? ll) #false]
+    [(cons? ll)
+     (if (positive? (suma-list (first ll)))
+         #true
+         (algun-pos (rest ll)))]))
+
+
+;forma b
+
+(define (mf-algun-pos ll)
+  (not (empty?
+        (filter positive?
+                (map suma-lista ll)))))

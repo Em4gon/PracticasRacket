@@ -170,6 +170,36 @@ ESTADO: ESTRUCTURA
    0 ;timer
    empty ;highscores
    ))
+
+
+(define snake-INICIAL
+  (make-nucleo
+   3 ;juego nucleo
+   menu ;fondo del menu
+   "Snake - Emanuel Gonzalez" ;gname
+   4 ;instancia de menu
+   "run-snake" ;- preselector
+   "stop" ;empieza detenido
+   3 ;vidas ;cantidad de vidas disponibles
+   #true ;alive
+   (make-posn 100 400) ;snake head
+   (list (make-posn 90 400) (make-posn 80 400)) ;cola
+   "quieto" ;direccion
+   0 ;color personaje
+   0 ;color fondo
+   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
+   0
+   400 ;rango
+   0.02 ;speed 
+   #false ;fantasta
+   'normal ;modo pantalla
+   0 ;timer
+   (list 0 0 0 0 0) ;highscores
+   ))
+
+;(nucleo-snake snake-INICIAL)
+;(nucleo-tail snake-INICIAL)
+  
 ;INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL
 
 
@@ -239,7 +269,19 @@ ESTADO: ESTRUCTURA
 ;toma un elemento y lo agrega en la ultima posicion de una lista
 (define (agregar-elemento-ultimo elemento lista) (reverse (cons elemento (reverse lista))))
 
-(check-expect (agregar-elemento-ultimo "e" testlist) (list "a" "b" "c" "d" "e"))
+
+;------------------------------------------------------------
+
+;RECIBE UNA LISTA, DEVUELVE LOS PRIMEROS 5 ELEMENTOS
+(define (TOP5 elemento)
+  (quicksort
+   (list (list-ref elemento 0)
+          (list-ref elemento 1)
+          (list-ref elemento 2)
+          (list-ref elemento 3)
+          (list-ref elemento 4)
+          ) >))
+
 
 ;-------------------------------------------------------------------------------
 ;recibe un numero, si es mayor o igual que dos le permite restar uno, sino devuelve 1
@@ -273,41 +315,9 @@ ESTADO: ESTRUCTURA
 
 
 
-;game manager
-;cambia el estado del juego segun lo que pase
-#;(
-(define (world-manager estado)
-
-  (cond
-    [                                                                                      ;
-     (and (= 1 (nucleo-juego estado)) (= 0 (nucleo-instancia estado)))                     ;
-     (make-nucleo                                                                          ;
-      (nucleo-juego estado)                                                                ;                                                           ;
-      (nucleo-fondo estado)                                                                ;DENTRO 
-      (nucleo-gname estado)                                                                ;DEL
-      (nucleo-instancia estado)                                                            ;SNAKE         CREO QUE NO SE VA A USAR......
-      (nucleo-preselector estado)                                                          ;
-      (nucleo-stopORstart "stop")                                                          ;
-      (nucleo-vidas 3)                                                                     ;
-      (nucleo-alive #true)                                                                 ;        
-      (nucleo-snake SNAKEINICIAL)                                                          ;
-      (nucleo-tail TAILINICIAL)                                                            ;
-      (nucleo-direccion "quieto")                                                          ;
-      (nucleo-preselector e)                                                               ;
-      (nucleo-colorchar estado)                                                            ;
-      (nucleo-colorback estado)                                                            ;
-      (nucleo-food FOODINICIAL)                                                            ;
-      (nucleo-score estado)                                                                ;
-      (nucleo-rango estado)                                                             ;
-      (nucleo-speed estado)                                                                ;
-      (nucleo-fantasma estado)                                                             ;
-      (nucleo-modopantalla estado)                                                         ;
-      (nucleo-timer estado)                                                                ;
-      (nucleo-highscores estado))                                                          ;
-     ]                                                                                     ; 
 
 
-)))
+
 ;=========================COMENTARIO=========================
 #;(
 ;TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW
@@ -477,6 +487,94 @@ Example:
 
 
 
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+;post-deth: estado -> imagen
+
+;texto-post-deth
+;estado-> string
+
+(define (texto-post-deth1 estado)
+  (string-append "¡Lograste " (number->string (nucleo-score estado))  " puntos!"))
+
+
+
+  ;------------------------------------
+(define (lista-puntaje-img estado)
+ (list
+  (text (string-append "Primero:......." (number->string (list-ref (top-5 (nucleo-highscore estado)) 0))) 25 "white")
+  (text (string-append "Segundo:......." (number->string (list-ref (top-5 (nucleo-highscore estado)) 1))) 25 "white")
+  (text (string-append "Tercero:......." (number->string (list-ref (top-5 (nucleo-highscore estado)) 2))) 25 "white")
+  (text (string-append "Cuarto:........" (number->string (list-ref (top-5 (nucleo-highscore estado)) 3))) 25 "white")
+  (text (string-append "Quinto:........" (number->string (list-ref (top-5 (nucleo-highscore estado)) 4))) 25 "white")
+  (rectangle 400 600 "solid" "black")))
+
+(define (lista-puntaje-posn estado)
+  (list
+   (make-posn 400 400)
+   (make-posn 400 425)
+   (make-posn 400 450)
+   (make-posn 400 475)
+   (make-posn 400 500)
+   (make-posn 400 300)))
+
+  (define (ventanita-highscores estado)
+    (place-images
+     (lista-puntaje-img estado)
+     (lista-puntaje-posn estado)
+     vacio))
+;---------------------------------
+
+
+
+
+(define (post-deth estado)
+  (place-images
+   
+   (list
+    (text "Has muerto, hace click para volver al menu,
+ o toca la barra espaciadora para jugar de nuevo" 70 "white")
+
+    (text (texto-post-deth1 estado) 70 "yellow")
+    )
+
+   (list
+    (make-posn 400 200)
+    (make-posn 400 300))
+
+    (ventanita-highscores estado))) 
+    
+   
+
+
+
+
+
+
+
+
+
+
+
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;=========================COMENTARIO=========================
 #;(
 ;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
@@ -484,7 +582,72 @@ Example:
 ;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
 )
 ;=========================COMENTARIO=========================
+;AUXULIARES
 
+   ;en caso de que choque la pared o que choque su cola cambia la instancia
+    #;( basado en esta funcion hecha en clase
+
+       
+  ;contiene-amigo?: string list -> boolean
+;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
+#|(define (contiene-amigo1? nombre-amigo lista) (cond [(empty? lista) #false]
+                                                   [(cons? lista) (if (string=? (amigo-nombre (first lista)) nombre-amigo)
+                                                                      #true
+(contiene-amigo1? nombre-amigo (rest lista)))]))
+|#
+
+(define (contiene-amigo-lista? nombre-amigo lista) (cond 
+                                                     [(empty? lista) #false]
+                                                     [(cons? lista) (if (equal? (first lista) nombre-amigo)
+                                                                        #true
+(contiene-amigo-lista? nombre-amigo (rest lista)))]))
+
+
+;-----------------
+)
+
+
+    #|
+(define (se-choca-con-la-cola cabeza lista)
+  (cond 
+    [(empty? lista) #false]
+    [(cons? lista) (if (equal? (first lista) cabeza)
+                       #true
+                       (se-choca-con-la-cola cabeza (rest lista)))]))
+
+
+|#
+
+
+
+;=========================================AUXILIARES
+
+ 
+(define (se-choca-con-la-cola estado)
+  (cond 
+    [(empty? (nucleo-tail estado)) #false]
+    [(cons? (nucleo-tail estado)) (if (equal? (first (nucleo-tail estado)) (nucleo-snake estado))
+                       #true
+                       (se-choca-con-la-cola cabeza (rest (nucleo-tail estado))))]))
+
+
+
+    
+(define (se-choca-con-la-pared estado)
+  (if (or (< (posn-x (nucleo-snake estado)) 0) 
+          (< (posn-y (nucleo-snake estado)) MINIMO-PARED) 
+          (> (posn-x (nucleo-snake estado)) (- ANCHO 10)) 
+          (> (posn-y (nucleo-snake estado)) MAXIMO-PARED))
+#true #false))
+
+
+
+
+
+
+
+
+;---------------------------------------------
 
 
 (define (tick-tock estado)
@@ -630,57 +793,9 @@ Example:
        ) ]
 
 
-    ;en caso de que choque la pared o que choque su cola cambia la instancia
-    #;( basado en esta funcion hecha en clase
+ 
 
-       
-  ;contiene-amigo?: string list -> boolean
-;contiene-amigo? recibe un string y una lista de estructuras y verifica que se encuentre el nombre(string) dentro de la lista
-#|(define (contiene-amigo1? nombre-amigo lista) (cond [(empty? lista) #false]
-                                                   [(cons? lista) (if (string=? (amigo-nombre (first lista)) nombre-amigo)
-                                                                      #true
-(contiene-amigo1? nombre-amigo (rest lista)))]))
-|#
-
-(define (contiene-amigo-lista? nombre-amigo lista) (cond 
-                                                     [(empty? lista) #false]
-                                                     [(cons? lista) (if (equal? (first lista) nombre-amigo)
-                                                                        #true
-(contiene-amigo-lista? nombre-amigo (rest lista)))]))
-
-
-;-----------------
-)
-
-
-    #|
-(define (se-choca-con-la-cola cabeza lista)
-  (cond 
-    [(empty? lista) #false]
-    [(cons? lista) (if (equal? (first lista) cabeza)
-                       #true
-                       (se-choca-con-la-cola cabeza (rest lista)))]))
-
-
-|#
-
-(define (se-choca-con-la-cola estado)
-  (cond 
-    [(empty? (nucleo-tail estado)) #false]
-    [(cons? (nucleo-tail estado)) (if (equal? (first (nucleo-tail estado)) (nucleo-snake estado))
-                       #true
-                       (se-choca-con-la-cola cabeza (rest (nucleo-tail estado))))]))
-
-
-
-    
-(define (se-choca-con-la-pared estado)
-  (if (or (< (posn-x (nucleo-snake estado)) 0) 
-          (< (posn-y (nucleo-snake estado)) MINIMO-PARED) 
-          (> (posn-x (nucleo-snake estado)) (- ANCHO 10)) 
-          (> (posn-y (nucleo-snake estado)) MAXIMO-PARED))
-#true #false))
-
+;CUADO SE CHOCA CON LA PARED O CON SU COLA
     [(or (se-choca-con-la-cola estado) (se-choca-con-la-pared estado))
      (make-nucleo
        (nucleo-juego estado)
@@ -691,12 +806,12 @@ Example:
        (nucleo-stopORstart estado)
        (- (nucleo-vidas estado) 1)
        (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
+       (nucleo-snake snake-INICIAL)
+       (nucleo-tail snake-INICIAL)
+       "quieto"
        (nucleo-colorchar estado)
        (nucleo-colorback estado)
-       (nucleo-food estado)
+       (nucleo-food snake-INICIAL)
        (nucleo-score estado)
        (nucleo-rango estado)
        (nucleo-speed estado)
@@ -751,6 +866,12 @@ Sorts the items on l, in an order according to comp.
 
 
     
+   
+
+
+
+
+    
     [else estado]
     ))
 
@@ -759,56 +880,7 @@ Sorts the items on l, in an order according to comp.
 
 
 
-;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
-;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
-;(post-deth e)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
-;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
 
 ;PUEDO SACAR EL ULTIMO ELEMENTO DE LA LISTA CON FILTER1111111111111111111
 
@@ -1097,10 +1169,10 @@ Returns the last element of the list.
       4
       "run-snake"
       "stop"
-      (nucleo-vidas estado)
+      3
       #true
       (make-posn 100 400)
-      (list (make-posn 90 400) (make-posn 80-400))
+      (list (make-posn 90 400) (make-posn 80 400))
       "quieto"
       (nucleo-colorchar estado)
       (nucleo-colorback estado)
@@ -1111,7 +1183,7 @@ Returns the last element of the list.
       (nucleo-fantasma estado)
       (nucleo-modopantalla estado)
       (nucleo-timer estado)
-      (nucleo-highscore stado))
+      (nucleo-highscores estado))
        
       ]
 ;----------------------------------selectores
@@ -1636,7 +1708,7 @@ Returns the last element of the list.
        (nucleo-fantasma estado)
        (nucleo-modopantalla estado)
        (nucleo-timer estado)
-       empty)]
+       (list 0 0 0 0 0))]
 
 
       ;-----------------------------------------       ;BOTON RESET-OPCIONES
@@ -1714,6 +1786,40 @@ Returns the last element of the list.
        (nucleo-timer estado)
        (nucleo-highscores estado)
        )]
+
+;------------------------click en post-deth scene
+
+      [(equal? (nucleo-instancia estado) 5)
+       (make-nucleo
+       0
+       (nucleo-fondo estado)
+       "Nucleo - Emanuel Gonzalez"
+       0
+       (nucleo-selector estado)
+       (nucleo-stopORstart estado)
+       (nucleo-vidas estado)
+       (nucleo-alive estado)
+       (nucleo-snake estado)
+       (nucleo-tail estado)
+       (nucleo-direccion estado)
+       (nucleo-colorchar estado)
+       (nucleo-colorback estado)
+       (nucleo-food estado)
+       (nucleo-score estado)
+       (nucleo-rango estado)
+       (nucleo-speed estado)
+       (nucleo-fantasma estado)
+       (nucleo-modopantalla estado)
+       (nucleo-timer estado)
+       (nucleo-highscores estado)
+       )]
+
+
+
+
+
+
+      
 ;---------------------------------------------------
       [else estado]
     

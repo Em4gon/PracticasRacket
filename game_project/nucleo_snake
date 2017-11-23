@@ -1154,23 +1154,21 @@ Haga click en cualquier lado para volver al menu" 70 "white")
       (modificar-direccion
       (modificar-tail
        (modificar-snake estado
-                        (make-posn (posn-x (nucleo-snake estado)) (- (posn-y (nucleo-snake estado)) DELTA)))
-       (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
-      "arriba")
-     
-       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))) ]
-
+                        (make-posn (posn-x (nucleo-snake estado))
+                                   (- (posn-y (nucleo-snake estado)) DELTA)))
+       (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado)))) "arriba")
+      (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))) ]
+    
     
 
     [(equal? "abajo" (nucleo-direccion estado))
      (modificar-timer (modificar-direccion
-                       (modificar-tail (modificar-snake estado (make-posn (posn-x (nucleo-snake estado)) (+ DELTA (posn-y (nucleo-snake estado))))) 
-                                       
+                       (modificar-tail (modificar-snake estado (make-posn
+                                                                (posn-x (nucleo-snake estado))
+                                                                (+ DELTA (posn-y (nucleo-snake estado))))) 
                                        (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
                        "abajo")
-                      
                       (- (nucleo-timer estado) (* 1 (nucleo-speed estado))))
-       
      ]
 
 
@@ -1204,17 +1202,17 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
     [(equal? "derecha" (nucleo-direccion estado))
-     (modificar-timer 
-      (modificar-direccion (modificar-tail
-                            (modificar-snake
-                             estado
-                             (make-posn (+ DELTA (posn-x (nucleo-snake estado))) (posn-y (nucleo-snake estado))))
-                            (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
-                           "derecha")
-      
-      (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
-       )]
- 
+     (modificar-timer  (modificar-direccion (modificar-tail
+                                             (modificar-snake
+                                              estado
+                                              (make-posn
+                                               (+ DELTA (posn-x (nucleo-snake estado)))
+                                               (posn-y (nucleo-snake estado))))
+                                             (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
+                                            "derecha")
+                       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
+                       )]
+    
     [else estado]
     ))
 
@@ -1517,7 +1515,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
   (cond
 
     [(equal? (nucleo-instancia estado) 5)  ;------------------------click en post-deth scene
-       (modificar-juego (modificar-instancia estado 0) 0)]
+      (modificar-vidas (modificar-juego (modificar-instancia estado 0) 0) 3)]
 
     
 ;----------------------------------boton play del menu
@@ -1779,3 +1777,5 @@ por jugar
 
 ")
      
+;(define (mitad2p a b) ;sabiendo que a es menor que b
+  ;(+ a (/ (- b a) 2)))

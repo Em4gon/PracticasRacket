@@ -1,4 +1,4 @@
-;----------------------------------
+;---------------------------------- El codigo empieza en la lina 555
 (define-struct
   nucleo
   [juego ;number number que juego es
@@ -551,14 +551,9 @@
        valor-highscores
        ))
 
+ ;=========================COMENTARIO=========================                                CONSTANTES
 
- ;=========================COMENTARIO=========================
-#;(
 
-CONSTANTES
-   
-)
-;=========================COMENTARIO=========================
 (define ALTO 600)
 (define ANCHO 800)
 (define COLORBOTONPLAY1 "red")
@@ -586,13 +581,16 @@ CONSTANTES
 (define SNAKEINICIAL (make-posn 100 200))
 
 
+(define CAMBIOVELOCIDAD 0.002)
+(define (AUMENTAR-VELOCIDAD num) (- num CAMBIOVELOCIDAD))
+(define (DECREMENTAR-VELOCIDAD num) (+ num CAMBIOVELOCIDAD))
 
 
 (define FOODINICIAL (make-posn (/ ANCHO 2) (+ (/ ALTO 2) 50)))
 (define TAMAÑO-TEXTO 30)
 
 
-;(define LISTAHIGHSCORES (list
+(define LISTAHIGHSCORES (list 0 0 0 0 0))
 
 ;=======================================================================================IMAGENES CONSTANTES
 ;funcion auxiliar poner-texto: string color color -> img
@@ -600,7 +598,41 @@ CONSTANTES
 (define (poner-texto string colortxt colorfondo )
   (place-image/align (text string 70 colortxt) (/ ANCHO 4) 50 "center" "center" (rectangle (/ ANCHO 2) 100 "solid" colorfondo)))
 
+(define COLORFONDO "yellow")
 
+(define BOTON-HIGHSCORE (poner-texto "Puntajes" "white" "red"))
+(define BOTON-INSTRUCCIONES (poner-texto "Instrucciones" "white" "green"))
+(define BOTON-SALIR (poner-texto "Salir" "white" "black"))
+
+
+(define (boton-jugar estado)
+  (poner-texto (nucleo-preselector estado) "white" "blue"))
+
+(define (menu estado)
+  (place-images
+   (list (boton-jugar estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+         BOTON-HIGHSCORE
+         BOTON-0-0-1
+         BOTON-INSTRUCCIONES
+         BOTON-SALIR
+    )
+   (list (make-posn 400 50)
+         (make-posn 150 50)
+         (make-posn 650 50)
+         (make-posn 400 175)
+         (make-posn 400 300)
+         (make-posn 400 425)
+         (make-posn 400 550)
+    )
+   (rectangle 800 600 "solid" COLORFONDO)))
+
+
+
+
+
+;--------------------------------------------------------------------
 ;CREDITOS
 (define CREDITOS (place-images
    (list (circle 50 "solid" "blue")
@@ -610,16 +642,7 @@ CONSTANTES
    escena))
 
 
-;MENU
-(define (menu estado)
-  (place-images
-   (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
-   (list (make-posn (/ ANCHO 2) 50)
-         (make-posn (/ ANCHO 2) (/ ALTO 2))
-         (make-posn (/ ANCHO 2) (- ALTO 50))
-         )
-   vacio
-   ))
+
 
 ;OPCIONES
 (define (opciones estado)
@@ -642,44 +665,12 @@ CONSTANTES
 (define BOTON-0-0-1 (poner-texto "Opciones" "black" "yellow"))
 
 (define BOTON-0-0-2 (poner-texto "Salir" "black" "red"))
-;=========================BARRA=========================
-#|;(
-
-ESTADO: ESTRUCTURA
 
 
-(make-nucleo
- (nucleo-juego e)
- (nucleo-fondo e)
- (nucleo-gname e)
- (nucleo-instancia e)
- (nucleo-preselector e)
- (nucleo-stopORstart e)
- (nucleo-vidas e)
- (nucleo-alive e)
- (nucleo-snake e)
- (nucleo-tail e)
- (nucleo-direccion e)
- (nucleo-colorchar e)
- (nucleo-colorback e)
- (nucleo-food e)
- (nucleo-score e)
- (nucleo-rango e)
- (nucleo-speed e)
-  (nucleo-fantasma e)
- (nucleo-modopantalla e)
-(nucleo-timer e)
-(nucleo-highscores e)
-)
-|#
 
-(define CAMBIOVELOCIDAD 0.002)
-(define (AUMENTAR-VELOCIDAD num) (- num CAMBIOVELOCIDAD))
-(define (DECREMENTAR-VELOCIDAD num) (+ num CAMBIOVELOCIDAD))
-;=========================COMENTARIO=========================
+;=========================COMENTARIO=========================                                         INICIAL
 
-;=========================COMENTARIO=========================
-;INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL
+
 (define INICIAL
   (make-nucleo
    0 ;juego nucleo
@@ -707,9 +698,8 @@ ESTADO: ESTRUCTURA
 
 
 (define snake-INICIAL
-  (make-nucleo
-   3 ;juego nucleo
-   menu ;fondo del menu
+  (make-nucleo    3 ;juego nucleo
+                     menu ;fondo del menu
    "Snake - Emanuel Gonzalez" ;gname
    4 ;instancia de menu
    "run-snake" ;- preselector
@@ -728,80 +718,62 @@ ESTADO: ESTRUCTURA
    #false ;fantasta
    'normal ;modo pantalla
    60 ;timer
-   (list 0 0 0 0 0) ;highscores
+   LISTAHIGHSCORES ;highscores
    ))
 
-;(nucleo-snake snake-INICIAL)
-;(nucleo-tail snake-INICIAL)
-  
-;INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL=INICIAL
+
+;=========================COMENTARIO=========================                                         AUXILIARES
 
 
 
-
-;=========================COMENTARIO=========================AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES
-#;(
-
-                            FUNCIONES AUXILIARES---------------------------------------------------------------------
-   
-)
-
-
-
-; number number -> boolean
-;puntos cercanos toma dos numeros y dicta si estos estan cerca o no, sirve para determinar si el gusano come o no la fruta dependiendo su rango
+#;( puntos-cercanos: number number -> boolean)
+;toma dos numeros y dicta si estos estan cerca o no
+;sirve para determinar si el gusano come o no la fruta dependiendo su rango
 (define (puntos-cercanos estado a b)
   (and (<= (- a b) (nucleo-rango estado)) (>= (- a b) (- (nucleo-rango estado)))))
 
 ;------------------------------------------------------------
 
-;round-to-multiplodiez
-;recibe un numero y lo redondea hacia abajo
+#;(round-to-multiplodiez: number -> number)
+;recibe un numero y lo redondea hacia abajo, para que quede un multiplo de 10
 (define (round-to-mutiplodiez number)
   (- number (modulo number 10)))
-;------------------------------------------------------------
 
-;random-acotado toma un valor al azar dentro de un intervalo inf-sup
-;number number -> number
+;------------------------------------------------------------
+#;(random-acotado: number number -> number )
+;toma un valor minimo y un maximo y devuelve un numero aleatorio entre esos dos valores
 (define (random-acotado inf sup)
          (let ( [rand (random sup)])
               (if
                (and (< rand sup) (> rand inf))
-               rand
-               (let ( [rand (random sup)])
-                  (cond
-                    [(and (< rand sup) (> rand inf)) rand]
-                    [else (random-acotado inf sup)]))
-                  ) 
- ); let
+               rand ;si esta en el intervalo, devuelve ese valor
+               (let
+                   ( [rand (random sup)])
+                 (cond
+                   [(and (< rand sup) (> rand inf)) rand]
+                   [else (random-acotado inf sup)]))
+               )  ;if 
+           ); let
   );define
 
 ;------------------------------------------------------------
-#;(
-(remove x l) ;remove x element from l list
-
-(list-ref x i) ;Extracts the x-th item from the list.
-
-(length l) ;Evaluates the number of items on a list. 
-)
-
+#;(quitar-ultimo: lista -> lista)
 ;recibe una lista y devuelve la misma lista sin su ultimo elemento
 
 (define (quitar-ultimo lista)
   (remove (list-ref lista (- (length lista) 1)) lista))
 
-
-
 ;----------------------------------
+#;(devolver-ultimo-elemento: lista -> elemento de lista)
 ;receibe una lista y devuelve su ultimo elemento (last)
 (define (devolver-ultimo-elemento lista)
  (list-ref lista (- (length lista) 1)))
 
 ;------------------------------------------------------------
 ;toma un elemento y lo agrega en la ultima posicion de una lista
-(define (agregar-elemento-ultimo elemento lista) (reverse (cons elemento (reverse lista))))
+#;(agregar-elemento-ultimo: elemento lista -> lista)
 
-;elemento lista :> lista
+;elemento elemento -> lista
 (define (agregar-a-ultimo-profe elemento lista)
   (cons
    [(empty? lista) (cons elemento empty)]
@@ -842,24 +814,9 @@ ESTADO: ESTRUCTURA
 
 
 
-
-
-;AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARESAUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES=AUXILIARES
-
-
-
-;=========================COMENTARIO=========================
-
-
-
-
-
-
-;=========================COMENTARIO=========================
+;=========================COMENTARIO=========================                                         TO-DRAW
 #;(
-;TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW
-                                            TO-DRAW
-;TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW=TO-DRAW   
+ 
                                             juego
                                             0 -> 
                                                  instancia
@@ -872,13 +829,10 @@ ESTADO: ESTRUCTURA
                                                  5 post-deth
                                             6 instrucciones
                                             7 -> 8
-                                           
-                                                 
-                                              
 
 
 graficador: estado-> imagen
-           recibe un estado y grafica una imagen                                      )
+           recibe un estado y grafica una imagen   )
 ;=========================COMENTARIO=========================
 (define instrucciones-snake
   (place-image (text "El objetivo del juego
@@ -905,7 +859,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
     [(equal? (nucleo-preselector estado) "run-snake")
      (place-image instrucciones-snake 400 300 vacio) ]
     [(equal? (nucleo-preselector estado) "juego-2")
-    (place-image instrucciones-juego-2 400 300 (nucleo-fondo estado)) ]))
+    (place-image instrucciones-juego-2 400 300 vacio) ]))
 
 
 
@@ -918,56 +872,32 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
     
     [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 1))
-     (opciones estado)
-     ]
+     (opciones estado)]
 
     
     [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 2))
-     creditos
-     ]                                                          ; fin
+     creditos ]                                                          ; fin
 
-   ; []
 
     [(and (= (nucleo-juego estado) 3) (= (nucleo-instancia estado) 4))    ;dentro del snake, vivo
-     (snake estado)
-     ]
+     (snake estado)]
 
    
     [(and (= (nucleo-juego estado) 3) (= (nucleo-instancia estado) 5))    ;dentro del snake, muerto
-     (post-deth estado)
-     ]
+     (post-deth estado)]
 
     
     [(= (nucleo-juego estado) 6)    ;instrucciones
-     (instrucciones estado)
-     ]
+     (instrucciones estado)]
 
     [(= (nucleo-juego estado) 7)    ;highscores
-     (ventanita-highscores estado)
-     ]
+     (ventanita-highscores estado)]
 
     [else (menu estado)]
-    
-))
+    ))
 
 ;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
 ;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
-;snake recibe el estado de el graficador y empieza a correr el snake
-
-
-
-
-
-
-
-     
-
-#|((define (lista-snake estado)
-  (list (nucleo-snake estado) (nucleo-tail estado)))
-
-(define (armar-snake estado)
-  (place-images
-   |#
 
 
 
@@ -1028,13 +958,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 ;------------------------------
 
-#;(define (se-choca-con-la-cola estado)
-  (cond 
-    [(empty? (nucleo-tail estado)) #false]
-    [(cons? (nucleo-tail estado)) 
-     (if (equal? (first (nucleo-tail estado)) (nucleo-snake estado))
-                       #true
-                      (se-choca-con-la-cola (rest (nucleo-tail estado)) ))]))
 
 (define (se-choca-con-la-cola listacola posicioncabeza)
   (cond 
@@ -1054,10 +977,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 ;----------------------------------------
-
-
-
-
 
 
 ;se llama a graficar esta funcion
@@ -1135,32 +1054,11 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
     (ventanita-highscores estado))) 
     
-   
-
-
-
-
-
-
-
-
 
 
 
 ;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
 ;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1173,58 +1071,14 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 ;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
 )
 ;=========================COMENTARIO=========================
-;AUXULIARES
-
-
-
-
-
-;=========================================AUXILIARES
-
-
-
-
-
-
-
-
-
-
-;---------------------------------------------
 
 
 (define (tick-tock estado)
   (cond
     [(equal? "quieto" (nucleo-direccion estado))
      (modificar-timer (modificar-tail (modificar-snake estado SNAKEINICIAL) (list (make-posn 90 200) (make-posn 80 200))) (nucleo-timer snake-INICIAL))
-
      
-     #;(make-nucleo                                                        ;origingal
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       SNAKEINICIAL
-       (list (make-posn 90 200) (make-posn 80 200))
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer snake-INICIAL)
-       (nucleo-highscores estado)
-       )
-
-
-     ]
+       ]
 
     [(= (nucleo-instancia estado) 5)
      (modificar-highscores estado (top-5 (cons (nucleo-score estado) (nucleo-highscores estado)) ))]
@@ -1304,35 +1158,19 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
       "arriba")
      
-       (- (nucleo-timer estado) (* 1 (nucleo-speed estado))))
-     ]
+       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))) ]
+
+    
 
     [(equal? "abajo" (nucleo-direccion estado))
-     (make-nucleo
-      (nucleo-juego estado)
-      (nucleo-fondo estado)
-      (nucleo-gname estado)
-      (nucleo-instancia estado)
-      (nucleo-preselector estado)
-      (nucleo-stopORstart estado)
-      (nucleo-vidas estado)
-      (nucleo-alive estado)
-      
-      (make-posn (posn-x (nucleo-snake estado)) (+ DELTA (posn-y (nucleo-snake estado))))
-      
-      (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado)))
-      "abajo"
-      (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
-       (nucleo-highscores estado)
-       )
+     (modificar-timer (modificar-direccion
+                       (modificar-tail (modificar-snake estado (make-posn (posn-x (nucleo-snake estado)) (+ DELTA (posn-y (nucleo-snake estado))))) 
+                                       
+                                       (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
+                       "abajo")
+                      
+                      (- (nucleo-timer estado) (* 1 (nucleo-speed estado))))
+       
      ]
 
 
@@ -1366,54 +1204,21 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
     [(equal? "derecha" (nucleo-direccion estado))
-     (make-nucleo
-      (nucleo-juego estado)
-      (nucleo-fondo estado)
-      (nucleo-gname estado)
-      (nucleo-instancia estado)
-      (nucleo-preselector estado)
-      (nucleo-stopORstart estado)
-      (nucleo-vidas estado)
-      (nucleo-alive estado)
-      (make-posn (+ DELTA (posn-x (nucleo-snake estado))) (posn-y (nucleo-snake estado)))
-      (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado)))
-      "derecha"
-      (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
-       (nucleo-highscores estado)
-       )
-     ]
-
-
-
-    
+     (modificar-timer 
+      (modificar-direccion (modificar-tail
+                            (modificar-snake
+                             estado
+                             (make-posn (+ DELTA (posn-x (nucleo-snake estado))) (posn-y (nucleo-snake estado))))
+                            (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
+                           "derecha")
+      
+      (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
+       )]
+ 
     [else estado]
     ))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
 
 
 
@@ -1444,107 +1249,9 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 (define (key-handler estado tecla)
-  ( cond
-     [(or (key=? tecla "left") (key=? tecla "a"))
-      (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       "izquierda"
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-     
-    [(or (key=? tecla "right") (key=? tecla "d"))
-     (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       "derecha"
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-    
-    [(or (key=? tecla "up") (key=? tecla "w"))    (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       "arriba"
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+     (cond
 
-    
-    [(or (key=? tecla "down") (key=? tecla "s"))  (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       "abajo"
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-
-    [(key=? tecla " ")
+       [(key=? tecla " ")
      (make-nucleo
        3
        (nucleo-fondo estado)
@@ -1567,8 +1274,80 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        (nucleo-modopantalla estado)
        60
        (nucleo-highscores estado)
-       )] 
-    [else estado]))
+       )]
+       
+       [(equal? (nucleo-direccion estado) "derecha") (cond
+    
+                                                       [(or (key=? tecla "up") (key=? tecla "w"))
+                                                        (modificar-direccion estado 
+                                                                             "arriba")]
+          
+          
+                                                       [(or (key=? tecla "down") (key=? tecla "s"))
+                                                        (modificar-direccion estado 
+                                                                             "abajo")]
+                                                       [else estado]
+                                                       )
+
+                                                     ]
+
+       [(equal? (nucleo-direccion estado) "izquierda") (cond
+                                                         [(or (key=? tecla "up") (key=? tecla "w"))
+                                                          (modificar-direccion estado 
+                                                                               "arriba")]
+        
+        
+                                                         [(or (key=? tecla "down") (key=? tecla "s"))
+                                                          (modificar-direccion estado 
+                                                                               "abajo")]
+                                                         [else estado])]
+
+       [(equal? (nucleo-direccion estado) "arriba") (cond
+                                                      [(or (key=? tecla "left") (key=? tecla "a"))
+                                                       (modificar-direccion estado 
+                                                                            "izquierda")]
+                                                      
+                                                      [(or (key=? tecla "right") (key=? tecla "d"))
+                                                       
+                                                       (modificar-direccion estado 
+                                                                            "derecha")]
+                                                      [else estado])]
+       
+       [(equal? (nucleo-direccion estado) "abajo") (cond
+                                                     [(or (key=? tecla "left") (key=? tecla "a"))
+                                                      (modificar-direccion estado 
+                                                                           "izquierda")]
+                                                     
+                                                     [(or (key=? tecla "right") (key=? tecla "d"))
+                                                      
+                                                      (modificar-direccion estado 
+                                                                           "derecha")]
+                                                     [else estado])]
+
+
+       
+     
+    [(equal? (nucleo-direccion estado) "quieto")  (cond
+            
+                                                   [(or (key=? tecla "left") (key=? tecla "a"))
+                                                    (modificar-direccion estado 
+                                                                         "izquierda")]
+     
+                                                   [(or (key=? tecla "right") (key=? tecla "d"))
+     
+                                                    (modificar-direccion estado 
+                                                                         "derecha")]
+    
+                                                   [(or (key=? tecla "up") (key=? tecla "w"))
+                                                    (modificar-direccion estado 
+                                                                         "arriba")]
+
+    
+                                                   [(or (key=? tecla "down") (key=? tecla "s"))
+                                                    (modificar-direccion estado 
+                                                                         "abajo")]
+                                                   [else estado])]
+           [else estado  ]))
   
 
 
@@ -1588,9 +1367,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
   ;                                           LIMITES DEL MENU juego 0 instancia 0
 
   
-;limitar-area; estado number x (mouse) number number y (mouse) number number -> boolean
-  
-;recibe la instancia del estado y las posiciones del mouse, y donde debe clickear para que devuelva verdadero
+;limitar-area:
+;estado number x (mouse) number number y (mouse) number number -> boolean
+;limitar-area recibe la instancia del estado y las posiciones del mouse, y donde debe clickear para que devuelva verdadero, siendo min-x y max-x lo que acotan el eje x y min-y y max-y el eje y
+
 
   (define (limitar-area estado queinstancia x min-x max-x y min-y max-y)
   (and
@@ -1601,12 +1381,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 ;---------------------------------------------------------------------------------------------------LIMITES MENU
   
   (define (limite-boton-0-0-0 estado x y) ;boton "play"
-    (limitar-area estado 0 x 200 600 y 0 100)
-    )
+    (limitar-area estado 0 x 200 600 y 0 100))
 
   (define (limite-preselector-izq estado x y) ;PRESELECTOR IZQUIERDO
-    (limitar-area estado 0 x 100 200 y 0 100)
-    )
+    (limitar-area estado 0 x 100 200 y 0 100))
 
 
   (define (limite-preselector-der estado x y) ;PRESELECTOR DERECHO
@@ -1618,32 +1396,28 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
   
   (define (limite-boton-0-0-1 estado x y) ;boton "opciones"
-    (limitar-area estado 0 x 200 600 y (- (/ ALTO 2) 50) (+ (/ ALTO 2) 50)) 
-    )
+    (limitar-area estado 0 x 200 600 y (- (/ ALTO 2) 50) (+ (/ ALTO 2) 50))) ;250 
 
+(define (limite-boton-0-0-1-bug estado x y) ;boton "opciones"
+    (limitar-area estado 5 x 200 600 y (- (/ ALTO 2) 50) (+ (/ ALTO 2) 50)))
 
   (define (limite-boton-instrucciones estado x y) ;boton "instrucciones"
-    (limitar-area estado 0 x 200 600 y 425 525) 
-    )
+    (limitar-area estado 0 x 200 600 y 375 475))
 
   
   (define (limite-boton-0-0-2 estado x y) ;boton "salir"
-    (limitar-area estado 0 x 200 600 y (- ALTO 100) ALTO)
-    )
+    (limitar-area estado 0 x 200 600 y (- ALTO 100) ALTO))
 
 ;-----------------------------------------------------------------------------------LIMITES OPCIONES
 (define (limite-volver estado x y) ;boton "volver"                     ;BOTON VOLVER
-    (limitar-area estado 1 x 200 600 y 0 100)
-    )
+    (limitar-area estado 1 x 200 600 y 0 100))
 
 
 (define (limite-boton-VIDAS estado x y) ;boton "BOTON1-VIDAS"              ;BOTON VIDAS
-    (limitar-area estado 1 x 100 300 y 100 200)
-    )
+    (limitar-area estado 1 x 100 300 y 100 200))
 
   (define (limite-VIDAS-IZQ estado x y) ;VIDAS BOTON IZQUIERDO
-    (limitar-area estado 1 x 0 100 y 100 200)
-    )
+    (limitar-area estado 1 x 0 100 y 100 200))
 
 
   (define (limite-VIDAS-DER estado x y) ;vidas BOTON DERECHO
@@ -1652,12 +1426,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 ;-------------------------------------
 
 (define (limite-boton-SPEED estado x y) ;boton "BOTON1-SPEED"              ;BOTON SPEED
-    (limitar-area estado 1 x 500 700 y 100 200)
-    )
+    (limitar-area estado 1 x 500 700 y 100 200))
 
   (define (limite-SPEED-IZQ estado x y) 
-    (limitar-area estado 1 x 400 500 y 100 200)
-    )
+    (limitar-area estado 1 x 400 500 y 100 200))
 
 
   (define (limite-SPEED-DER estado x y) 
@@ -1667,12 +1439,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 (define (limite-boton-RANGO estado x y)                        ;BOTON RANGO CAPTURA
-    (limitar-area estado 1 x 100 300 y 200 300)
-    )
+    (limitar-area estado 1 x 100 300 y 200 300))
 
   (define (limite-RANGO-IZQ estado x y) 
-    (limitar-area estado 1 x 000 100 y 200 300)
-    )
+    (limitar-area estado 1 x 000 100 y 200 300))
 
 
   (define (limite-RANGO-DER estado x y) 
@@ -1682,12 +1452,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 (define (limite-boton-TIME estado x y)                            ;BOTON TIEMPO
-    (limitar-area estado 1 x 500 700 y 200 300)
-    )
+    (limitar-area estado 1 x 500 700 y 200 300))
 
   (define (limite-TIME-IZQ estado x y) 
-    (limitar-area estado 1 x 400 500 y 200 300)
-    )
+    (limitar-area estado 1 x 400 500 y 200 300))
 
 
   (define (limite-TIME-DER estado x y) 
@@ -1697,12 +1465,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 (define (limite-boton-COLOR-FONDO estado x y)                        ;BOTON COLOR DE FONDO
-    (limitar-area estado 1 x 100 300 y 300 400)
-    )
+    (limitar-area estado 1 x 100 300 y 300 400))
 
   (define (limite-C-FONDO-IZQ estado x y) 
-    (limitar-area estado 1 x 000 100 y 300 400)
-    )
+    (limitar-area estado 1 x 000 100 y 300 400))
 
 
   (define (limite-C-FONDO-DER estado x y) 
@@ -1712,12 +1478,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 (define (limite-boton-COLOR-PERSONAJE estado x y)                            ;BOTON COLOR DE PERSONAJE
-    (limitar-area estado 1 x 500 700 y 300 400)
-    )
+    (limitar-area estado 1 x 500 700 y 300 400))
 
   (define (limite-C-PERSONAJE-IZQ estado x y) 
-    (limitar-area estado 1 x 400 500 y 300 400)
-    )
+    (limitar-area estado 1 x 400 500 y 300 400))
 
 
   (define (limite-C-PERSONAJE-DER estado x y) 
@@ -1732,17 +1496,14 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 (define (limite-boton-RESET-OPCIONES estado x y)                        ;BOTON RESET-OPCIONES
-    (limitar-area estado 1 x 500 700 y 400 500)
-    )
+    (limitar-area estado 1 x 500 700 y 400 500))
 
 ;-----------------------------------
 (define (limite-boton-PANTALLAMOD1 estado x y)                        ;BOTON NORMAL
-  (limitar-area estado 1 x 100 300 y 500 600)
-    )
+  (limitar-area estado 1 x 100 300 y 500 600))
 
 (define (limite-boton-PANTALLAMOD2 estado x y)                        ;BOTON FULLSCREEN
-  (limitar-area estado 1 x 500 700 y 500 600)
-    )
+  (limitar-area estado 1 x 500 700 y 500 600))
 
 
 
@@ -1754,6 +1515,11 @@ Haga click en cualquier lado para volver al menu" 70 "white")
   (if
    (string=? event "button-down")
   (cond
+
+    [(equal? (nucleo-instancia estado) 5)  ;------------------------click en post-deth scene
+       (modificar-juego (modificar-instancia estado 0) 0)]
+
+    
 ;----------------------------------boton play del menu
     [(limite-boton-0-0-0 estado x y)
 
@@ -1787,553 +1553,113 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        
       ]
 ;----------------------------------selectores
-
     [(limite-preselector-izq estado x y)
-     (make-nucleo
-      (nucleo-juego estado)
-      (nucleo-fondo estado)
-      (nucleo-gname estado)
-      (nucleo-instancia estado)
+     (modificar-preselector estado
       (cond [(equal? (nucleo-preselector estado) "run-snake") "juego-2" ]
-            [(equal? (nucleo-preselector estado) "juego-2") "run-snake" ])
-      (nucleo-stopORstart estado)
-      (nucleo-vidas estado)
-      (nucleo-alive estado)
-      (nucleo-snake estado)
-      (nucleo-tail estado)
-      (nucleo-direccion estado)
-      (nucleo-colorchar estado)
-      (nucleo-colorback estado)
-      (nucleo-food estado)
-      (nucleo-score estado)
-      (nucleo-rango estado)
-      (nucleo-speed estado)
-      (nucleo-fantasma estado)
-      (nucleo-modopantalla estado)
-      (nucleo-timer estado)
-      (nucleo-highscores estado))]
+            [(equal? (nucleo-preselector estado) "juego-2") "run-snake" ]))]
 
+    
      [(limite-preselector-der estado x y)
-     (make-nucleo
-      (nucleo-juego estado)
-      (nucleo-fondo estado)
-      (nucleo-gname estado)
-      (nucleo-instancia estado)
+     (modificar-preselector estado
       (cond [(equal? (nucleo-preselector estado) "run-snake") "juego-2" ]
-            [(equal? (nucleo-preselector estado) "juego-2") "run-snake" ])
-      (nucleo-stopORstart estado)
-      (nucleo-vidas estado)
-      (nucleo-alive estado)
-      (nucleo-snake estado)
-      (nucleo-tail estado)
-      (nucleo-direccion estado)
-      (nucleo-colorchar estado)
-      (nucleo-colorback estado)
-      (nucleo-food estado)
-      (nucleo-score estado)
-      (nucleo-rango estado)
-      (nucleo-speed estado)
-      (nucleo-fantasma estado)
-      (nucleo-modopantalla estado)
-      (nucleo-timer estado)
-      (nucleo-highscores estado))]
+            [(equal? (nucleo-preselector estado) "juego-2") "run-snake" ]))]
 
 ;----------------------------------------------------highscore     
      [(limite-boton-highscore estado x y)
-      (make-nucleo
-       7
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+      (modificar-juego estado 7)]
 ;----------------------------------------------------OPCIONES
 
      [(limite-boton-0-0-1 estado x y)
-      
-      (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       1
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+      (modificar-instancia estado 1)]
 
 ;----------------------------------------------------INSTRUCCIONES
       [(limite-boton-instrucciones estado x y)
-       (make-nucleo
-        6
-        (nucleo-fondo estado)
-        (nucleo-gname estado)
-        (nucleo-instancia estado)
-        (nucleo-preselector estado)
-        (nucleo-stopORstart estado)
-        (nucleo-vidas estado)
-        (nucleo-alive estado)
-        (nucleo-snake estado)
-        (nucleo-tail estado)
-        (nucleo-direccion estado)
-        (nucleo-colorchar estado)
-        (nucleo-colorback estado)
-        (nucleo-food estado)
-        (nucleo-score estado)
-        (nucleo-rango estado)
-        (nucleo-speed estado)
-        (nucleo-fantasma estado)
-        (nucleo-modopantalla estado)
-        (nucleo-timer estado)
-        (nucleo-highscores estado)
-        )]
+       (modificar-juego estado 6)]
 
       [(= (nucleo-juego estado) 6)
-       (make-nucleo
-        0
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+       (modificar-juego estado 0)]
 
 ;----------------------------------------------------SALIDA
 
       [ (limite-boton-0-0-2 estado x y) ;boton "salir"
-       
-      
-      (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       2
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-
+        (modificar-instancia estado
+                             2)]
       ;========================================================DENTRO DEL MENU OPCIONES
 
       [(limite-volver estado x y) ;boton "volver"
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       0
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-
-      ;---------------------------------------------------------------------
+       (modificar-instancia (modificar-juego estado 0)
+       0)]
+       ;---------------------------------------------------------------------
 
       [(limite-VIDAS-IZQ estado x y) ;VIDAS BOTON IZQUIERDO
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (restar1 (nucleo-vidas estado))
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
+       (modificar-vidas estado (restar1 (nucleo-vidas estado))
        )]
 
 
 
       [(limite-VIDAS-DER estado x y) ;VIDAS BOTON DERECHO
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (+ (nucleo-vidas estado) 1)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+       (modificar-vidas estado
+       (+ (nucleo-vidas estado) 1))]
+       
 ;---------------------------------------------------------VELOCIDAD
       [(limite-SPEED-IZQ estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (DECREMENTAR-VELOCIDAD (nucleo-speed estado))
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
+       (modificar-speed estado 
+                        (DECREMENTAR-VELOCIDAD (nucleo-speed estado))
        )]
 
       [(limite-SPEED-DER estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (AUMENTAR-VELOCIDAD (nucleo-speed estado))
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-      
+       (modificar-speed estado
+                        (AUMENTAR-VELOCIDAD (nucleo-speed estado)))]
+       
       ;--------------------------------------------RANGO
        [(limite-RANGO-IZQ estado x y)
-        (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (restar1b (nucleo-rango estado))
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+        (modificar-rango estado (restar1b (nucleo-rango estado)))]
 
        [(limite-RANGO-DER estado x y)
-        (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (+ 1 (nucleo-rango estado))
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+        (modificar-rango estado
+       (+ 1 (nucleo-rango estado)))]
+       
 
        ;------------------------------------------TIME
        [(limite-TIME-IZQ estado x y)
-        (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (restar1c (nucleo-timer estado))
-       (nucleo-highscores estado)
-       )]
+        (modificar-timer estado
+                         (restar1c (nucleo-timer estado))
+                         )]
 
        [(limite-TIME-DER estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (+ 10 (nucleo-timer estado))
-       (nucleo-highscores estado)
-       )]
-
+       (modificar-timer
+        estado
+       (+ 10 (nucleo-timer estado)))]
        
        
-
-
 
         ;-----------------------------------------COLOR FONDO
-      [(limite-C-FONDO-IZQ estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (restar1b (nucleo-colorback estado))
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado))]
+       [(limite-C-FONDO-IZQ estado x y)
+        (modificar-colorback estado   (restar1b (nucleo-colorback estado)))] 
+  
 
       [(limite-C-FONDO-DER estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
+       (modificar-colorback estado
        (sumar1 (nucleo-colorback estado))
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado))]
+       )]
 
       ;--------------------------------------------COLOR PERSONAJE
       [(limite-C-PERSONAJE-IZQ estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
+       (modificar-colorchar
        (restar1b (nucleo-colorchar estado))
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
        )]
 
       [(limite-C-PERSONAJE-DER estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (sumar1 (nucleo-colorchar estado))
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+       (modificar-colorchar estado
+       (sumar1 (nucleo-colorchar estado)))
+       ]
 
      
       ;-----------------------------------------------------------
       [(limite-boton-RESET-HIGHSCORE estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (list 0 0 0 0 0))]
+       (modificar-highscores
+        estado
+        (list 0 0 0 0 0))]
 
 
       ;-----------------------------------------       ;BOTON RESET-OPCIONES
@@ -2411,35 +1737,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        (nucleo-timer estado)
        (nucleo-highscores estado)
        )]
-
-;------------------------click en post-deth scene
-
-      [(equal? (nucleo-instancia estado) 5)
-       (make-nucleo
-       0
-       (nucleo-fondo estado)
-       "Nucleo - Emanuel Gonzalez"
-       0
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
-
-
 
 
 

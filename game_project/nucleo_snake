@@ -598,7 +598,7 @@
 (define (poner-texto string colortxt colorfondo )
   (place-image/align (text string 70 colortxt) (/ ANCHO 4) 50 "center" "center" (rectangle (/ ANCHO 2) 100 "solid" colorfondo)))
 
-(define COLORFONDO "yellow")
+(define COLORFONDO "DarkSeaGreen")
 
 (define BOTON-HIGHSCORE (poner-texto "Puntajes" "white" "red"))
 (define BOTON-INSTRUCCIONES (poner-texto "Instrucciones" "white" "green"))
@@ -645,16 +645,6 @@
 
 
 ;OPCIONES
-(define (opciones estado)
-              
-  (place-images
-   (list BOTONPLAY BOTONOPCIONES BOTONSALIR)
-   (list (make-posn (/ ANCHO 2) 50)
-         (make-posn (/ ANCHO 2) (/ ALTO 2))
-         (make-posn (/ ANCHO 2) (- ALTO 50))
-         )
-   FONDOOPCIONES
-   ))
 
 (define PRESELECTORIZQ (place-image (rotate 90 (triangle 80 "solid" "red")) 50 50 (rectangle 100 100 "solid" "blue")))
 
@@ -662,11 +652,118 @@
 
 (define BOTON-0-0-0 (poner-texto "Jugar" "white" "blue"))
 
-(define BOTON-0-0-1 (poner-texto "Opciones" "black" "yellow"))
+(define BOTON-0-0-1 (poner-texto "Opciones" "black" "chocolate"))
 
 (define BOTON-0-0-2 (poner-texto "Salir" "black" "red"))
+;=========================================================================================================================== OPCIONES
 
 
+(define (poner-texto-opt string colortxt colorfondo )
+  (place-image (text string 20 colortxt) (- (/ ANCHO 4) 100) 50 (rectangle (/ (/ ANCHO 2) 2) 100 "solid" colorfondo)))
+
+(define PRESELECTOR-OPCIONES-IZQ (place-image (rotate 90 (triangle 80 "solid" "red")) 50 50 (rectangle 100 100 "solid" "blue")))
+
+(define PRESELECTOR-OPCIONES-DER (place-image (rotate -90 (triangle 80 "solid" "red")) 50 50 (rectangle 100 100 "solid" "blue")))
+
+
+
+(define (boton-vidas estado)
+  (poner-texto-opt (string-append "Vidas " (number->string (nucleo-vidas estado))) "white" "blue"))
+
+(define (boton-speed estado)
+  (poner-texto-opt (string-append "Vel " (number->string (nucleo-speed estado))) "white" "blue"))
+
+(define (boton-rango estado)
+  (poner-texto-opt (string-append "Rango " (number->string (nucleo-rango estado))) "white" "blue"))
+
+(define (boton-tiempo estado)
+  (poner-texto-opt (string-append "Tiempo " (number->string (nucleo-timer estado))) "white" "blue"))
+
+(define (boton-color-fondo estado)
+  (poner-texto-opt (string-append "Fondo " (list-ref COLORESFONDO (nucleo-colorback estado))) "white" "blue"))
+
+(define (boton-color-personaje estado)
+  (poner-texto-opt (string-append "Fondo " (list-ref COLORESPERSONAJE (nucleo-colorback estado))) "white" "blue"))
+
+(define boton-RESET-HIGHSCORE 
+  (poner-texto-opt "Resetear puntajes" "white" "red"))
+
+(define boton-RESET-OPCIONES
+  (poner-texto-opt "Resetear opciones" "white" "red"))
+
+(define PANTALLANORMAL
+  (poner-texto-opt "Pantalla normal" "white" "green"))
+
+(define FULLSCREEN
+  (poner-texto-opt "Pantalla completa" "white" "green"))
+
+(define (opciones estado)
+  (place-images
+   (list (boton-vidas estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+         
+         (boton-speed estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+
+         (boton-rango estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+
+         (boton-tiempo estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+
+         (boton-color-fondo estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+
+         (boton-color-personaje estado)
+         PRESELECTORIZQ
+         PRESELECTORDER
+
+         boton-RESET-HIGHSCORE
+
+         boton-RESET-OPCIONES
+
+         PANTALLANORMAL
+
+         FULLSCREEN
+    )
+   (list (make-posn 200 150)
+         (make-posn 50 150)
+         (make-posn 350 150)
+         
+         (make-posn 600 150)
+         (make-posn 450 150)   ;-150 a la x del primero , y es la misma
+         (make-posn 750 150)
+         
+         (make-posn 200 250)
+         (make-posn 50 250)       ;rango
+          (make-posn 350 250)
+
+          (make-posn 600 250)
+         (make-posn 450 250)   ;tiempo
+         (make-posn 750 250)
+
+         (make-posn 200 350)
+         (make-posn 50 350)       ;color-fondo
+          (make-posn 350 350)
+
+          (make-posn 600 350)
+         (make-posn 450 350)   ;color-personaje
+         (make-posn 750 350)
+
+         (make-posn 200 450) ;reset-highscore
+
+         (make-posn 600 450) ;reset-opciones
+
+         (make-posn 200 550) ;p normal
+
+         (make-posn 600 550);p completa
+    )
+  (place-image (poner-texto "Volver" "white" COLORFONDO) 400 50 (rectangle 800 600 "solid" COLORFONDO))))
 
 ;=========================COMENTARIO=========================                                         INICIAL
 
@@ -802,9 +899,8 @@
 (define (restar1c num) (if (>= num 20) (- num 10) 10))
 ;--------------------------------------------------------------------------------
 
-(define ALEATORIO (make-color (random 255) (random 255) (random 255)))
 
-(define COLORESPERSONAJE (list "black"   "white" ALEATORIO "red" "blue" "green" "yellow"))
+(define COLORESPERSONAJE (list "black" "white" "pink" "red" "blue" "green" "yellow"))
 (define COLORESFONDO (list "GhostWhite" "DeepSkyBlue" "white" "Salmon" "DarkGreen" "Violet" "LightSlateGray"))
 (define n 1)
 ;(define (lista-izq l) (list-ref (let (restar1 n)) COLORESPERSONAJE)))   
@@ -814,7 +910,7 @@
 
 
 
-;=========================COMENTARIO=========================                                         TO-DRAW
+;=========================COMENTARIO=========================                                         =TO-DRAW=
 #;(
  
                                             juego
@@ -1042,14 +1138,18 @@ Haga click en cualquier lado para volver al menu" 70 "white")
   (place-images
    
    (list
-    (text "Has muerto, hace click para volver al menu,
- o toca la barra espaciadora para jugar de nuevo" 70 "white")
+    (text
+   "Has muerto, clickea
+    en cualquier lado para
+    volver al menu, o toca
+    la barra espaciadora
+    para jugar de nuevo" 30 "white")
 
     (text (texto-post-deth1 estado) 20 "yellow")
     )
 
    (list
-    (make-posn 400 200)
+    (make-posn 400 100)
     (make-posn 400 300))
 
     (ventanita-highscores estado))) 
@@ -1146,7 +1246,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        (nucleo-snake snake-INICIAL))
       (list (make-posn 90 200) (make-posn 80 200)))
      "quieto")
-     ]
+    ]
 
 
     [(equal? "arriba" (nucleo-direccion estado))
@@ -1157,7 +1257,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                         (make-posn (posn-x (nucleo-snake estado))
                                    (- (posn-y (nucleo-snake estado)) DELTA)))
        (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado)))) "arriba")
-      (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))) ]
+      (- (nucleo-timer estado) (* 10 (nucleo-speed estado)))) ] 
     
     
 
@@ -1168,39 +1268,21 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                                                 (+ DELTA (posn-y (nucleo-snake estado))))) 
                                        (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
                        "abajo")
-                      (- (nucleo-timer estado) (* 1 (nucleo-speed estado))))
-     ]
+                      (- (nucleo-timer estado) (* 10 (nucleo-speed estado))))]
 
 
 
     [(equal? "izquierda" (nucleo-direccion estado))
-     (make-nucleo
-      (nucleo-juego estado)
-      (nucleo-fondo estado)
-      (nucleo-gname estado)
-      (nucleo-instancia estado)
-      (nucleo-preselector estado)
-      (nucleo-stopORstart estado)
-      (nucleo-vidas estado)
-      (nucleo-alive estado)
-      (make-posn (- (posn-x (nucleo-snake estado)) DELTA) (posn-y (nucleo-snake estado)))
-      (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado)))
-      "izquierda"
-      (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
-       (nucleo-highscores estado)
-       )
-     ]
-
-
-
+     (modificar-timer
+      (modificar-direccion (modificar-tail
+                            (modificar-snake estado 
+                                             (make-posn (- (posn-x (nucleo-snake estado)) DELTA)
+                                                        (posn-y (nucleo-snake estado))))
+      (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
+      "izquierda")
+      (- (nucleo-timer estado) (* 10 (nucleo-speed estado))))]
+     
+    
     [(equal? "derecha" (nucleo-direccion estado))
      (modificar-timer  (modificar-direccion (modificar-tail
                                              (modificar-snake
@@ -1210,30 +1292,11 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                                (posn-y (nucleo-snake estado))))
                                              (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
                                             "derecha")
-                       (- (nucleo-timer estado) (* 1 (nucleo-speed estado)))
+                       (- (nucleo-timer estado) (* 10 (nucleo-speed estado)))
                        )]
     
     [else estado]
     ))
-
-
-
-
-
-;=========================COMENTARIO=========================
-#;(
-;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
-                                            ON-TICK
-;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
-)
-;=========================COMENTARIO=========================
-
-
-
-
-
-
-
 
 
 
@@ -1248,7 +1311,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 (define (key-handler estado tecla)
      (cond
-
        [(key=? tecla " ")
      (make-nucleo
        3
@@ -1273,28 +1335,25 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        60
        (nucleo-highscores estado)
        )]
+
+       [(key=? tecla "escape")
+     INICIAL]
        
        [(equal? (nucleo-direccion estado) "derecha") (cond
-    
                                                        [(or (key=? tecla "up") (key=? tecla "w"))
                                                         (modificar-direccion estado 
                                                                              "arriba")]
-          
-          
                                                        [(or (key=? tecla "down") (key=? tecla "s"))
                                                         (modificar-direccion estado 
                                                                              "abajo")]
                                                        [else estado]
                                                        )
-
                                                      ]
 
        [(equal? (nucleo-direccion estado) "izquierda") (cond
                                                          [(or (key=? tecla "up") (key=? tecla "w"))
                                                           (modificar-direccion estado 
                                                                                "arriba")]
-        
-        
                                                          [(or (key=? tecla "down") (key=? tecla "s"))
                                                           (modificar-direccion estado 
                                                                                "abajo")]
@@ -1304,53 +1363,36 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                                       [(or (key=? tecla "left") (key=? tecla "a"))
                                                        (modificar-direccion estado 
                                                                             "izquierda")]
-                                                      
                                                       [(or (key=? tecla "right") (key=? tecla "d"))
-                                                       
                                                        (modificar-direccion estado 
                                                                             "derecha")]
                                                       [else estado])]
-       
        [(equal? (nucleo-direccion estado) "abajo") (cond
                                                      [(or (key=? tecla "left") (key=? tecla "a"))
                                                       (modificar-direccion estado 
                                                                            "izquierda")]
-                                                     
                                                      [(or (key=? tecla "right") (key=? tecla "d"))
-                                                      
                                                       (modificar-direccion estado 
                                                                            "derecha")]
                                                      [else estado])]
-
-
        
-     
     [(equal? (nucleo-direccion estado) "quieto")  (cond
             
                                                    [(or (key=? tecla "left") (key=? tecla "a"))
                                                     (modificar-direccion estado 
                                                                          "izquierda")]
-     
                                                    [(or (key=? tecla "right") (key=? tecla "d"))
-     
                                                     (modificar-direccion estado 
                                                                          "derecha")]
-    
                                                    [(or (key=? tecla "up") (key=? tecla "w"))
                                                     (modificar-direccion estado 
                                                                          "arriba")]
-
-    
                                                    [(or (key=? tecla "down") (key=? tecla "s"))
                                                     (modificar-direccion estado 
                                                                          "abajo")]
                                                    [else estado])]
-           [else estado  ]))
+    [else estado  ]))
   
-
-
-
-
 
 ;=========================COMENTARIO=========================
 #;(
@@ -1634,17 +1676,16 @@ Haga click en cualquier lado para volver al menu" 70 "white")
         ;-----------------------------------------COLOR FONDO
        [(limite-C-FONDO-IZQ estado x y)
         (modificar-colorback estado   (restar1b (nucleo-colorback estado)))] 
-  
+       
 
       [(limite-C-FONDO-DER estado x y)
        (modificar-colorback estado
-       (sumar1 (nucleo-colorback estado))
-       )]
+                            (sumar1 (nucleo-colorback estado)))]
 
       ;--------------------------------------------COLOR PERSONAJE
       [(limite-C-PERSONAJE-IZQ estado x y)
-       (modificar-colorchar
-       (restar1b (nucleo-colorchar estado))
+       (modificar-colorchar estado
+        (restar1b (nucleo-colorchar estado))
        )]
 
       [(limite-C-PERSONAJE-DER estado x y)
@@ -1687,54 +1728,14 @@ Haga click en cualquier lado para volver al menu" 70 "white")
         )]
 
       [(limite-boton-PANTALLAMOD1 estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
+       (modificar-modopantalla estado
        'normal
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
        )]
 
       [(limite-boton-PANTALLAMOD2 estado x y)
-       (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       (nucleo-instancia estado)
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       'fullscreen
-       (nucleo-timer estado)
-       (nucleo-highscores estado)
-       )]
+       (modificar-modopantalla estado
+       'fullscreen)
+      ]
 
 
 
@@ -1754,6 +1755,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 (define (close estado)
    (equal? (nucleo-instancia estado) 2))
+;(define CHAU image.
+
+ ; )
+
 
 (define (creditos estado)
   CREDITOS)
@@ -1765,17 +1770,9 @@ Haga click en cualquier lado para volver al menu" 70 "white")
           [on-key key-handler]
           [on-mouse mouse-handler]
           [stop-when close creditos]
-          [close-on-stop 3]
+          [close-on-stop 2]
           [display-mode (nucleo-modopantalla INICIAL)]
           [name (nucleo-gname INICIAL)]
 )
   
-(printf "gracias
-por jugar
-
-
-
-")
-     
-;(define (mitad2p a b) ;sabiendo que a es menor que b
-  ;(+ a (/ (- b a) 2)))
+(printf "Emanuel Gonzalez - Proyecto 2")

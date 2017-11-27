@@ -1,4 +1,4 @@
-;---------------------------------- El codigo empieza en la lina 555
+;---------------------------------- El codigo empieza en la lina 600
 (define-struct
   nucleo
   [juego ;number number que juego es
@@ -23,10 +23,58 @@
    timer ;number
    highscores 
    ])
-
-(define (modificar-juego estado valor-juego)
+;=========================COMENTARIO=========================                                         INICIAL
+(define INICIAL
   (make-nucleo
-       valor-juego
+   0 ;juego nucleo
+   menu ;fondo del menu
+   "Nucleo - Emanuel Gonzalez" ;gname
+   0 ;instancia de menu
+   "run-snake" ;- preselector
+   "stop" ;empieza detenido
+   0 ;vidas ;cantidad de vidas disponibles
+   #false ;alive
+   (make-posn 100 400) ;snake head
+   (list (make-posn 90 400) (make-posn 80 400)) ;cola
+   "quieto" ;direccion
+   0 ;color personaje
+   0 ;color fondo
+   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
+   0
+   20 ;rango
+   0.02 ;speed 
+   #false ;fantasta
+   'normal ;modo pantalla
+   0 ;timer
+   (list 0 0 0 0 0) ;highscores
+   ))
+
+(define snake-INICIAL
+  (make-nucleo    3 ;juego nucleo
+                     menu ;fondo del menu
+   "Snake - Emanuel Gonzalez" ;gname
+   4 ;instancia de menu
+   "run-snake" ;- preselector
+   "stop" ;empieza detenido
+   3 ;vidas ;cantidad de vidas disponibles
+   #true ;alive
+   (make-posn 100 400) ;snake head
+   (list (make-posn 90 400) (make-posn 80 400)) ;cola
+   "quieto" ;direccion
+   0 ;color personaje
+   0 ;color fondo
+   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
+   0
+   400 ;rango
+   0.02 ;speed 
+   #false ;fantasta
+   'normal ;modo pantalla
+   800 ;timer
+   LISTAHIGHSCORES ;highscores
+   ))
+;--------------------------------------------------------------
+(define (modificar-juego estado valor-juego)
+  (make-nucleo       valor-juego
        (nucleo-fondo estado)
        (nucleo-gname estado)
        (nucleo-instancia estado)
@@ -123,7 +171,6 @@
        (nucleo-timer estado)
        (nucleo-highscores estado)
        ))
-
 
 (define (modificar-preselector estado valor-preselector)
   (make-nucleo
@@ -475,7 +522,6 @@
        (nucleo-highscores estado)
        ))
 
-
 (define (modificar-modopantalla estado valor-modopantalla) ;
   (make-nucleo
        (nucleo-juego estado)
@@ -552,8 +598,6 @@
        ))
 
  ;=========================COMENTARIO=========================                                CONSTANTES
-
-
 (define ALTO 600)
 (define ANCHO 800)
 (define COLORBOTONPLAY1 "red")
@@ -591,14 +635,14 @@
 
 
 (define LISTAHIGHSCORES (list 0 0 0 0 0))
-
+(define DELTATIEMPO 20)
 ;=======================================================================================IMAGENES CONSTANTES
 ;funcion auxiliar poner-texto: string color color -> img
 ;recibe una string y dos colores y genera una imagen de 400x100
 (define (poner-texto string colortxt colorfondo )
   (place-image/align (text string 70 colortxt) (/ ANCHO 4) 50 "center" "center" (rectangle (/ ANCHO 2) 100 "solid" colorfondo)))
 
-(define COLORFONDO "DarkSeaGreen")
+(define COLORFONDO "DarkGreen")
 
 (define BOTON-HIGHSCORE (poner-texto "Puntajes" "white" "red"))
 (define BOTON-INSTRUCCIONES (poner-texto "Instrucciones" "white" "green"))
@@ -633,15 +677,6 @@
 
 
 ;--------------------------------------------------------------------
-;CREDITOS
-(define CREDITOS (place-images
-   (list (circle 50 "solid" "blue")
-         )
-   (list (make-posn (/ ANCHO 2) (/ ALTO 2))
-         )
-   escena))
-
-
 
 
 ;OPCIONES
@@ -683,7 +718,7 @@
   (poner-texto-opt (string-append "Fondo " (list-ref COLORESFONDO (nucleo-colorback estado))) "white" "blue"))
 
 (define (boton-color-personaje estado)
-  (poner-texto-opt (string-append "Fondo " (list-ref COLORESPERSONAJE (nucleo-colorback estado))) "white" "blue"))
+  (poner-texto-opt (string-append "Personaje " (list-ref COLORESPERSONAJE (nucleo-colorchar estado))) "white" "blue"))
 
 (define boton-RESET-HIGHSCORE 
   (poner-texto-opt "Resetear puntajes" "white" "red"))
@@ -765,93 +800,9 @@
     )
   (place-image (poner-texto "Volver" "white" COLORFONDO) 400 50 (rectangle 800 600 "solid" COLORFONDO))))
 
-;=========================COMENTARIO=========================                                         INICIAL
-
-
-(define INICIAL
-  (make-nucleo
-   0 ;juego nucleo
-   menu ;fondo del menu
-   "Nucleo - Emanuel Gonzalez" ;gname
-   0 ;instancia de menu
-   "run-snake" ;- preselector
-   "stop" ;empieza detenido
-   0 ;vidas ;cantidad de vidas disponibles
-   #false ;alive
-   (make-posn 100 400) ;snake head
-   (list (make-posn 90 400) (make-posn 80 400)) ;cola
-   "quieto" ;direccion
-   0 ;color personaje
-   0 ;color fondo
-   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
-   0
-   20 ;rango
-   0.02 ;speed 
-   #false ;fantasta
-   'normal ;modo pantalla
-   0 ;timer
-   (list 0 0 0 0 0) ;highscores
-   ))
-
-
-(define snake-INICIAL
-  (make-nucleo    3 ;juego nucleo
-                     menu ;fondo del menu
-   "Snake - Emanuel Gonzalez" ;gname
-   4 ;instancia de menu
-   "run-snake" ;- preselector
-   "stop" ;empieza detenido
-   3 ;vidas ;cantidad de vidas disponibles
-   #true ;alive
-   (make-posn 100 400) ;snake head
-   (list (make-posn 90 400) (make-posn 80 400)) ;cola
-   "quieto" ;direccion
-   0 ;color personaje
-   0 ;color fondo
-   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
-   0
-   400 ;rango
-   0.02 ;speed 
-   #false ;fantasta
-   'normal ;modo pantalla
-   60 ;timer
-   LISTAHIGHSCORES ;highscores
-   ))
-
 
 ;=========================COMENTARIO=========================                                         AUXILIARES
 
-
-
-#;( puntos-cercanos: number number -> boolean)
-;toma dos numeros y dicta si estos estan cerca o no
-;sirve para determinar si el gusano come o no la fruta dependiendo su rango
-(define (puntos-cercanos estado a b)
-  (and (<= (- a b) (nucleo-rango estado)) (>= (- a b) (- (nucleo-rango estado)))))
-
-;------------------------------------------------------------
-
-#;(round-to-multiplodiez: number -> number)
-;recibe un numero y lo redondea hacia abajo, para que quede un multiplo de 10
-(define (round-to-mutiplodiez number)
-  (- number (modulo number 10)))
-
-;------------------------------------------------------------
-#;(random-acotado: number number -> number )
-;toma un valor minimo y un maximo y devuelve un numero aleatorio entre esos dos valores
-(define (random-acotado inf sup)
-         (let ( [rand (random sup)])
-              (if
-               (and (< rand sup) (> rand inf))
-               rand ;si esta en el intervalo, devuelve ese valor
-               (let
-                   ( [rand (random sup)])
-                 (cond
-                   [(and (< rand sup) (> rand inf)) rand]
-                   [else (random-acotado inf sup)]))
-               )  ;if 
-           ); let
-  );define
 
 ;------------------------------------------------------------
 #;(quitar-ultimo: lista -> lista)
@@ -894,19 +845,16 @@
 (define (restar1 num) (if (>= num 2) (- num 1) 1))
 
 (define (restar1b num) (if (>= num 1) (- num 1) 0))
+(define (restar1d num) (if (>= num 10) (- num 10) 0))
 (define (sumar1 num) (if (<= num 6) (+ num 1) 7))
 
 (define (restar1c num) (if (>= num 20) (- num 10) 10))
 ;--------------------------------------------------------------------------------
 
 
-(define COLORESPERSONAJE (list "black" "white" "pink" "red" "blue" "green" "yellow"))
-(define COLORESFONDO (list "GhostWhite" "DeepSkyBlue" "white" "Salmon" "DarkGreen" "Violet" "LightSlateGray"))
+(define COLORESPERSONAJE (list "black" "white" "pink" "crimson" "DarkSlateGray" "blue" "green" "yellow" "MediumSeaGreen"))
+(define COLORESFONDO (list "GhostWhite" "black" "DeepSkyBlue" "Crimson" "Salmon" "DarkGreen" "Violet" "LightSlateGray" "Turquoise"))
 (define n 1)
-;(define (lista-izq l) (list-ref (let (restar1 n)) COLORESPERSONAJE)))   
-
-
-
 
 
 
@@ -927,7 +875,7 @@
                                             7 -> 8
 
 
-graficador: estado-> imagen
+manejador-pantalla: estado-> imagen
            recibe un estado y grafica una imagen   )
 ;=========================COMENTARIO=========================
 (define instrucciones-snake
@@ -941,13 +889,16 @@ el rango (que tan cerca tiene que estar de las frutas)
 y la velocidad (cuanto menor el numero, mas rapido).
 El tiempo no se resetea luego de cada muerte.
 Al perder las 3 vidas (o mas) termina el juego.
-Haga click en cualquier lado para volver al menu" 20 "white")
+Presione escape para volver al menu" 20 "white")
                400 300 (rectangle ANCHO ALTO "solid" "black")))
 
 (define instrucciones-juego-2
-  (place-image (text "El juego no esta definido
-por lo tanto tampoco las instrucciones.
-Haga click en cualquier lado para volver al menu" 70 "white")
+  (place-image
+   (text
+    "El juego no esta definido
+     por lo tanto tampoco las
+     instrucciones.
+     Clickear en cualquier lado para volver al menu" 25 "white")
                400 300 (rectangle ANCHO ALTO "solid" "black")))
 
 (define (instrucciones estado)
@@ -960,37 +911,22 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 
-(define (graficador estado)
-  (cond
-                                                               ;dentro del menu
-    [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 0))
-     (menu estado)]
-
+(define (manejador-pantalla estado)
+  (cond                                                     
+    [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 0)) (menu estado)] ;menu principal
+     
+    [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 1)) (opciones estado)];opciones
+     
+    [(and (= (nucleo-juego estado) 3) (= (nucleo-instancia estado) 4)) (snake estado)]  ;dentro del snake, vivo
+     
+    [(and (= (nucleo-juego estado) 3) (= (nucleo-instancia estado) 5)) (post-deth estado)] ;dentro del snake, muerto
+     
+    [(= (nucleo-juego estado) 6) (instrucciones estado)]  ;instrucciones
+     
+    [(= (nucleo-juego estado) 7) (ventanita-highscores estado)]    ;highscores
     
-    [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 1))
-     (opciones estado)]
-
-    
-    [(and (= (nucleo-juego estado) 0) (= (nucleo-instancia estado) 2))
-     creditos ]                                                          ; fin
-
-
-    [(and (= (nucleo-juego estado) 3) (= (nucleo-instancia estado) 4))    ;dentro del snake, vivo
-     (snake estado)]
-
+    [else (menu estado)] ))
    
-    [(and (= (nucleo-juego estado) 3) (= (nucleo-instancia estado) 5))    ;dentro del snake, muerto
-     (post-deth estado)]
-
-    
-    [(= (nucleo-juego estado) 6)    ;instrucciones
-     (instrucciones estado)]
-
-    [(= (nucleo-juego estado) 7)    ;highscores
-     (ventanita-highscores estado)]
-
-    [else (menu estado)]
-    ))
 
 ;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
 ;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
@@ -1034,14 +970,17 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 (define (generador-fondo-snake estado)
   (place-images
    (list
-    (text (string-append "Velocidad: " (number->string (nucleo-speed estado))) 25 (make-color 100 100 100))
-    (text (string-append "Rango: " (number->string (nucleo-rango estado))) 25 (make-color 100 100 100))
-    (text (string-append "Vidas: " (number->string (nucleo-vidas estado))) TAMAÑO-TEXTO (make-color 228 48 48))
-   
-    (text (string-append "Tiempo: " (number->string (nucleo-timer estado))) TAMAÑO-TEXTO (make-color 255 255 255))
-    (text (string-append "Puntaje: " (number->string (nucleo-score estado))) TAMAÑO-TEXTO (make-color 216 255 21))
-    (text (nucleo-gname estado) 15 (make-color 100 100 100))
-    )
+    (text (string-append "Velocidad: " (number->string (nucleo-speed estado)))
+          25 (make-color 100 100 100))
+    (text (string-append "Rango: " (number->string (nucleo-rango estado)))
+          25 (make-color 100 100 100))
+    (text (string-append "Vidas: " (number->string (nucleo-vidas estado)))
+          TAMAÑO-TEXTO (make-color 228 48 48))
+    (text (string-append "Tiempo: " (number->string (nucleo-timer estado)))
+          TAMAÑO-TEXTO (make-color 255 255 255))
+    (text (string-append "Puntaje: " (number->string (nucleo-score estado)))
+          TAMAÑO-TEXTO (make-color 216 255 21))
+    (text (nucleo-gname estado) 15 (make-color 100 100 100)))
 
    (list (make-posn 100 30)
          (make-posn 100 60)
@@ -1050,27 +989,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
          (make-posn 700 70)
          (make-posn 700 10))
     (fondo-snake estado)))
-
-
-;------------------------------
-
-
-(define (se-choca-con-la-cola listacola posicioncabeza)
-  (cond 
-    [(empty? listacola) #false]
-    [(cons? listacola) 
-     (if (equal? (first listacola) posicioncabeza)
-                       #true
-                      (se-choca-con-la-cola (rest listacola) posicioncabeza))]))
-
-
-(define (se-choca-con-la-pared estado)
-  (if (or (< (posn-x (nucleo-snake estado)) 0) 
-          (< (posn-y (nucleo-snake estado)) MINIMO-PARED) 
-          (> (posn-x (nucleo-snake estado)) (- ANCHO 10)) 
-          (> (posn-y (nucleo-snake estado)) MAXIMO-PARED))
-#true #false))
-
 
 ;----------------------------------------
 
@@ -1083,12 +1001,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
    (lista-de-snake estado)
 (generador-fondo-snake estado)))
    
-
-
-
-
-;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
-;SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE=SNAKE
 
 
 
@@ -1139,8 +1051,8 @@ Haga click en cualquier lado para volver al menu" 70 "white")
    
    (list
     (text
-   "Has muerto, clickea
-    en cualquier lado para
+   "     Te moriste, 
+    presiona escape para
     volver al menu, o toca
     la barra espaciadora
     para jugar de nuevo" 30 "white")
@@ -1157,12 +1069,6 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 
-;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
-;POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH=POST-DETH
-
-
-
-
 
 ;=========================COMENTARIO=========================
 #;(
@@ -1170,45 +1076,72 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                             ON-TICK
 ;ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK=ON-TICK
 )
-;=========================COMENTARIO=========================
+;=========================COMENTARIO=========================  AUXILIARES
+;recibe el estado y compara los campos snake y tail
+(define (se-choca-con-la-cola listacola snake)
+  (cond 
+    [(empty? listacola) #false]
+    [(cons? listacola) 
+     (if (equal? (first listacola) snake)
+                       #true
+                      (se-choca-con-la-cola (rest listacola) snake))]))
+
+
+(define (se-choca-con-la-pared estado)
+  (if (or (< (posn-x (nucleo-snake estado)) 0) 
+          (< (posn-y (nucleo-snake estado)) MINIMO-PARED) 
+          (> (posn-x (nucleo-snake estado)) (- ANCHO 10)) 
+          (> (posn-y (nucleo-snake estado)) MAXIMO-PARED))
+#true #false))
+
+;-------------------------------------------------------------
+
+#;( puntos-cercanos: number number -> boolean)
+;toma dos numeros y dicta si estos estan cerca o no
+;sirve para determinar si el gusano come o no la fruta dependiendo su rango
+(define (puntos-cercanos estado a b)
+  (and (<= (- a b) (nucleo-rango estado)) (>= (- a b) (- (nucleo-rango estado)))))
+
+;------------------------------------------------------------
+
+#;(round-to-multiplodiez: number -> number)
+;recibe un numero y lo redondea hacia abajo, para que quede un multiplo de 10
+(define (round-to-mutiplodiez number)
+  (- number (modulo number 10)))
+
+;------------------------------------------------------------
+#;(random-acotado: number number -> number )
+;toma un valor minimo y un maximo y devuelve un numero aleatorio entre esos dos valores
+(define (random-acotado inf sup)
+         (let ( [rand (random sup)])
+              (if
+               (and (< rand sup) (> rand inf))
+               rand ;si esta en el intervalo, devuelve ese valor
+               (let
+                   ( [rand (random sup)])
+                 (cond
+                   [(and (< rand sup) (> rand inf)) rand]
+                   [else (random-acotado inf sup)]))
+               )  ;if 
+           ); let
+  );define
+
+
+
+
+
+
+
+
 
 
 (define (tick-tock estado)
   (cond
     [(equal? "quieto" (nucleo-direccion estado))
-     (modificar-timer (modificar-tail (modificar-snake estado SNAKEINICIAL) (list (make-posn 90 200) (make-posn 80 200))) (nucleo-timer snake-INICIAL))
+     (modificar-timer (modificar-tail (modificar-snake estado SNAKEINICIAL) (list (make-posn 90 200) (make-posn 80 200))) (nucleo-timer snake-INICIAL))]
+   
+     [(>= 0 (nucleo-vidas estado))     (modificar-instancia estado       5)]
      
-       ]
-
-    [(= (nucleo-instancia estado) 5)
-     (modificar-highscores estado (top-5 (cons (nucleo-score estado) (nucleo-highscores estado)) ))]
-
-     [(>= 0 (nucleo-vidas estado))
-     (make-nucleo
-       (nucleo-juego estado)
-       (nucleo-fondo estado)
-       (nucleo-gname estado)
-       5
-       (nucleo-preselector estado)
-       (nucleo-stopORstart estado)
-       (nucleo-vidas estado)
-       (nucleo-alive estado)
-       (nucleo-snake estado)
-       (nucleo-tail estado)
-       (nucleo-direccion estado)
-       (nucleo-colorchar estado)
-       (nucleo-colorback estado)
-       (nucleo-food estado)
-       (nucleo-score estado)
-       (nucleo-rango estado)
-       (nucleo-speed estado)
-       (nucleo-fantasma estado)
-       (nucleo-modopantalla estado)
-       (nucleo-timer estado)
-       #;(top-5 (quicksort (cons (nucleo-score estado) (nucleo-highscores estado)) >))
-       (nucleo-highscores estado)
-       )
-     ]
      ;en caso de que la posicione de la cabeza sea igual a la de la comida, agrega un elemento a la lista de la cola y genera una nueva posicion de la comida
   
      [(and (puntos-cercanos estado (posn-x (nucleo-snake estado)) (posn-x (nucleo-food estado)))
@@ -1229,7 +1162,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
              (make-posn (+ DELTA (posn-x (nucleo-snake estado))) (posn-y (nucleo-snake estado)))])) ;nucleo-snake
          (cons (nucleo-snake estado) (nucleo-tail estado))) ;NUCLEO-TAIL
         (make-posn
-         (random-acotado 10 (- ANCHO 10))            ;nueva posiciones de comida
+         (round-to-mutiplodiez (random-acotado 10 (- ANCHO 10)))            ;nueva posiciones de comida
          (round-to-mutiplodiez (random-acotado 110 (- ALTO 10))) )) ;NUCLEO-FOOD
        (+ 10 (nucleo-score estado))) ;NUCLEO-SCORE
 
@@ -1237,7 +1170,8 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 
 ;CUADO SE CHOCA CON LA PARED O CON SU COLA
-   [(or (se-choca-con-la-cola (nucleo-tail estado) (nucleo-snake estado)) (se-choca-con-la-pared estado))
+   [(or (se-choca-con-la-cola (nucleo-tail estado) (nucleo-snake estado)) (se-choca-con-la-pared estado)
+        (negative? (nucleo-timer estado)))
     (modificar-direccion
      (modificar-tail
       (modificar-snake
@@ -1257,7 +1191,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                         (make-posn (posn-x (nucleo-snake estado))
                                    (- (posn-y (nucleo-snake estado)) DELTA)))
        (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado)))) "arriba")
-      (- (nucleo-timer estado) (* 10 (nucleo-speed estado)))) ] 
+      (- (nucleo-timer estado) (* DELTATIEMPO (nucleo-speed estado)))) ] 
     
     
 
@@ -1268,7 +1202,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                                                 (+ DELTA (posn-y (nucleo-snake estado))))) 
                                        (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
                        "abajo")
-                      (- (nucleo-timer estado) (* 10 (nucleo-speed estado))))]
+                      (- (nucleo-timer estado) (* DELTATIEMPO (nucleo-speed estado))))]
 
 
 
@@ -1280,7 +1214,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                                         (posn-y (nucleo-snake estado))))
       (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
       "izquierda")
-      (- (nucleo-timer estado) (* 10 (nucleo-speed estado))))]
+      (- (nucleo-timer estado) (* DELTATIEMPO (nucleo-speed estado))))]
      
     
     [(equal? "derecha" (nucleo-direccion estado))
@@ -1292,7 +1226,7 @@ Haga click en cualquier lado para volver al menu" 70 "white")
                                                (posn-y (nucleo-snake estado))))
                                              (quitar-ultimo (cons (nucleo-snake estado) (nucleo-tail estado))))
                                             "derecha")
-                       (- (nucleo-timer estado) (* 10 (nucleo-speed estado)))
+                       (- (nucleo-timer estado) (* DELTATIEMPO (nucleo-speed estado)))
                        )]
     
     [else estado]
@@ -1311,6 +1245,10 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 (define (key-handler estado tecla)
      (cond
+
+        [(key=? tecla "q")
+         (modificar-timer estado 99999) ]
+        
        [(key=? tecla " ")
      (make-nucleo
        3
@@ -1559,7 +1497,8 @@ Haga click en cualquier lado para volver al menu" 70 "white")
     [(equal? (nucleo-instancia estado) 5)  ;------------------------click en post-deth scene
       (modificar-vidas (modificar-juego (modificar-instancia estado 0) 0) 3)]
 
-    
+    [(equal? (nucleo-instancia estado) 6)  ;------------------------click en instrucciones
+      (modificar-juego (modificar-instancia estado 0) 0)]
 ;----------------------------------boton play del menu
     [(limite-boton-0-0-0 estado x y)
 
@@ -1653,11 +1592,11 @@ Haga click en cualquier lado para volver al menu" 70 "white")
        
       ;--------------------------------------------RANGO
        [(limite-RANGO-IZQ estado x y)
-        (modificar-rango estado (restar1b (nucleo-rango estado)))]
+        (modificar-rango estado (restar1d (nucleo-rango estado)))]
 
        [(limite-RANGO-DER estado x y)
         (modificar-rango estado
-       (+ 1 (nucleo-rango estado)))]
+       (+ 10 (nucleo-rango estado)))]
        
 
        ;------------------------------------------TIME
@@ -1744,7 +1683,8 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 ;---------------------------------------------------
       [else estado]
     
-    ) estado))
+    ) (if (= (nucleo-instancia estado) 5)
+     (modificar-highscores estado (top-5 (cons (nucleo-score estado) (nucleo-highscores estado)) )) estado)))
       
 ;=========================COMENTARIO=========================
 #;(
@@ -1755,17 +1695,17 @@ Haga click en cualquier lado para volver al menu" 70 "white")
 
 (define (close estado)
    (equal? (nucleo-instancia estado) 2))
-;(define CHAU image.
+(define CHAU .
 
- ; )
+  )
 
 
 (define (creditos estado)
-  CREDITOS)
+  CHAU)
 ;=========================COMENTARIO=========================
 
 (big-bang INICIAL 
-          [to-draw graficador]
+          [to-draw manejador-pantalla]
           [on-tick tick-tock (nucleo-speed INICIAL)]
           [on-key key-handler]
           [on-mouse mouse-handler]

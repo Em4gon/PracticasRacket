@@ -206,3 +206,26 @@ Ejercicio 5. Diseñe la función factnat que toma un número natural y devuelve 
 #|
 Ejercicio 6. Diseñe la función fibnat que toma un número natural y devuelve el valor correspondiente a la secuencia de Fibonacci para ese valor: fibnat (0) = 1 ,fibnat (1) =1 ,fibnat (n+2) = fibnat (n) + fibnat (n+1). Use el evaluador paso a paso para calcular (fibnat 5).
 |#
+
+;fibnat: natural -> natural
+;calcula el fibonacci de un n dado
+;casos base fib 0 = 1
+; fib 1 = 1
+
+(define (fibnat n)
+  (cond
+    [(zero? n) 1]
+    [(equal? n 1) 1]
+    [(>= n 2)         (+
+                       (fibnat (sub1 n))
+                       (fibnat (sub1 (sub1 n))))
+     ]))
+
+(check-expect (fibnat 0) 1)
+(check-expect (fibnat 1) 1)
+(check-expect (fibnat 2) 2)
+(check-expect (fibnat 3) 3)
+(check-expect (fibnat 4) 5)
+(check-expect (fibnat 5) 8)
+(check-expect (fibnat 6) 13)
+(check-expect (fibnat 7) 21)

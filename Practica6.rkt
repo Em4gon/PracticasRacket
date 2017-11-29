@@ -246,6 +246,42 @@ Ejercicio 7. Diseñe una función list-fibonacci que dado un número n devuelve 
               (list 1))
 
 
+;g: N -> N
+(define (g nat)
+  (cond
+    [(equal? nat 0) 1]
+    [(equal? nat 1) 2]
+    [(equal? nat 2) 3]
+    [(>= nat 3)
+     (* (g (sub1 nat)) (g (sub1 (sub1 nat))) (g (sub1 (sub1 (sub1 nat)))))
+     ]))
+
+(check-expect (g 0) 1)
+(check-expect (g 1) 2)
+(check-expect (g 2) 3)
+(check-expect (g 3) 6)
+(check-expect (g 4) 36)
+(check-expect (g 5) 648)
+
+
+;list-g: N -> ListDeN
+
+;recursion sobre n
+
+(define (list-g n)
+  (cond
+    [(zero? n) (list 1)]
+    [(positive? n) (cons (g n)
+                         (list-g (sub1 n)))     
+     ])) 
+
+
+(check-expect (list-g 3)
+              (list 6 3 2 1))
+(check-expect (list-g 0)
+              (list 1))
+
+
 #|
 Ejercicio 9. Diseñe una función multiplos que tome dos naturales n y m, y devuelva una lista con los primeros n múltiplos positivos de m, en orden inverso: m * n ,m * (n-1) ,... ,m * 2 ,m.
 
@@ -343,21 +379,34 @@ Diseñe una función cuotas que dado un importe de un préstamo, total, un valor
     [(positive? n)
      (cons (+ (/ total n) (* (/ total n) (/ i (* 100 12)) (+ j 1))) (quotas (* (+ 2 j) (/ total n)) (sub1 n) i))])-------------------------------------------------------------)
 
-(define (cuotas total n i j )
+(define (cuotas total n i)
+  (cond
+    [(or (zero? n) (zero? total))  empty]
+    [(and (positive? n ) (positive? total)) (calculo-cuotas total n i 0)]
+    )) 
+
+
+;calculo-cuotas:  N N N N ->ListN
+; j: N
+; recursión j
+(define (calculo-cuotas total n i j )
   (cond
     [(equal? j n) empty]
-    [(zero? n) empty]
-    [(positive? n)
-     (cons (+ (/ total n) (* (/ total n) (/ i (* 100 12)) (+ j 1)))
-           (cuotas total n i (add1 j)))]))
+    [(and (<= 0 j) ( < j n))  (cons (+ (/ total n) (* (/ total n) (/ i (* 100 12)) (+ j 1)))
+                                    (calculo-cuotas total n i (add1 j)))] ) )
 
- (cuotas 10000 0 18 0)
-  (cuotas 30000 3 12 0)
-(cuotas 10000 1 12 0)
-(cuotas 100000 4 18 0)
+
+
+ (cuotas 10000 0 18)
+  (cuotas 30000 3 12)
+(cuotas 10000 1 12)
+(cuotas 100000 4 18)
+(cuotas 10000 1 0)
+(cuotas 10000 5 0)
+(cuotas 0 40 20)
 "Aca termina el ejercicio 12"
 "---------------------------------"
-;----------------------------------------
+;---------------------------------------------------------------------------------
 
 #|
 Ejercicio 13. Según la profesora de probabilidad y estadística, al tirar muchas veces un dado -si este no está cargado- la frecuencia con la que ocurre cada número tiende a ser la misma. Es decir, si tiramos un dado seis millones de veces y anotamos los resultados, es de esperar que cada número del 1 al 6 aparezca aproximadamente un millón de veces.
@@ -377,22 +426,17 @@ Como no todos los dados tienen 6 caras, comenzamos definiendo una constante para
               (if
                (and (< rand sup) (> rand inf))
                rand ;si esta en el intervalo, devuelve ese valor
-               (let
-                   ( [rand (random sup)])
-                 (cond
-                   [(and (< rand sup) (> rand inf)) rand]
-                   [else (random-acotado inf sup)]))
-               )  ;if 
+               (random-acotado inf sup))  ;if 
            ); let
 )
 
 (define (simular-dado n)
   (cond
     [(zero? n) empty]
-    [else
-     (cons (random-acotado 0 (+ 1 CARAS)) (simular-dado (sub1 n)))]))
+    [else  (cons (+ (random CARAS) 1)
+                 (simular-dado (sub1 n)))]))
 
-(simular-dado 9)
+(simular-dado 29)
 
 #|
 Considere ahora las siguientes definiciones:
@@ -406,7 +450,7 @@ La lista EXPERIMENTO tendrá MAX números aleatorios entre 1 y CARAS. La lista V
     Diseñe la función frecuencia, que dado un número natural n y una lista de naturales, devuelve la cantidad de veces que n aparece en la lista. Es decir, su frecuencia absoluta.
 |#
 
-;frecuencia: natural ListaDeNumeros -> number
+;frecuencia: N ListaDeN -> N
 
 
 ;(define (frecuencia n lista)
@@ -415,10 +459,20 @@ La lista EXPERIMENTO tendrá MAX números aleatorios entre 1 y CARAS. La lista V
 (define (frecuencia n lista)
   (cond
     [(empty? lista) 0]
-    [else (if (equal? n (first lista))
-              (+ 1 (frecuencia n (rest lista))) (frecuencia n (rest lista)))]))
+    [(and (cons? lista) (equal? n (first lista))) (+ 1 (frecuencia n (rest lista)))]
+    [(and (cons? lista) (not (equal? n (first lista)))) (frecuencia n (rest lista))]))
 
 
+;(define (frecuencia n lista)
+ ; (cond
+  ;  [(empty? lista) 0]
+   ; [else (if (equal? n (first lista))
+    ;          (+ 1 (frecuencia n (rest lista))) (frecuencia n (rest lista)))]))
+
+
+
+;(defien (frecuencia2 n lista)
+ ; (filter boolean? (map (equal? n (first lista)) lista) 
 #|
 Utilizando esta función, podemos calcular la frecuencia relativa de un valor en una lista. Esto es, la proporción de veces que aparece:
 |#
@@ -429,8 +483,3 @@ Utilizando esta función, podemos calcular la frecuencia relativa de un valor en
     (define (frec-rel-exp n) (frecuencia-relativa n EXPERIMENTO))
 
     (define FRECUENCIAS-RELATIVAS (map frec-rel-exp VALORES))
-
-;PREGUNTAS
-;LA FUNCION FRECUENCIA SE PUEDE REALIZAR CON FILTER?
-;EN EL EJ 12 SE PUEDE HACER LA FUNCION SIN USAR J?
-;ejercicio 8

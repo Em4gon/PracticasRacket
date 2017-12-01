@@ -23,56 +23,6 @@
    timer ;number
    highscores 
    ])
-;=========================COMENTARIO=========================                                         INICIAL
-(define INICIAL
-  (make-nucleo
-   0 ;juego nucleo
-   menu ;fondo del menu
-   "Nucleo - Emanuel Gonzalez" ;gname
-   0 ;instancia de menu
-   "run-snake" ;- preselector
-   "stop" ;empieza detenido
-   0 ;vidas ;cantidad de vidas disponibles
-   #false ;alive
-   (make-posn 100 400) ;snake head
-   (list (make-posn 90 400) (make-posn 80 400)) ;cola
-   "quieto" ;direccion
-   0 ;color personaje
-   0 ;color fondo
-   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
-   0
-   20 ;rango
-   0.02 ;speed 
-   #false ;fantasta
-   'normal ;modo pantalla
-   0 ;timer
-   (list 0 0 0 0 0) ;highscores
-   ))
-
-(define snake-INICIAL
-  (make-nucleo    3 ;juego nucleo
-                     menu ;fondo del menu
-   "Snake - Emanuel Gonzalez" ;gname
-   4 ;instancia de menu
-   "run-snake" ;- preselector
-   "stop" ;empieza detenido
-   3 ;vidas ;cantidad de vidas disponibles
-   #true ;alive
-   (make-posn 100 400) ;snake head
-   (list (make-posn 90 400) (make-posn 80 400)) ;cola
-   "quieto" ;direccion
-   0 ;color personaje
-   0 ;color fondo
-   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
-   0
-   400 ;rango
-   0.02 ;speed 
-   #false ;fantasta
-   'normal ;modo pantalla
-   800 ;timer
-   LISTAHIGHSCORES ;highscores
-   ))
-;--------------------------------------------------------------
 (define (modificar-juego estado valor-juego)
   (make-nucleo       valor-juego
        (nucleo-fondo estado)
@@ -856,6 +806,56 @@
 (define COLORESFONDO (list "GhostWhite" "black" "DeepSkyBlue" "Crimson" "Salmon" "DarkGreen" "Violet" "LightSlateGray" "Turquoise"))
 (define n 1)
 
+;=========================COMENTARIO=========================                                         INICIAL
+(define INICIAL
+  (make-nucleo
+   0 ;juego nucleo
+   2 ;fondo del menu
+   "Nucleo - Emanuel Gonzalez" ;gname
+   0 ;instancia de menu
+   "run-snake" ;- preselector
+   "stop" ;empieza detenido
+   0 ;vidas ;cantidad de vidas disponibles
+   #false ;alive
+   (make-posn 100 400) ;snake head
+   (list (make-posn 90 400) (make-posn 80 400)) ;cola
+   "quieto" ;direccion
+   0 ;color personaje
+   0 ;color fondo
+   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
+   0
+   20 ;rango
+   0.02 ;speed 
+   #false ;fantasta
+   'normal ;modo pantalla
+   0 ;timer
+   (list 0 0 0 0 0) ;highscores
+   ))
+
+(define snake-INICIAL
+  (make-nucleo    3 ;juego nucleo
+                     menu ;fondo del menu
+   "Snake - Emanuel Gonzalez" ;gname
+   4 ;instancia de menu
+   "run-snake" ;- preselector
+   "stop" ;empieza detenido
+   3 ;vidas ;cantidad de vidas disponibles
+   #true ;alive
+   (make-posn 100 400) ;snake head
+   (list (make-posn 90 400) (make-posn 80 400)) ;cola
+   "quieto" ;direccion
+   0 ;color personaje
+   0 ;color fondo
+   (make-posn (/ ALTO 2) (/ ANCHO 2)) ;FOOD
+   0
+   400 ;rango
+   0.02 ;speed 
+   #false ;fantasta
+   'normal ;modo pantalla
+   800 ;timer
+   LISTAHIGHSCORES ;highscores
+   ))
+;--------------------------------------------------------------
 
 
 ;=========================COMENTARIO=========================                                         =TO-DRAW=
@@ -1695,7 +1695,7 @@ Presione escape para volver al menu" 20 "white")
 
 (define (close estado)
    (equal? (nucleo-instancia estado) 2))
-(define CHAU .
+(define CHAU (circle 20 "solid" "red")
 
   )
 
